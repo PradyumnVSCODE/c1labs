@@ -1,0 +1,260 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Continuum One</title>
+
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600&display=swap" rel="stylesheet">
+
+<style>
+
+*{
+  margin:0;
+  padding:0;
+  box-sizing:border-box;
+}
+
+body{
+  background:#000;
+  color:#fff;
+  font-family:"Space Grotesk", sans-serif;
+  overflow-x:hidden;
+}
+
+/* animated deep black background */
+body::before{
+  content:"";
+  position:fixed;
+  inset:0;
+  background:
+    radial-gradient(circle at 15% 20%, rgba(255,255,255,0.07), transparent 35%),
+    radial-gradient(circle at 80% 60%, rgba(255,255,255,0.05), transparent 40%),
+    radial-gradient(circle at 50% 90%, rgba(255,255,255,0.03), transparent 45%);
+  z-index:-2;
+}
+
+/* HERO */
+.hero{
+  height:100vh;
+  display:flex;
+  flex-direction:column;
+  justify-content:center;
+  align-items:center;
+  text-align:center;
+  padding:20px;
+}
+
+.logo{
+  width:220px;
+  margin-bottom:20px;
+  opacity:0.95;
+  filter: drop-shadow(0 0 20px rgba(255,255,255,0.12));
+}
+
+h1{
+  font-size:70px;
+  letter-spacing:10px;
+  font-weight:500;
+}
+
+.tagline{
+  margin-top:18px;
+  font-size:18px;
+  max-width:800px;
+  opacity:0.7;
+  line-height:1.7;
+}
+
+.cta{
+  margin-top:35px;
+  padding:14px 30px;
+  border:1px solid rgba(255,255,255,0.25);
+  border-radius:999px;
+  color:white;
+  text-decoration:none;
+  transition:0.3s;
+  font-size:13px;
+  letter-spacing:1px;
+}
+
+.cta:hover{
+  background:white;
+  color:black;
+}
+
+/* SECTION SYSTEM */
+.section{
+  min-height:100vh;
+  display:flex;
+  flex-direction:column;
+  justify-content:center;
+  align-items:center;
+  text-align:center;
+  padding:120px 20px;
+}
+
+h2{
+  font-size:42px;
+  font-weight:500;
+  margin-bottom:20px;
+  letter-spacing:3px;
+}
+
+p{
+  max-width:850px;
+  opacity:0.65;
+  line-height:1.8;
+  font-size:16px;
+}
+
+/* FEATURE GRID */
+.grid{
+  display:flex;
+  flex-wrap:wrap;
+  justify-content:center;
+  gap:18px;
+  margin-top:50px;
+}
+
+.card{
+  width:260px;
+  padding:20px;
+  border:1px solid rgba(255,255,255,0.12);
+  border-radius:14px;
+  transition:0.3s;
+  opacity:0.8;
+}
+
+.card:hover{
+  transform:translateY(-8px);
+  border-color:white;
+  opacity:1;
+}
+
+/* FOOTER */
+footer{
+  padding:60px;
+  text-align:center;
+  font-size:12px;
+  opacity:0.4;
+}
+
+</style>
+</head>
+
+<body>
+
+<!-- HERO -->
+<div class="hero">
+
+  <img src="assets/logo.png" class="logo">
+
+  <h1>CONTINUUM ONE</h1>
+
+  <div class="tagline">
+    An AI-native operating system that replaces software interaction with intent-driven execution.
+    It doesn’t assist you — it executes for you.
+  </div>
+
+  <a class="cta" href="os.html">Launch Continuum OS</a>
+
+</div>
+
+<!-- WHAT IT IS -->
+<div class="section">
+
+  <h2>WHAT IT IS</h2>
+
+  <p>
+    Continuum One is not a chatbot or productivity tool.
+    It is an execution layer that converts human intent into structured action pipelines using AI reasoning, memory, and tool orchestration.
+  </p>
+
+  <div class="grid">
+
+    <div class="card">Intent → Structured Execution</div>
+    <div class="card">Persistent Memory System</div>
+    <div class="card">Multi-Agent Reasoning Core</div>
+    <div class="card">Tool + API Orchestration Layer</div>
+
+  </div>
+
+</div>
+
+<!-- HOW IT WORKS -->
+<div class="section">
+
+  <h2>HOW IT WORKS</h2>
+
+  <p>
+    Instead of apps, you express intent. Continuum breaks it into steps, selects tools, executes, and returns results.
+  </p>
+
+  <div class="grid">
+
+    <div class="card">1. User Intent Input</div>
+    <div class="card">2. Context + Memory Retrieval</div>
+    <div class="card">3. AI Reasoning Decomposition</div>
+    <div class="card">4. Tool Selection & Execution</div>
+    <div class="card">5. Response Synthesis</div>
+
+  </div>
+
+</div>
+
+<!-- WHY IT MATTERS -->
+<div class="section">
+
+  <h2>WHY IT MATTERS</h2>
+
+  <p>
+    Software today requires navigation. Continuum removes navigation entirely.
+    You no longer use apps — you state outcomes.
+  </p>
+
+</div>
+
+<!-- FINAL CTA -->
+<div class="section">
+
+  <h2>BUILDING THE FUTURE OF COMPUTING</h2>
+
+  <p>
+    Continuum One is an early-stage AI operating system prototype redefining how humans interact with machines.
+  </p>
+
+  <a class="cta" href="os.html">Enter System</a>
+
+</div>
+<div class="section">
+
+  <h2>VISION</h2>
+
+  <p>
+    The future of computing is not app-based.
+
+It is intent-based.
+
+Today, users:
+
+open apps
+navigate interfaces
+manually perform steps
+
+In Continuum’s vision:
+
+You express what you want — the system figures out how to do it.
+
+This shifts computing from interaction → execution.
+  </p>
+
+</div>
+
+<footer>
+Continuum One • AI Operating System Prototype
+</footer>
+
+</body>
+</html>
