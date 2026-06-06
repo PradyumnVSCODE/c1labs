@@ -24,5 +24,6 @@ async function send(){
 
   const data = await res.json();
 
-  document.getElementById(aiId).innerHTML = data.reply;
+ document.getElementById(id).innerText =
+  data.reply || data.error || "No response";
 }
