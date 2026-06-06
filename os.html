@@ -1,81 +1,74 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Continuum OS</title>
-
-<style>
-body{
-margin:0;
-background:black;
-color:white;
-font-family:Arial;
-height:100vh;
-display:flex;
-flex-direction:column;
-}
-
-.top{
-padding:20px;
-border-bottom:1px solid #222;
-}
-
-#chat{
-flex:1;
-padding:20px;
-overflow:auto;
-}
-
-.msg{
-margin:10px 0;
-padding:10px;
-border-radius:10px;
-max-width:70%;
-}
-
-.user{background:#222;margin-left:auto;}
-.ai{background:#111;border:1px solid #333;}
-
-.bottom{
-display:flex;
-padding:10px;
-border-top:1px solid #222;
-}
-
-input{
-flex:1;
-padding:10px;
-background:#111;
-border:none;
-color:white;
-}
-
-button{
-padding:10px 15px;
-background:white;
-border:none;
-cursor:pointer;
-}
-</style>
-</head>
-
 <body>
 
-<div class="top">
-<h2>Continuum OS</h2>
+<div class="background-logo">
+  <img src="assets/logo.png">
 </div>
 
-<div id="chat">
-<div class="msg ai">System online.</div>
+<div class="topbar">
+
+  <div class="brand">
+    <img src="assets/logo.png">
+    <span>CONTINUUM ONE</span>
+  </div>
+
+  <div class="status">
+    SYSTEM ONLINE
+  </div>
+
 </div>
 
-<div class="bottom">
-<input id="input" placeholder="Type..." />
-<button onclick="send()">Send</button>
+<div class="center">
+
+  <h1>
+    What would you like to accomplish?
+  </h1>
+
+  <p>
+    Describe an outcome.
+    Continuum handles the path.
+  </p>
+
+  <div class="command-box">
+
+    <input
+      id="input"
+      placeholder="Build a startup..."
+    >
+
+    <button onclick="send()">
+      EXECUTE
+    </button>
+
+  </div>
+
 </div>
 
-<script src="chat.js"></script>
+<div class="panels">
+
+  <div class="panel">
+    <h3>Reasoning</h3>
+    <span>ACTIVE</span>
+  </div>
+
+  <div class="panel">
+    <h3>Memory</h3>
+    <span>ONLINE</span>
+  </div>
+
+  <div class="panel">
+    <h3>Agents</h3>
+    <span>READY</span>
+  </div>
+
+  <div class="panel">
+    <h3>Execution</h3>
+    <span>WAITING</span>
+  </div>
+
+</div>
+
+<div id="chat"></div>
+
+<script src="ap.js"></script>
 
 </body>
-</html>
