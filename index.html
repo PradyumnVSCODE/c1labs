@@ -1,56 +1,19 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
 <title>Continuum One</title>
 
 <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;700&display=swap" rel="stylesheet">
 
 <style>
 
-  .countdown{
-display:flex;
-justify-content:center;
-gap:25px;
-flex-wrap:wrap;
-margin-top:50px;
-}
-
-.timeBox{
-width:160px;
-padding:30px;
-border-radius:20px;
-background:rgba(255,255,255,.03);
-border:1px solid rgba(255,255,255,.08);
-text-align:center;
-}
-
-.timeBox h2{
-font-size:3rem;
-font-weight:500;
-}
-
-.timeBox span{
-opacity:.5;
-letter-spacing:2px;
-font-size:12px;
-}
-
-.launchText{
-margin-top:40px;
-opacity:.6;
-text-align:center;
-}
-
+/* RESET */
 *{
 margin:0;
 padding:0;
 box-sizing:border-box;
-}
-
-html{
-scroll-behavior:smooth;
 }
 
 body{
@@ -60,68 +23,70 @@ font-family:'Space Grotesk',sans-serif;
 overflow-x:hidden;
 }
 
+html{
+scroll-behavior:smooth;
+}
+
+/* NAV */
 nav{
 position:fixed;
 top:0;
-left:0;
 width:100%;
-padding:30px 8%;
+padding:25px 8%;
 display:flex;
 justify-content:space-between;
 align-items:center;
-background:rgba(0,0,0,.5);
+background:rgba(0,0,0,.6);
 backdrop-filter:blur(20px);
-z-index:100;
+z-index:1000;
 }
 
 .logo{
 display:flex;
 align-items:center;
-gap:20px;
+gap:15px;
 text-decoration:none;
 color:white;
-transition:.3s;
 }
 
 .logo img{
-height:42px;
+height:40px;
 }
 
 .brand{
-letter-spacing:8px;
+letter-spacing:6px;
 font-size:14px;
 }
 
+/* HERO */
 .hero{
 min-height:100vh;
 display:flex;
-align-items:center;
 justify-content:space-between;
+align-items:center;
 padding:0 8%;
 }
 
 .left{
-max-width:700px;
+max-width:650px;
 }
 
 .left h1{
-font-size:clamp(4rem,8vw,8rem);
+font-size:clamp(3.5rem,7vw,7rem);
 font-weight:400;
-line-height:.95;
-margin-bottom:40px;
+line-height:1;
 }
 
 .left p{
-font-size:1.2rem;
+margin-top:20px;
 opacity:.7;
-line-height:1.8;
-max-width:600px;
+line-height:1.6;
 }
 
 .btn{
 display:inline-block;
-margin-top:50px;
-padding:18px 36px;
+margin-top:40px;
+padding:16px 30px;
 border:1px solid rgba(255,255,255,.2);
 color:white;
 text-decoration:none;
@@ -134,76 +99,119 @@ background:white;
 color:black;
 }
 
-  .instaBtn{
+.instaBtn{
 margin-left:15px;
-background:transparent;
 }
 
-.instaBtn:hover{
-background:white;
-color:black;
-}
-
-.right{
-display:flex;
-justify-content:center;
-align-items:center;
-}
-
+/* IMAGE */
 .right img{
-width:min(40vw,650px);
+width:min(40vw,500px);
 opacity:.9;
 }
 
+/* SECTIONS */
 section{
-min-height:100vh;
 padding:120px 8%;
-display:flex;
-flex-direction:column;
-justify-content:center;
 }
 
 .kicker{
-letter-spacing:8px;
 opacity:.5;
-margin-bottom:30px;
+letter-spacing:6px;
+margin-bottom:20px;
 }
 
 .big{
-font-size:clamp(3rem,6vw,6rem);
-line-height:1.05;
-max-width:1000px;
+font-size:clamp(2.5rem,5vw,5rem);
+line-height:1.1;
 }
 
 .text{
-margin-top:30px;
+margin-top:20px;
+opacity:.7;
+line-height:1.8;
 max-width:800px;
-font-size:1.2rem;
-line-height:1.9;
-opacity:.75;
 }
 
-  <section>
+/* COUNTDOWN */
+.countdown{
+display:flex;
+gap:20px;
+flex-wrap:wrap;
+margin-top:40px;
+}
 
-<div class="kicker">
-PROTOTYPE 01
-</div>
+.timeBox{
+padding:25px;
+border:1px solid rgba(255,255,255,.1);
+border-radius:15px;
+min-width:140px;
+text-align:center;
+background:rgba(255,255,255,.03);
+}
 
-<div class="big">
-Launching June 10
-</div>
+.timeBox h2{
+font-size:2.5rem;
+}
 
-<div class="text">
-CORE ........ ONLINE<br>
-MEMORY ...... ACTIVE<br>
-AGENTS ...... READY<br>
-STATUS ...... DEPLOYING
-</div>
+/* MODES */
+.modeGrid{
+display:grid;
+grid-template-columns:repeat(auto-fit,minmax(250px,1fr));
+gap:20px;
+margin-top:50px;
+}
 
-</section>
+.modeCard{
+padding:25px;
+border:1px solid rgba(255,255,255,.08);
+border-radius:15px;
+background:rgba(255,255,255,.02);
+transition:.3s;
+}
 
+.modeCard:hover{
+transform:translateY(-6px);
+border-color:rgba(255,255,255,.3);
+}
+
+/* STATUS */
+.statusPanel{
+margin-top:40px;
+padding:30px;
+border:1px solid rgba(255,255,255,.08);
+border-radius:15px;
+background:rgba(255,255,255,.02);
+}
+
+.statusPanel div{
+display:flex;
+justify-content:space-between;
+padding:12px 0;
+border-bottom:1px solid rgba(255,255,255,.05);
+}
+
+.statusPanel div:last-child{
+border:none;
+}
+
+/* TERMINAL */
+.terminal{
+margin-top:40px;
+padding:25px;
+background:#050505;
+border:1px solid rgba(255,255,255,.08);
+border-radius:15px;
+font-family:monospace;
+line-height:1.8;
+}
+
+.success{
+color:#00ff88;
+}
+
+/* FOOTER */
 footer{
-padding:120px;
+padding:80px;
 text-align:center;
 opacity:.5;
 }
@@ -213,123 +221,88 @@ opacity:.5;
 
 <body>
 
+<!-- NAV -->
 <nav>
-
-<a href="index.html" class="logo">
-
-<img src="assets/logo.png">
-
-<div class="brand">
-CONTINUUM ONE
-</div>
-
+<a class="logo" href="index.html">
+<img src="assets/logo.png"/>
+<div class="brand">CONTINUUM ONE</div>
 </a>
-
 </nav>
 
+<!-- HERO -->
 <div class="hero">
 
 <div class="left">
 
-<h1>
-The next interface
-is understanding.
-</h1>
+<h1>The next interface is understanding.</h1>
 
-<p>
-Computers were built to follow commands.
-We're building systems that understand intent.
-</p>
+<p>Computers follow commands. We build systems that understand intent.</p>
 
-<a href="os.html" class="btn">
-LAUNCH PROTOTYPE
-</a>
+<a class="btn" href="os.html">LAUNCH PROTOTYPE</a>
 
-  <a
-href="https://www.instagram.com/continuumonelabs/"
-target="_blank"
-class="btn instaBtn">
-
-FOLLOW @CONTINUUMONELABS
-
+<a class="btn instaBtn" target="_blank"
+href="https://www.instagram.com/continuumonelabs/">
+FOLLOW INSTAGRAM
 </a>
 
 </div>
 
 <div class="right">
-
-<img src="assets/logo.png">
-
+<img src="assets/logo.png"/>
 </div>
 
 </div>
 
+<!-- SYSTEM STATUS -->
 <section>
+<div class="kicker">SYSTEM STATUS</div>
+<div class="big">Continuum Core</div>
 
-<div class="kicker">
-BEYOND COMMANDS
+<div class="statusPanel">
+<div>CORE <span>ONLINE</span></div>
+<div>MEMORY <span>ACTIVE</span></div>
+<div>RESEARCH <span>READY</span></div>
+<div>AGENTS <span>STANDBY</span></div>
+<div>NETWORK <span>STABLE</span></div>
 </div>
-
-<div class="big">
-Intent becomes the interface.
-</div>
-
-<div class="text">
-For decades software required humans to adapt to machines.
-Continuum reverses that relationship.
-You describe outcomes.
-The system handles execution.
-</div>
-
 </section>
 
+<!-- MODES -->
 <section>
+<div class="kicker">MISSION MODES</div>
+<div class="big">Choose a workflow</div>
 
-<div class="kicker">
-INTELLIGENCE THAT ACTS
+<div class="modeGrid">
+
+<div class="modeCard"><h3>RESEARCH</h3><p>Deep analysis and synthesis</p></div>
+<div class="modeCard"><h3>BUILD</h3><p>Turn ideas into systems</p></div>
+<div class="modeCard"><h3>ANALYZE</h3><p>Break down complexity</p></div>
+<div class="modeCard"><h3>CREATE</h3><p>Generate new outputs</p></div>
+<div class="modeCard"><h3>EXECUTE</h3><p>Turn plans into action</p></div>
+<div class="modeCard"><h3>DEEP THINK</h3><p>Long reasoning mode</p></div>
+
 </div>
-
-<div class="big">
-Reason. Plan. Research. Execute.
-</div>
-
-<div class="text">
-A unified intelligence layer designed to transform goals into action.
-</div>
-
 </section>
 
+<!-- TERMINAL -->
 <section>
+<div class="kicker">COMMAND CENTER</div>
+<div class="big">Execution Layer Preview</div>
 
-<div class="kicker">
-THE OPERATING LAYER
+<div class="terminal">
+> Research AI hardware trends<br>
+Analyzing sources...<br>
+Building report...<br>
+Synthesizing insights...<br><br>
+
+<span class="success">MISSION COMPLETE</span>
 </div>
-
-<div class="big">
-Building the operating layer for the age of intelligence.
-</div>
-
-<div class="text">
-Persistent memory.
-Agents.
-Research.
-Execution.
-One environment.
-</div>
-
 </section>
 
+<!-- COUNTDOWN -->
 <section>
-
-<section id="launch">
-
-<div class="kicker">
-PROTOTYPE 01
-</div>
-
-<div class="big">
-Launching June 10
-</div>
+<div class="kicker">PROTOTYPE 01</div>
+<div class="big">Launching June 10</div>
 
 <div class="countdown">
 
@@ -354,99 +327,50 @@ Launching June 10
 </div>
 
 </div>
-
-<p class="launchText">
-Continuum One Prototype 01 enters public deployment.
-</p>
-
 </section>
 
+<!-- ROADMAP -->
+<section>
+<div class="kicker">ROADMAP</div>
+<div class="big">Building Continuum</div>
+
+<div class="text">
+Prototype 01 — Core OS<br>
+Prototype 02 — Agent Layer<br>
+Prototype 03 — Autonomous Execution<br>
+</div>
 </section>
 
+<!-- FOOTER -->
 <footer>
-
-
-
-<br><br>
-
-
-
+CONTINUUM ONE<br><br>
+Building the operating layer for intelligence
 </footer>
 
-  <script>
+<script>
 
 const launchDate = new Date("June 10, 2026 00:00:00").getTime();
 
-setInterval(()=>{
+setInterval(() => {
 
 const now = new Date().getTime();
-
 const distance = launchDate - now;
 
-const days = Math.floor(distance/(1000*60*60*24));
+document.getElementById("days").innerText =
+Math.floor(distance / (1000*60*60*24));
 
-const hours = Math.floor(
-(distance%(1000*60*60*24))/(1000*60*60)
-);
+document.getElementById("hours").innerText =
+Math.floor((distance%(1000*60*60*24))/(1000*60*60));
 
-const minutes = Math.floor(
-(distance%(1000*60*60))/(1000*60)
-);
+document.getElementById("minutes").innerText =
+Math.floor((distance%(1000*60*60))/(1000*60));
 
-const seconds = Math.floor(
-(distance%(1000*60))/1000
-);
-
-document.getElementById("days").innerText = days;
-document.getElementById("hours").innerText = hours;
-document.getElementById("minutes").innerText = minutes;
-document.getElementById("seconds").innerText = seconds;
+document.getElementById("seconds").innerText =
+Math.floor((distance%(1000*60))/1000);
 
 },1000);
 
 </script>
-
-  <section>
-
-<div class="kicker">
-ROADMAP
-</div>
-
-<div class="big">
-Building Continuum
-</div>
-
-<div class="text">
-
-<h3>PROTOTYPE 01</h3>
-<p>Core OS • Mission Interface • AI Engine</p>
-
-<br>
-
-<h3>PROTOTYPE 02</h3>
-<p>Research Layer • Workspace • Agent Systems</p>
-
-<br>
-
-<h3>PROTOTYPE 03</h3>
-<p>Autonomous Execution • Memory Graph • Team Collaboration</p>
-
-</div>
-
-</section>
-
-  <div style="margin-top:60px;text-align:center;">
-
-<a
-href="https://www.instagram.com/continuumonelabs/"
-target="_blank"
-class="btn">
-
-FOLLOW @CONTINUUMONELABS
-
-</a>
-
-</div>
 
 </body>
 </html>
