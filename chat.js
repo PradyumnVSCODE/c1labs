@@ -1,41 +1,34 @@
-export default async function handler(req, res){
+async function send(){
 
-  try {
+const input = document.getElementById("input");
+const text = input.value.trim();
+if(!text) return;
 
-    const { message } = req.body;
+const chat = document.getElementById("chat");
 
-    const response = await fetch("https://api.openai.com/v1/chat/completions", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        "Authorization": `Bearer ${process.env.OPENAI_API_KEY}`
-      },
-      body: JSON.stringify({
-        model: "gpt-4o-mini",
-        messages: [
-          {
-            role: "system",
-            content: "You are Continuum OS, an AI operating system. Be concise and intelligent."
-          },
-          {
-            role: "user",
-            content: message
-          }
-        ]
-      })
-    });
+// user msg
+chat.innerHTML += `<div class="msg user">${text}</div>`;
 
-    const data = await response.json();
+// AI placeholder
+const id = Date.now();
+chat.innerHTML += `<div class="msg ai" id="${id}">Thinking...</div>`;
 
-    res.status(200).json({
-      reply: data.choices?.[0]?.message?.content || "No response"
-    });
+input.value = "";
 
-  } catch (error) {
+try{
 
-    res.status(500).json({
-      reply: "Error connecting to AI backend"
-    });
+const res = await fetch("/api/chat", {
+method:"POST",
+headers:{ "Content-Type":"application/json" },
+body: JSON.stringify({ message: text })
+});
 
-  }
+const data = await res.json();
+
+document.getElementById(id).innerText = data.reply;
+
+}catch(err){
+document.getElementById(id).innerText = "Error connecting API";
+}
+
 }
