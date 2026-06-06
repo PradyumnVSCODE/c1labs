@@ -1,39 +1,36 @@
-import OpenAI from "openai";
+import Groq from "groq-sdk";
+
+const groq = new Groq({
+  apiKey: process.env.GROQ_API_KEY,
+});
 
 export default async function handler(req, res) {
   try {
-    console.log("1. API HIT");
+    const { message } = req.body;
 
-    const client = new OpenAI({
-      apiKey: process.env.OPENAI_API_KEY,
-    });
-
-    console.log("2. KEY EXISTS:", !!process.env.OPENAI_API_KEY);
-
-    const body = req.body || {};
-    console.log("3. BODY:", body);
-
-    const message = body.message;
-
-    const response = await client.chat.completions.create({
-      model: "gpt-4o-mini",
+    const completion = await groq.chat.completions.create({
+      model: "llama-3.3-70b-versatile",
       messages: [
-        { role: "system", content: "You are Continuum OS AI." },
-        { role: "user", content: message },
-      ],
+        {
+          role: "system",
+          content: "You are Continuum OS, an AI operating system."
+        },
+        {
+          role: "user",
+          content: message
+        }
+      ]
     });
 
-    console.log("4. OPENAI SUCCESS");
-
-    return res.status(200).json({
-      reply: response.choices[0].message.content,
+    res.status(200).json({
+      reply: completion.choices[0].message.content
     });
 
   } catch (err) {
-    console.log("🔥 FULL ERROR:", err);
+    console.error(err);
 
-    return res.status(500).json({
-      error: err.message,
+    res.status(500).json({
+      error: err.message
     });
   }
 }
