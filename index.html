@@ -9,6 +9,40 @@
 
 <style>
 
+  .countdown{
+display:flex;
+justify-content:center;
+gap:25px;
+flex-wrap:wrap;
+margin-top:50px;
+}
+
+.timeBox{
+width:160px;
+padding:30px;
+border-radius:20px;
+background:rgba(255,255,255,.03);
+border:1px solid rgba(255,255,255,.08);
+text-align:center;
+}
+
+.timeBox h2{
+font-size:3rem;
+font-weight:500;
+}
+
+.timeBox span{
+opacity:.5;
+letter-spacing:2px;
+font-size:12px;
+}
+
+.launchText{
+margin-top:40px;
+opacity:.6;
+text-align:center;
+}
+
 *{
 margin:0;
 padding:0;
@@ -145,6 +179,46 @@ font-size:1.2rem;
 line-height:1.9;
 opacity:.75;
 }
+
+  <section id="launch">
+
+<div class="kicker">
+PROTOTYPE 01
+</div>
+
+<div class="big">
+Launching June 10
+</div>
+
+<div class="countdown">
+
+<div class="timeBox">
+<h2 id="days">00</h2>
+<span>DAYS</span>
+</div>
+
+<div class="timeBox">
+<h2 id="hours">00</h2>
+<span>HOURS</span>
+</div>
+
+<div class="timeBox">
+<h2 id="minutes">00</h2>
+<span>MINUTES</span>
+</div>
+
+<div class="timeBox">
+<h2 id="seconds">00</h2>
+<span>SECONDS</span>
+</div>
+
+</div>
+
+<p class="launchText">
+Continuum One Prototype 01 enters public deployment.
+</p>
+
+</section>
 
 footer{
 padding:120px;
@@ -291,6 +365,81 @@ CONTINUUM ONE
 BUILDING THE OPERATING LAYER FOR THE AGE OF INTELLIGENCE
 
 </footer>
+
+  <script>
+
+const launchDate = new Date("June 10, 2026 00:00:00").getTime();
+
+setInterval(()=>{
+
+const now = new Date().getTime();
+
+const distance = launchDate - now;
+
+const days = Math.floor(distance/(1000*60*60*24));
+
+const hours = Math.floor(
+(distance%(1000*60*60*24))/(1000*60*60)
+);
+
+const minutes = Math.floor(
+(distance%(1000*60*60))/(1000*60)
+);
+
+const seconds = Math.floor(
+(distance%(1000*60))/1000
+);
+
+document.getElementById("days").innerText = days;
+document.getElementById("hours").innerText = hours;
+document.getElementById("minutes").innerText = minutes;
+document.getElementById("seconds").innerText = seconds;
+
+},1000);
+
+</script>
+
+  <section>
+
+<div class="kicker">
+ROADMAP
+</div>
+
+<div class="big">
+Building Continuum
+</div>
+
+<div class="text">
+
+<h3>PROTOTYPE 01</h3>
+<p>Core OS • Mission Interface • AI Engine</p>
+
+<br>
+
+<h3>PROTOTYPE 02</h3>
+<p>Research Layer • Workspace • Agent Systems</p>
+
+<br>
+
+<h3>PROTOTYPE 03</h3>
+<p>Autonomous Execution • Memory Graph • Team Collaboration</p>
+
+</div>
+
+</section>
+
+  <div style="margin-top:60px;text-align:center;">
+
+<a
+href="https://www.instagram.com/continuumonelabs/"
+target="_blank"
+class="btn">
+
+FOLLOW @CONTINUUMONELABS
+
+</a>
+
+</div>
 
 </body>
 </html>
