@@ -215,61 +215,97 @@ opacity:.8;
 </div>
 
 </div>
-
 <script>
 
 const chat=document.getElementById("chat");
 const input=document.getElementById("input");
 
 function add(text,type){
-const div=document.createElement("div");
-div.className="msg "+type;
-div.textContent=text;
-chat.appendChild(div);
-chat.scrollTop=chat.scrollHeight;
+  const div=document.createElement("div");
+  div.className="msg "+type;
+  div.textContent=text;
+  chat.appendChild(div);
+  chat.scrollTop=chat.scrollHeight;
+  return div;
 }
 
+/* ================= TYPING ANIMATION ================= */
+function typeText(element, text, speed=15){
+  element.textContent = "";
+  let i = 0;
+
+  const interval = setInterval(() => {
+    element.textContent += text[i];
+    i++;
+    chat.scrollTop = chat.scrollHeight;
+
+    if(i >= text.length){
+      clearInterval(interval);
+    }
+  }, speed);
+}
+
+/* ================= SYSTEM MSG ================= */
 function sysMsg(text){
-add(text,"sys");
+  add(text,"sys");
 }
 
 function clearChat(){
-chat.innerHTML="";
+  chat.innerHTML="";
 }
 
 /* ================= AI CALL ================= */
 async function send(){
 
-const msg=input.value.trim();
-if(!msg) return;
+  const msg=input.value.trim();
+  if(!msg) return;
 
-input.value="";
+  input.value="";
 
-add(msg,"user");
-add("Thinking...","ai");
+  add(msg,"user");
 
-try{
+  const loading = add("Thinking...","ai");
 
-const res=await fetch("/api/chat",{
-method:"POST",
-headers:{"Content-Type":"application/json"},
-body:JSON.stringify({message:msg})
-});
+  try{
 
-const data=await res.json();
+    const res = await fetch("/api/chat",{
+      method:"POST",
+      headers:{"Content-Type":"application/json"},
+      body:JSON.stringify({prompt:msg})
+    });
 
-chat.lastChild.remove();
-add(data.reply || "Error","ai");
+    const data = await res.json();
 
-}catch(e){
-chat.lastChild.remove();
-add("Connection error","sys");
+    loading.remove();
+
+    if(!data.research || !data.compare || !data.ideas){
+      add("⚠ Invalid response from server","sys");
+      return;
+    }
+
+    const finalText =
+`🧠 Research:
+${data.research}
+
+⚖ Compare:
+${data.compare}
+
+💡 Ideas:
+${data.ideas}`;
+
+    const aiMsg = add("","ai");
+    typeText(aiMsg, finalText, 10);
+
+  }catch(e){
+    loading.remove();
+    add("Connection error / backend not reachable","sys");
+  }
+
 }
 
-}
-
+/* ENTER KEY SUPPORT */
 input.addEventListener("keydown",(e)=>{
-if(e.key==="Enter") send();
+  if(e.key==="Enter") send();
 });
 
 </script>
