@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Continuum OS // NEURAL KERNEL</title>
+<title>Continuum OS // FINAL FORM</title>
 
 <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;700&display=swap" rel="stylesheet">
 
@@ -14,242 +14,260 @@
 
 body{
 background:#000;
-color:#fff;
+color:white;
 font-family:'Space Grotesk',sans-serif;
-cursor:none;
 overflow:hidden;
 }
 
-/* ================= CURSOR ================= */
-#cursor{
+/* ================= DESKTOP ================= */
+#desktop{
 position:fixed;
-width:14px;height:14px;
-border:1px solid rgba(255,255,255,.7);
-border-radius:50%;
-transform:translate(-50%,-50%);
-pointer-events:none;
-z-index:9999;
-}
-
-/* ================= GRID ================= */
-body::before{
-content:"";
-position:fixed;inset:0;
+inset:0;
 background:
-radial-gradient(circle at 30% 20%, rgba(0,255,255,.05), transparent 40%),
-radial-gradient(circle at 70% 70%, rgba(255,255,255,.03), transparent 50%);
-z-index:-2;
+radial-gradient(circle at 20% 20%, rgba(0,255,255,.06), transparent 40%),
+radial-gradient(circle at 80% 80%, rgba(255,255,255,.04), transparent 50%);
 }
 
-body::after{
+/* grid */
+#desktop::after{
 content:"";
-position:fixed;inset:0;
+position:absolute;
+inset:0;
 background-image:
-linear-gradient(rgba(255,255,255,.04) 1px, transparent 1px),
-linear-gradient(90deg, rgba(255,255,255,.04) 1px, transparent 1px);
+linear-gradient(rgba(255,255,255,.05) 1px, transparent 1px),
+linear-gradient(90deg, rgba(255,255,255,.05) 1px, transparent 1px);
 background-size:60px 60px;
-opacity:.08;
-z-index:-1;
+opacity:.1;
 }
 
-/* ================= TOP BAR ================= */
-.topbar{
+/* ================= TOPBAR ================= */
+#bar{
 position:fixed;
 top:0;left:0;right:0;
-height:50px;
+height:45px;
 display:flex;
 align-items:center;
-padding:0 20px;
+justify-content:space-between;
+padding:0 15px;
 background:rgba(0,0,0,.6);
 backdrop-filter:blur(20px);
 border-bottom:1px solid rgba(255,255,255,.1);
-z-index:10;
+z-index:1000;
 font-size:12px;
 letter-spacing:2px;
 }
 
-/* ================= CHAT AREA ================= */
-.main{
-padding-top:60px;
-height:100vh;
+/* ================= LAUNCHER ================= */
+#launcher{
+position:fixed;
+bottom:20px;
+left:50%;
+transform:translateX(-50%);
 display:flex;
-flex-direction:column;
-}
-
-.log{
-flex:1;
-padding:20px;
-overflow-y:auto;
-display:flex;
-flex-direction:column;
 gap:10px;
 }
 
-/* ================= MESSAGE ================= */
-.line{
+.app{
+padding:10px 14px;
+border:1px solid rgba(255,255,255,.2);
+cursor:pointer;
+font-size:12px;
+background:#000;
+}
+
+/* ================= WINDOWS ================= */
+.window{
+position:absolute;
+width:420px;
+height:300px;
+background:#050505;
+border:1px solid rgba(255,255,255,.15);
+display:flex;
+flex-direction:column;
+}
+
+.titlebar{
+height:30px;
+background:#111;
+display:flex;
+align-items:center;
+justify-content:space-between;
+padding:0 10px;
+cursor:move;
+font-size:12px;
+}
+
+.content{
+flex:1;
+padding:10px;
+overflow:auto;
 font-family:monospace;
 font-size:13px;
-white-space:pre-wrap;
-opacity:.9;
 }
-
-.user{color:#60a5fa;}
-.ai{color:#e5e7eb;}
-.sys{color:#34d399;}
-.err{color:#f87171;}
 
 /* ================= INPUT ================= */
-.inputBar{
-display:flex;
-padding:15px;
-border-top:1px solid rgba(255,255,255,.1);
-background:rgba(0,0,0,.8);
-}
-
 input{
-flex:1;
+width:100%;
+padding:10px;
 background:#000;
 border:1px solid rgba(255,255,255,.2);
 color:white;
-padding:12px;
-font-family:monospace;
 outline:none;
+font-family:monospace;
 }
 
 button{
-padding:12px 18px;
-margin-left:10px;
-background:#fff;
+margin-top:8px;
+padding:8px 12px;
+background:white;
 border:none;
 cursor:pointer;
 font-weight:600;
 }
 
-/* ================= SCROLLBAR ================= */
-.log::-webkit-scrollbar{width:6px;}
-.log::-webkit-scrollbar-thumb{background:rgba(255,255,255,.2);}
+/* ================= LOG ================= */
+.line{margin:5px 0;}
+.user{color:#60a5fa;}
+.ai{color:#e5e7eb;}
+.sys{color:#34d399;}
 
 </style>
 </head>
 
 <body>
 
-<div id="cursor"></div>
+<div id="desktop"></div>
 
-<div class="topbar">
-CONTINUUM OS // NEURAL KERNEL ACTIVE
+<div id="bar">
+<div>CONTINUUM OS // FINAL FORM</div>
+<div id="time"></div>
 </div>
 
-<div class="main">
-
-<div class="log" id="log"></div>
-
-<div class="inputBar">
-<input id="input" placeholder="type /help or ask anything..." />
-<button onclick="run()">EXEC</button>
-</div>
-
+<div id="launcher">
+<div class="app" onclick="openWindow('ai')">AI</div>
+<div class="app" onclick="openWindow('notes')">NOTES</div>
+<div class="app" onclick="openWindow('sys')">SYSTEM</div>
 </div>
 
 <script>
 
-/* ================= CURSOR ================= */
-const cursor=document.getElementById("cursor");
-document.addEventListener("mousemove",(e)=>{
-cursor.style.left=e.clientX+"px";
-cursor.style.top=e.clientY+"px";
-});
+/* ================= TIME ================= */
+setInterval(()=>{
+document.getElementById("time").innerText=new Date().toLocaleTimeString();
+},1000);
 
-/* ================= LOG SYSTEM ================= */
-const log=document.getElementById("log");
+/* ================= WINDOW SYSTEM ================= */
+let z=10;
 
-function add(text,type="ai"){
-const div=document.createElement("div");
-div.className="line "+type;
-div.textContent=text;
-log.appendChild(div);
-log.scrollTop=log.scrollHeight;
+function createWindow(id,title){
+
+const win=document.createElement("div");
+win.className="window";
+win.style.top="80px";
+win.style.left="80px";
+win.style.zIndex=z++;
+
+win.innerHTML=`
+<div class="titlebar">
+<span>${title}</span>
+<span onclick="this.parentElement.parentElement.remove()" style="cursor:pointer">X</span>
+</div>
+<div class="content" id="${id}"></div>
+`;
+
+document.body.appendChild(win);
+
+/* drag */
+let bar=win.querySelector(".titlebar");
+let offsetX,offsetY,drag=false;
+
+bar.onmousedown=(e)=>{
+drag=true;
+offsetX=e.clientX-win.offsetLeft;
+offsetY=e.clientY-win.offsetTop;
+};
+
+document.onmousemove=(e)=>{
+if(drag){
+win.style.left=(e.clientX-offsetX)+"px";
+win.style.top=(e.clientY-offsetY)+"px";
+}
+};
+
+document.onmouseup=()=>drag=false;
+
+return win;
 }
 
-/* ================= BOOT ================= */
-add("[BOOT] initializing continuum kernel...","sys");
-add("[BOOT] memory layer: online","sys");
-add("[BOOT] ai interface: connected","sys");
-add("[BOOT] system ready","sys");
+/* ================= AI APP ================= */
+function openWindow(type){
 
-/* ================= COMMAND ENGINE ================= */
-function handleCommand(cmd){
+if(type==="ai"){
 
-if(cmd.startsWith("/")){
-const c=cmd.toLowerCase();
+let win=createWindow("aiBox","NEURAL AI");
 
-/* HELP */
-if(c==="/help"){
-add("AVAILABLE COMMANDS:\n/help\n/clear\n/ping\n/status","sys");
-return;
+const box=document.getElementById("aiBox");
+
+box.innerHTML=`
+<div id="log"></div>
+<input id="inp" placeholder="ask continuum..." />
+<button onclick="sendAI()">EXEC</button>
+`;
+
 }
 
-/* CLEAR */
-if(c==="/clear"){
-log.innerHTML="";
-return;
+if(type==="notes"){
+
+let win=createWindow("notesBox","NOTES");
+
+document.getElementById("notesBox").innerHTML=`
+<textarea style="width:100%;height:100%;background:#000;color:white;border:none;outline:none;font-family:monospace;"></textarea>
+`;
+
 }
 
-/* PING */
-if(c==="/ping"){
-add("pong.","sys");
-return;
+if(type==="sys"){
+
+let win=createWindow("sysBox","SYSTEM");
+
+document.getElementById("sysBox").innerHTML=`
+<div class="line sys">kernel: active</div>
+<div class="line sys">ai: online</div>
+<div class="line sys">memory: stable</div>
+`;
 }
 
-/* STATUS */
-if(c==="/status"){
-add("SYSTEM: stable\nAI: active\nAPI: connected","sys");
-return;
-}
-}
-
-/* DEFAULT → AI */
-callAI(cmd);
 }
 
 /* ================= AI CALL ================= */
-async function callAI(message){
+async function sendAI(){
 
-add("> "+message,"user");
-add("[processing neural request...]","sys");
+const inp=document.getElementById("inp");
+const log=document.getElementById("log");
+
+const msg=inp.value;
+if(!msg)return;
+
+log.innerHTML+=`<div class="line user">> ${msg}</div>`;
+inp.value="";
 
 try{
 
 const res=await fetch("/api/chat",{
 method:"POST",
 headers:{"Content-Type":"application/json"},
-body:JSON.stringify({message})
+body:JSON.stringify({message:msg})
 });
 
 const data=await res.json();
 
-log.lastChild.remove();
-add(data.reply || data.error,"ai");
+log.innerHTML+=`<div class="line ai">${data.reply}</div>`;
 
 }catch(e){
-log.lastChild.remove();
-add("[connection failure]","err");
-}
+log.innerHTML+=`<div class="line sys">connection error</div>`;
 }
 
-/* ================= RUN ================= */
-function run(){
-const input=document.getElementById("input");
-const val=input.value.trim();
-if(!val) return;
-
-input.value="";
-handleCommand(val);
 }
-
-document.getElementById("input").addEventListener("keydown",(e)=>{
-if(e.key==="Enter") run();
-});
 
 </script>
 
