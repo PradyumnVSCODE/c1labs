@@ -1,16 +1,14 @@
 import express from "express";
 
 const app = express();
-app.use(express.json());
+
+console.log("🔥 THIS NEW SERVER IS RUNNING");
 
 app.get("/test", (req, res) => {
-  res.json({ ok: true });
-});
-
-app.post("/chat", (req, res) => {
-  res.json({ reply: "Chat endpoint works" });
+  console.log("TEST HIT");
+  res.send("TEST WORKS");
 });
 
 app.listen(3000, () => {
-  console.log("SERVER RUNNING CLEAN");
+  console.log("SERVER LISTENING ON 3000");
 });
