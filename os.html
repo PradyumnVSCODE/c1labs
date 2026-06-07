@@ -3,142 +3,131 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Continuum OS</title>
+<title>Continuum OS // NEURAL KERNEL</title>
 
 <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;700&display=swap" rel="stylesheet">
 
 <style>
 
 /* ================= BASE ================= */
-*{
-margin:0;
-padding:0;
-box-sizing:border-box;
-}
+*{margin:0;padding:0;box-sizing:border-box;}
 
 body{
 background:#000;
-color:white;
+color:#fff;
 font-family:'Space Grotesk',sans-serif;
-overflow-x:hidden;
 cursor:none;
+overflow:hidden;
 }
 
 /* ================= CURSOR ================= */
 #cursor{
 position:fixed;
-width:18px;
-height:18px;
-border:1px solid rgba(255,255,255,.6);
+width:14px;height:14px;
+border:1px solid rgba(255,255,255,.7);
 border-radius:50%;
 transform:translate(-50%,-50%);
 pointer-events:none;
 z-index:9999;
 }
 
-/* ================= BACKGROUND ================= */
+/* ================= GRID ================= */
 body::before{
 content:"";
-position:fixed;
-inset:0;
+position:fixed;inset:0;
 background:
-radial-gradient(circle at 20% 20%, rgba(255,255,255,.05), transparent 40%),
-radial-gradient(circle at 80% 60%, rgba(0,255,255,.03), transparent 50%);
-z-index:-1;
+radial-gradient(circle at 30% 20%, rgba(0,255,255,.05), transparent 40%),
+radial-gradient(circle at 70% 70%, rgba(255,255,255,.03), transparent 50%);
+z-index:-2;
 }
 
 body::after{
 content:"";
-position:fixed;
-inset:0;
+position:fixed;inset:0;
 background-image:
 linear-gradient(rgba(255,255,255,.04) 1px, transparent 1px),
 linear-gradient(90deg, rgba(255,255,255,.04) 1px, transparent 1px);
 background-size:60px 60px;
-opacity:.12;
+opacity:.08;
 z-index:-1;
 }
 
-/* ================= SECTIONS ================= */
-section{
-min-height:100vh;
-padding:120px 8%;
+/* ================= TOP BAR ================= */
+.topbar{
+position:fixed;
+top:0;left:0;right:0;
+height:50px;
+display:flex;
+align-items:center;
+padding:0 20px;
+background:rgba(0,0,0,.6);
+backdrop-filter:blur(20px);
+border-bottom:1px solid rgba(255,255,255,.1);
+z-index:10;
+font-size:12px;
+letter-spacing:2px;
 }
 
-/* ================= CHAT CONTAINER ================= */
-.chatBox{
-height:420px;
-overflow-y:auto;
-padding:20px;
-background:#050505;
-border:1px solid rgba(255,255,255,.12);
-font-family:monospace;
+/* ================= CHAT AREA ================= */
+.main{
+padding-top:60px;
+height:100vh;
 display:flex;
 flex-direction:column;
-gap:14px;
 }
 
-/* ================= MESSAGE BASE ================= */
-.msg{
-padding:12px 14px;
-max-width:75%;
-border-radius:10px;
-line-height:1.4;
-white-space:pre-wrap;
-font-size:14px;
-}
-
-/* USER MESSAGE */
-.user{
-align-self:flex-end;
-background:#1d4ed8;
-border:1px solid rgba(255,255,255,.1);
-}
-
-/* AI MESSAGE */
-.ai{
-align-self:flex-start;
-background:#111;
-border:1px solid rgba(255,255,255,.15);
-}
-
-/* LABELS */
-.label{
-font-size:11px;
-opacity:0.6;
-margin-bottom:4px;
-letter-spacing:1px;
-}
-
-/* INPUT AREA */
-.inputRow{
+.log{
+flex:1;
+padding:20px;
+overflow-y:auto;
 display:flex;
+flex-direction:column;
 gap:10px;
-margin-top:15px;
+}
+
+/* ================= MESSAGE ================= */
+.line{
+font-family:monospace;
+font-size:13px;
+white-space:pre-wrap;
+opacity:.9;
+}
+
+.user{color:#60a5fa;}
+.ai{color:#e5e7eb;}
+.sys{color:#34d399;}
+.err{color:#f87171;}
+
+/* ================= INPUT ================= */
+.inputBar{
+display:flex;
+padding:15px;
+border-top:1px solid rgba(255,255,255,.1);
+background:rgba(0,0,0,.8);
 }
 
 input{
 flex:1;
-padding:12px;
 background:#000;
 border:1px solid rgba(255,255,255,.2);
 color:white;
+padding:12px;
 font-family:monospace;
 outline:none;
 }
 
 button{
 padding:12px 18px;
-background:white;
-color:black;
+margin-left:10px;
+background:#fff;
 border:none;
 cursor:pointer;
 font-weight:600;
 }
 
-button:hover{
-opacity:0.85;
-}
+/* ================= SCROLLBAR ================= */
+.log::-webkit-scrollbar{width:6px;}
+.log::-webkit-scrollbar-thumb{background:rgba(255,255,255,.2);}
 
 </style>
 </head>
@@ -147,61 +136,90 @@ opacity:0.85;
 
 <div id="cursor"></div>
 
-<section>
-
-<h2 style="margin-bottom:20px;">NEURAL CHAT INTERFACE</h2>
-
-<div class="chatBox" id="chatBox"></div>
-
-<div class="inputRow">
-<input id="input" placeholder="Type command..." />
-<button onclick="send()">EXECUTE</button>
+<div class="topbar">
+CONTINUUM OS // NEURAL KERNEL ACTIVE
 </div>
 
-</section>
+<div class="main">
+
+<div class="log" id="log"></div>
+
+<div class="inputBar">
+<input id="input" placeholder="type /help or ask anything..." />
+<button onclick="run()">EXEC</button>
+</div>
+
+</div>
 
 <script>
 
 /* ================= CURSOR ================= */
 const cursor=document.getElementById("cursor");
-
 document.addEventListener("mousemove",(e)=>{
 cursor.style.left=e.clientX+"px";
 cursor.style.top=e.clientY+"px";
 });
 
-/* ================= CHAT ================= */
-const chatBox=document.getElementById("chatBox");
-const input=document.getElementById("input");
+/* ================= LOG SYSTEM ================= */
+const log=document.getElementById("log");
 
-function addMessage(text,type){
-const wrapper=document.createElement("div");
-wrapper.className="msg "+type;
-
-const label=document.createElement("div");
-label.className="label";
-label.textContent= type==="user" ? "USER" : "CONTINUUM";
-
-const content=document.createElement("div");
-content.textContent=text;
-
-wrapper.appendChild(label);
-wrapper.appendChild(content);
-
-chatBox.appendChild(wrapper);
-chatBox.scrollTop=chatBox.scrollHeight;
+function add(text,type="ai"){
+const div=document.createElement("div");
+div.className="line "+type;
+div.textContent=text;
+log.appendChild(div);
+log.scrollTop=log.scrollHeight;
 }
 
-async function send(){
-const message=input.value.trim();
-if(!message) return;
+/* ================= BOOT ================= */
+add("[BOOT] initializing continuum kernel...","sys");
+add("[BOOT] memory layer: online","sys");
+add("[BOOT] ai interface: connected","sys");
+add("[BOOT] system ready","sys");
 
-addMessage(message,"user");
-input.value="";
+/* ================= COMMAND ENGINE ================= */
+function handleCommand(cmd){
 
-addMessage("processing request...","ai");
+if(cmd.startsWith("/")){
+const c=cmd.toLowerCase();
+
+/* HELP */
+if(c==="/help"){
+add("AVAILABLE COMMANDS:\n/help\n/clear\n/ping\n/status","sys");
+return;
+}
+
+/* CLEAR */
+if(c==="/clear"){
+log.innerHTML="";
+return;
+}
+
+/* PING */
+if(c==="/ping"){
+add("pong.","sys");
+return;
+}
+
+/* STATUS */
+if(c==="/status"){
+add("SYSTEM: stable\nAI: active\nAPI: connected","sys");
+return;
+}
+}
+
+/* DEFAULT → AI */
+callAI(cmd);
+}
+
+/* ================= AI CALL ================= */
+async function callAI(message){
+
+add("> "+message,"user");
+add("[processing neural request...]","sys");
 
 try{
+
 const res=await fetch("/api/chat",{
 method:"POST",
 headers:{"Content-Type":"application/json"},
@@ -210,17 +228,27 @@ body:JSON.stringify({message})
 
 const data=await res.json();
 
-chatBox.lastChild.remove();
-addMessage(data.reply || data.error || "error","ai");
+log.lastChild.remove();
+add(data.reply || data.error,"ai");
 
-}catch(err){
-chatBox.lastChild.remove();
-addMessage("connection failure","ai");
+}catch(e){
+log.lastChild.remove();
+add("[connection failure]","err");
 }
 }
 
-input.addEventListener("keydown",(e)=>{
-if(e.key==="Enter") send();
+/* ================= RUN ================= */
+function run(){
+const input=document.getElementById("input");
+const val=input.value.trim();
+if(!val) return;
+
+input.value="";
+handleCommand(val);
+}
+
+document.getElementById("input").addEventListener("keydown",(e)=>{
+if(e.key==="Enter") run();
 });
 
 </script>
