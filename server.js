@@ -1,62 +1,42 @@
 const express = require("express");
 const cors = require("cors");
+const path = require("path");
 
 const app = express();
 
-/* =======================
-   MIDDLEWARE
-======================= */
 app.use(cors());
 app.use(express.json());
 
-/* =======================
-   HEALTH CHECK ROUTE
-======================= */
+console.log("SERVER LOADED ✔");
+
+/* =========================
+   HEALTH CHECK
+========================= */
 app.get("/test", (req, res) => {
-  res.json({
-    status: "ok",
-    message: "Continuum backend alive"
+  res.json({ ok: true });
+});
+
+/* =========================
+   CHAT ROUTE (SAFE MOCK)
+========================= */
+app.post("/api/chat", (req, res) => {
+  const prompt = req.body.prompt;
+
+  console.log("RECEIVED:", prompt);
+
+  return res.json({
+    research: "AI Research: " + prompt,
+    compare: "AI Comparison: " + prompt,
+    ideas: "AI Ideas: " + prompt
   });
 });
 
-/* =======================
-   CHAT ROUTE (SAFE MOCK FIRST)
-   (NO GROQ YET — STABILITY FIRST)
-======================= */
-app.post("/api/chat", (req, res) => {
-  try {
-    const prompt = req.body?.prompt;
+/* =========================
+   OPTIONAL: SERVE FRONTEND
+   (so you stop file:// issues)
+========================= */
+app.use(express.static(__dirname));
 
-    console.log("📩 REQUEST:", prompt);
-
-    if (!prompt) {
-      return res.status(400).json({
-        error: "No prompt received"
-      });
-    }
-
-    // SAFE MOCK RESPONSE (NO CRASH POSSIBLE)
-    return res.json({
-      research: `Research analysis for: ${prompt}`,
-      compare: `Comparison layer processed for: ${prompt}`,
-      ideas: `Ideas generated from: ${prompt}`
-    });
-
-  } catch (err) {
-    console.log("❌ SERVER ERROR:", err);
-
-    return res.status(500).json({
-      error: "Internal server error",
-      details: err.message
-    });
-  }
-});
-
-/* =======================
-   START SERVER
-======================= */
-const PORT = 3000;
-
-app.listen(PORT, () => {
-  console.log(`🚀 Continuum AI running on http://localhost:${PORT}`);
+app.listen(3000, () => {
+  console.log("Continuum AI running on http://localhost:3000");
 });
