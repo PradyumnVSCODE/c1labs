@@ -1,56 +1,62 @@
-import express from "express";
-import cors from "cors";
-import dotenv from "dotenv";
-import Groq from "groq-sdk";
-
-dotenv.config();
+const express = require("express");
+const cors = require("cors");
 
 const app = express();
+
+/* =======================
+   MIDDLEWARE
+======================= */
 app.use(cors());
 app.use(express.json());
 
-const groq = new Groq({
-  apiKey: process.env.GROQ_API_KEY,
-});
-
-const buildAgents = (prompt) => ({
-  research: `Research deeply and explain: ${prompt}`,
-  compare: `Compare options clearly: ${prompt}`,
-  ideas: `Generate creative ideas: ${prompt}`,
-});
-
-async function run(prompt) {
-  const res = await groq.chat.completions.create({
-    model: "llama3-70b-8192",
-    messages: [{ role: "user", content: prompt }],
+/* =======================
+   HEALTH CHECK ROUTE
+======================= */
+app.get("/test", (req, res) => {
+  res.json({
+    status: "ok",
+    message: "Continuum backend alive"
   });
+});
 
-  return res.choices[0]?.message?.content;
-}
-
-app.post("/api/chat", async (req, res) => {
+/* =======================
+   CHAT ROUTE (SAFE MOCK FIRST)
+   (NO GROQ YET — STABILITY FIRST)
+======================= */
+app.post("/api/chat", (req, res) => {
   try {
-    const prompt = req.body.prompt;
+    const prompt = req.body?.prompt;
 
-    const agents = buildAgents(prompt);
+    console.log("📩 REQUEST:", prompt);
 
-    const [research, compare, ideas] = await Promise.all([
-      run(agents.research),
-      run(agents.compare),
-      run(agents.ideas),
-    ]);
+    if (!prompt) {
+      return res.status(400).json({
+        error: "No prompt received"
+      });
+    }
 
-    res.json({
-      research,
-      compare,
-      ideas,
+    // SAFE MOCK RESPONSE (NO CRASH POSSIBLE)
+    return res.json({
+      research: `Research analysis for: ${prompt}`,
+      compare: `Comparison layer processed for: ${prompt}`,
+      ideas: `Ideas generated from: ${prompt}`
     });
 
   } catch (err) {
-    res.status(500).json({ error: err.message });
+    console.log("❌ SERVER ERROR:", err);
+
+    return res.status(500).json({
+      error: "Internal server error",
+      details: err.message
+    });
   }
 });
 
-app.listen(3000, () => {
-  console.log("Continuum AI running on http://localhost:3000");
+/* =======================
+   START SERVER
+======================= */
+const PORT = 3000;
+
+app.listen(PORT, () => {
+  console.log(`🚀 Continuum AI running on http://localhost:${PORT}`);
 });
