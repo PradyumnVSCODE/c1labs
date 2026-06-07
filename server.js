@@ -1,3 +1,6 @@
+console.log("🔥 THIS IS THE FILE BEING EXECUTED");
+console.log("PATH CHECK:", import.meta.url);
+
 import http from "http";
 
 console.log("SERVER IS LIVE");
