@@ -1,3 +1,5 @@
+console.log(">>> THIS SERVER FILE IS ACTIVE <<<");
+
 const express = require("express");
 const cors = require("cors");
 
