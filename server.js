@@ -1,15 +1,15 @@
-console.log("🔥 FILE LOADED - THIS MUST APPEAR");
+console.log("🔥 SERVER STARTING");
 
 const express = require("express");
 const app = express();
 
-console.log("🔥 EXPRESS INIT OK");
+console.log("🔥 EXPRESS LOADED");
 
 app.get("/test", (req, res) => {
-  console.log("🔥 TEST ROUTE HIT");
+  console.log("🔥 TEST HIT");
   res.json({ ok: true });
 });
 
 app.listen(3000, () => {
-  console.log("🚀 SERVER RUNNING");
+  console.log("🚀 RUNNING ON 3000");
 });
