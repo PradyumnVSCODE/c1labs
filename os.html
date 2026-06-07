@@ -34,7 +34,6 @@ border-radius:50%;
 transform:translate(-50%,-50%);
 pointer-events:none;
 z-index:9999;
-transition:0.05s;
 }
 
 /* ================= BACKGROUND ================= */
@@ -60,72 +59,58 @@ opacity:.12;
 z-index:-1;
 }
 
-/* ================= BOOT ================= */
-#boot{
-position:fixed;
-inset:0;
-background:black;
-display:flex;
-flex-direction:column;
-justify-content:center;
-align-items:center;
-z-index:99999;
-}
-
-.bootText{
-margin-top:20px;
-opacity:.6;
-letter-spacing:3px;
-}
-
-/* ================= NAV ================= */
-nav{
-position:fixed;
-top:0;
-width:100%;
-padding:18px 8%;
-display:flex;
-justify-content:space-between;
-align-items:center;
-backdrop-filter:blur(25px);
-background:rgba(0,0,0,.5);
-z-index:100;
-}
-
 /* ================= SECTIONS ================= */
 section{
 min-height:100vh;
 padding:120px 8%;
-opacity:0;
-transform:translateY(40px);
-transition:1s ease;
 }
 
-section.active{
-opacity:1;
-transform:translateY(0);
-}
-
-/* ================= HERO ================= */
-.hero h1{
-font-size:clamp(3rem,7vw,7rem);
-line-height:1;
-font-weight:500;
-}
-
-/* ================= TERMINAL ================= */
-.terminal{
-margin-top:20px;
+/* ================= CHAT CONTAINER ================= */
+.chatBox{
+height:420px;
+overflow-y:auto;
 padding:20px;
 background:#050505;
-border:1px solid rgba(255,255,255,.1);
+border:1px solid rgba(255,255,255,.12);
 font-family:monospace;
-line-height:1.8;
-height:300px;
-overflow-y:auto;
+display:flex;
+flex-direction:column;
+gap:14px;
 }
 
-/* ================= INPUT ================= */
+/* ================= MESSAGE BASE ================= */
+.msg{
+padding:12px 14px;
+max-width:75%;
+border-radius:10px;
+line-height:1.4;
+white-space:pre-wrap;
+font-size:14px;
+}
+
+/* USER MESSAGE */
+.user{
+align-self:flex-end;
+background:#1d4ed8;
+border:1px solid rgba(255,255,255,.1);
+}
+
+/* AI MESSAGE */
+.ai{
+align-self:flex-start;
+background:#111;
+border:1px solid rgba(255,255,255,.15);
+}
+
+/* LABELS */
+.label{
+font-size:11px;
+opacity:0.6;
+margin-bottom:4px;
+letter-spacing:1px;
+}
+
+/* INPUT AREA */
 .inputRow{
 display:flex;
 gap:10px;
@@ -148,6 +133,11 @@ background:white;
 color:black;
 border:none;
 cursor:pointer;
+font-weight:600;
+}
+
+button:hover{
+opacity:0.85;
 }
 
 </style>
@@ -155,52 +145,22 @@ cursor:pointer;
 
 <body>
 
-<!-- CURSOR -->
 <div id="cursor"></div>
 
-<!-- BOOT -->
-<div id="boot">
-<div class="bootText">INITIALIZING CONTINUUM OS</div>
-</div>
-
-<!-- NAV -->
-<nav>
-<div>CONTINUUM OS</div>
-</nav>
-
-<!-- HERO -->
-<section class="active">
-<div class="hero">
-<h1>Continuum OS</h1>
-<p>Neural execution layer for intent-driven computing.</p>
-</div>
-</section>
-
-<!-- STATUS -->
 <section>
-<h2>SYSTEM ONLINE</h2>
-<p>Memory ACTIVE • Agents STANDBY</p>
-</section>
 
-<!-- CHAT SECTION -->
-<section>
-<h2>NEURAL INTERFACE</h2>
+<h2 style="margin-bottom:20px;">NEURAL CHAT INTERFACE</h2>
 
-<div class="terminal" id="chatBox"></div>
+<div class="chatBox" id="chatBox"></div>
 
 <div class="inputRow">
-<input id="input" placeholder="Enter command..." />
-<button onclick="send()">EXEC</button>
+<input id="input" placeholder="Type command..." />
+<button onclick="send()">EXECUTE</button>
 </div>
 
 </section>
 
 <script>
-
-/* ================= BOOT ================= */
-setTimeout(()=>{
-document.getElementById("boot").style.display="none";
-},1500);
 
 /* ================= CURSOR ================= */
 const cursor=document.getElementById("cursor");
@@ -210,25 +170,25 @@ cursor.style.left=e.clientX+"px";
 cursor.style.top=e.clientY+"px";
 });
 
-/* ================= SCROLL ================= */
-const sections=document.querySelectorAll("section");
-
-window.addEventListener("scroll",()=>{
-sections.forEach(s=>{
-if(s.getBoundingClientRect().top < window.innerHeight-100){
-s.classList.add("active");
-}
-});
-});
-
 /* ================= CHAT ================= */
 const chatBox=document.getElementById("chatBox");
 const input=document.getElementById("input");
 
-function add(text, type="ai"){
-const div=document.createElement("div");
-div.textContent=(type==="user"?"> ":"AI: ")+text;
-chatBox.appendChild(div);
+function addMessage(text,type){
+const wrapper=document.createElement("div");
+wrapper.className="msg "+type;
+
+const label=document.createElement("div");
+label.className="label";
+label.textContent= type==="user" ? "USER" : "CONTINUUM";
+
+const content=document.createElement("div");
+content.textContent=text;
+
+wrapper.appendChild(label);
+wrapper.appendChild(content);
+
+chatBox.appendChild(wrapper);
 chatBox.scrollTop=chatBox.scrollHeight;
 }
 
@@ -236,10 +196,10 @@ async function send(){
 const message=input.value.trim();
 if(!message) return;
 
-add(message,"user");
+addMessage(message,"user");
 input.value="";
 
-add("processing...","ai");
+addMessage("processing request...","ai");
 
 try{
 const res=await fetch("/api/chat",{
@@ -251,11 +211,11 @@ body:JSON.stringify({message})
 const data=await res.json();
 
 chatBox.lastChild.remove();
-add(data.reply || data.error,"ai");
+addMessage(data.reply || data.error || "error","ai");
 
 }catch(err){
 chatBox.lastChild.remove();
-add("connection error","ai");
+addMessage("connection failure","ai");
 }
 }
 
