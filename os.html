@@ -1,6 +1,3 @@
-after launch!!!!!!!!
-
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -49,7 +46,7 @@ opacity:.08;
 z-index:-1;
 }
 
-/* ================= TOP BAR (APPLE STYLE) ================= */
+/* ================= TOP BAR ================= */
 .topbar{
 position:fixed;
 top:0;
@@ -68,7 +65,7 @@ letter-spacing:2px;
 z-index:100;
 }
 
-/* ================= MAIN LAYOUT ================= */
+/* ================= LAYOUT ================= */
 .container{
 display:flex;
 height:100vh;
@@ -98,14 +95,13 @@ font-size:13px;
 background:rgba(255,255,255,.06);
 }
 
-/* ================= MAIN PANEL ================= */
+/* ================= CHAT ================= */
 .main{
 flex:1;
 display:flex;
 flex-direction:column;
 }
 
-/* ================= CHAT AREA ================= */
 .chat{
 flex:1;
 padding:30px;
@@ -115,7 +111,7 @@ flex-direction:column;
 gap:18px;
 }
 
-/* ================= MESSAGE BUBBLES (APPLE STYLE) ================= */
+/* ================= MESSAGE ================= */
 .msg{
 max-width:70%;
 padding:14px 16px;
@@ -123,6 +119,18 @@ border-radius:16px;
 font-size:14px;
 line-height:1.5;
 white-space:pre-wrap;
+
+/* ✨ smooth entry animation */
+opacity:0;
+transform:translateY(6px);
+animation:pop .18s ease forwards;
+}
+
+@keyframes pop{
+to{
+opacity:1;
+transform:translateY(0);
+}
 }
 
 /* USER */
@@ -146,7 +154,7 @@ opacity:.6;
 font-size:12px;
 }
 
-/* ================= INPUT BAR ================= */
+/* ================= INPUT ================= */
 .inputBar{
 display:flex;
 padding:20px;
@@ -182,6 +190,18 @@ button:hover{
 opacity:.8;
 }
 
+/* ================= TYPING DOTS ================= */
+.dots::after{
+content:'...';
+animation:blink 1s infinite steps(3);
+}
+
+@keyframes blink{
+0%{content:"."}
+33%{content:".."}
+66%{content:"..."}
+}
+
 </style>
 </head>
 
@@ -194,7 +214,6 @@ opacity:.8;
 
 <div class="container">
 
-<!-- SIDEBAR -->
 <div class="sidebar">
 <div class="app" onclick="sysMsg('System check complete')">System</div>
 <div class="app" onclick="sysMsg('Memory module active')">Memory</div>
@@ -202,7 +221,6 @@ opacity:.8;
 <div class="app" onclick="clearChat()">Clear</div>
 </div>
 
-<!-- MAIN -->
 <div class="main">
 
 <div class="chat" id="chat"></div>
@@ -215,97 +233,72 @@ opacity:.8;
 </div>
 
 </div>
+
 <script>
 
 const chat=document.getElementById("chat");
 const input=document.getElementById("input");
 
 function add(text,type){
-  const div=document.createElement("div");
-  div.className="msg "+type;
-  div.textContent=text;
-  chat.appendChild(div);
-  chat.scrollTop=chat.scrollHeight;
-  return div;
+const div=document.createElement("div");
+div.className="msg "+type;
+div.textContent=text;
+chat.appendChild(div);
+chat.scrollTop=chat.scrollHeight;
+return div;
 }
 
-/* ================= TYPING ANIMATION ================= */
-function typeText(element, text, speed=15){
-  element.textContent = "";
-  let i = 0;
-
-  const interval = setInterval(() => {
-    element.textContent += text[i];
-    i++;
-    chat.scrollTop = chat.scrollHeight;
-
-    if(i >= text.length){
-      clearInterval(interval);
-    }
-  }, speed);
-}
-
-/* ================= SYSTEM MSG ================= */
 function sysMsg(text){
-  add(text,"sys");
+add(text,"sys");
 }
 
 function clearChat(){
-  chat.innerHTML="";
+chat.innerHTML="";
 }
 
 /* ================= AI CALL ================= */
 async function send(){
 
-  const msg=input.value.trim();
-  if(!msg) return;
+const msg=input.value.trim();
+if(!msg) return;
 
-  input.value="";
+input.value="";
 
-  add(msg,"user");
+add(msg,"user");
 
-  const loading = add("Thinking...","ai");
+/* ✨ animated thinking bubble */
+const loading = add("Thinking","ai");
+loading.classList.add("dots");
 
-  try{
+try{
 
-    const res = await fetch("/api/chat",{
-      method:"POST",
-      headers:{"Content-Type":"application/json"},
-      body:JSON.stringify({prompt:msg})
-    });
+const res=await fetch("/api/chat",{
+method:"POST",
+headers:{"Content-Type":"application/json"},
+body:JSON.stringify({message:msg})
+});
 
-    const data = await res.json();
+const data=await res.json();
 
-    loading.remove();
+loading.remove();
 
-    if(!data.research || !data.compare || !data.ideas){
-      add("⚠ Invalid response from server","sys");
-      return;
-    }
+/* SAFE fallback */
+const reply =
+data.reply ||
+data.research ||
+"Error: No response";
 
-    const finalText =
-`🧠 Research:
-${data.research}
+add(reply,"ai");
 
-⚖ Compare:
-${data.compare}
-
-💡 Ideas:
-${data.ideas}`;
-
-    const aiMsg = add("","ai");
-    typeText(aiMsg, finalText, 10);
-
-  }catch(e){
-    loading.remove();
-    add("Connection error / backend not reachable","sys");
-  }
+}catch(e){
+loading.remove();
+add("Connection error","sys");
+}
 
 }
 
-/* ENTER KEY SUPPORT */
 input.addEventListener("keydown",(e)=>{
-  if(e.key==="Enter") send();
+if(e.key==="Enter") send();
 });
 
 </script>
