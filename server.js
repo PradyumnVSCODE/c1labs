@@ -1,42 +1,30 @@
 const express = require("express");
 const cors = require("cors");
-const path = require("path");
 
 const app = express();
 
 app.use(cors());
 app.use(express.json());
 
-console.log("SERVER LOADED ✔");
+console.log("🔥 SERVER FILE IS RUNNING");
 
-/* =========================
-   HEALTH CHECK
-========================= */
+/* TEST ROUTE */
 app.get("/test", (req, res) => {
+  console.log("TEST HIT");
   res.json({ ok: true });
 });
 
-/* =========================
-   CHAT ROUTE (SAFE MOCK)
-========================= */
+/* CHAT ROUTE */
 app.post("/api/chat", (req, res) => {
-  const prompt = req.body.prompt;
+  console.log("CHAT HIT:", req.body);
 
-  console.log("RECEIVED:", prompt);
-
-  return res.json({
-    research: "AI Research: " + prompt,
-    compare: "AI Comparison: " + prompt,
-    ideas: "AI Ideas: " + prompt
+  res.json({
+    research: "OK",
+    compare: "OK",
+    ideas: "OK"
   });
 });
 
-/* =========================
-   OPTIONAL: SERVE FRONTEND
-   (so you stop file:// issues)
-========================= */
-app.use(express.static(__dirname));
-
 app.listen(3000, () => {
-  console.log("Continuum AI running on http://localhost:3000");
+  console.log("🚀 Running on http://localhost:3000");
 });
