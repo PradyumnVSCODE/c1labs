@@ -1,3 +1,4 @@
+console.log("🔥 SERVER FILE LOADED: server.js");
 import express from "express";
 
 const app = express();
