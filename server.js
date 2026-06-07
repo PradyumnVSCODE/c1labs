@@ -1,3 +1,2 @@
-console.log("🔥 NODE IS RUNNING THIS FILE");
-
+console.log("NODE ACTIVE");
 process.stdin.resume();
