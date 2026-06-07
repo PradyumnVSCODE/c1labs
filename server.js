@@ -1,3 +1,4 @@
+console.log("🔥 ACTUAL FILE EXECUTING");
 import express from "express";
 import dotenv from "dotenv";
 
