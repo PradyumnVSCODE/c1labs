@@ -1,28 +1,18 @@
-console.log("🔥 SERVER BOOT");
-
-const express = require("express");
-const cors = require("cors");
+import express from "express";
 
 const app = express();
+const PORT = 3000;
 
-app.use(cors());
 app.use(express.json());
 
+app.get("/", (req, res) => {
+  res.send("Server is running");
+});
+
 app.get("/test", (req, res) => {
-  console.log("TEST ROUTE HIT");
-  res.json({ ok: true });
+  res.send("Test route works");
 });
 
-app.post("/api/chat", (req, res) => {
-  console.log("CHAT HIT:", req.body);
-
-  res.json({
-    research: "OK",
-    compare: "OK",
-    ideas: "OK"
-  });
-});
-
-app.listen(3000, () => {
-  console.log("🚀 RUNNING http://localhost:3000");
+app.listen(PORT, () => {
+  console.log(`Server running on http://localhost:${PORT}`);
 });
