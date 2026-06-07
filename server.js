@@ -6,13 +6,13 @@ const PORT = 3000;
 app.use(express.json());
 
 app.get("/", (req, res) => {
-  res.send("Server is running");
+  res.send("Continuum AI running");
 });
 
 app.get("/test", (req, res) => {
-  res.send("Test route works");
+  res.send("TEST OK");
 });
 
 app.listen(PORT, () => {
-  console.log(`Server running on http://localhost:${PORT}`);
+  console.log(`Continuum AI running on http://localhost:${PORT}`);
 });
