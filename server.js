@@ -1,13 +1,10 @@
-console.log("🔥 THIS IS THE FILE BEING EXECUTED");
-console.log("PATH CHECK:", import.meta.url);
+console.log("🔥 CLEAN FILE IS RUNNING");
 
 import http from "http";
 
-console.log("SERVER IS LIVE");
-
 http.createServer((req, res) => {
-  console.log("GOT REQUEST:", req.url);
+  console.log("REQUEST:", req.url);
   res.end("OK " + req.url);
 }).listen(3000, "127.0.0.1");
 
-console.log("LISTENING ON 3000");
+console.log("LISTENING 3000");
