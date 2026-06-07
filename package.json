@@ -1,14 +1,15 @@
-import express from "express";
-
-const app = express();
-
-console.log("🔥 THIS NEW SERVER IS RUNNING");
-
-app.get("/test", (req, res) => {
-  console.log("TEST HIT");
-  res.send("TEST WORKS");
-});
-
-app.listen(3000, () => {
-  console.log("SERVER LISTENING ON 3000");
-});
+{
+  "name": "c1labs",
+  "version": "1.0.0",
+  "type": "module",
+  "engines": {
+    "node": "18.x"
+  },
+  "scripts": {
+    "start": "node server.js"
+  },
+  "dependencies": {
+    "express": "^4.19.2",
+    "dotenv": "^16.4.5"
+  }
+}
