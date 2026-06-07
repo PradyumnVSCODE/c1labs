@@ -1,11 +1,10 @@
 import http from "http";
 
-console.log("🔥 FRESH SERVER STARTED");
+console.log("SERVER IS LIVE");
 
 http.createServer((req, res) => {
-  console.log("REQ:", req.url);
-
+  console.log("GOT REQUEST:", req.url);
   res.end("OK " + req.url);
-}).listen(3000, "127.0.0.1", () => {
-  console.log("RUNNING ON 127.0.0.1:3000");
-});
+}).listen(3000, "127.0.0.1");
+
+console.log("LISTENING ON 3000");
