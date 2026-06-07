@@ -1,156 +1,268 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Continuum OS</title>
 
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;700&display=swap" rel="stylesheet">
+
 <style>
-  body {
-    margin: 0;
-    font-family: Arial, sans-serif;
-    background: #0b0f17;
-    color: white;
-    display: flex;
-    flex-direction: column;
-    height: 100vh;
-  }
 
-  /* TOP BAR */
-  .topbar {
-    background: #111827;
-    padding: 12px 18px;
-    font-weight: bold;
-    border-bottom: 1px solid #1f2937;
-  }
+/* ================= BASE ================= */
+*{
+margin:0;
+padding:0;
+box-sizing:border-box;
+}
 
-  /* CHAT AREA */
-  .chat {
-    flex: 1;
-    padding: 20px;
-    overflow-y: auto;
-    display: flex;
-    flex-direction: column;
-    gap: 12px;
-  }
+body{
+background:#000;
+color:white;
+font-family:'Space Grotesk',sans-serif;
+overflow-x:hidden;
+cursor:none;
+}
 
-  .msg {
-    max-width: 70%;
-    padding: 12px 14px;
-    border-radius: 12px;
-    line-height: 1.4;
-    white-space: pre-wrap;
-  }
+/* ================= CURSOR ================= */
+#cursor{
+position:fixed;
+width:18px;
+height:18px;
+border:1px solid rgba(255,255,255,.6);
+border-radius:50%;
+transform:translate(-50%,-50%);
+pointer-events:none;
+z-index:9999;
+transition:0.05s;
+}
 
-  .user {
-    align-self: flex-end;
-    background: #3b82f6;
-  }
+/* ================= BACKGROUND ================= */
+body::before{
+content:"";
+position:fixed;
+inset:0;
+background:
+radial-gradient(circle at 20% 20%, rgba(255,255,255,.05), transparent 40%),
+radial-gradient(circle at 80% 60%, rgba(0,255,255,.03), transparent 50%);
+z-index:-1;
+}
 
-  .ai {
-    align-self: flex-start;
-    background: #1f2937;
-  }
+body::after{
+content:"";
+position:fixed;
+inset:0;
+background-image:
+linear-gradient(rgba(255,255,255,.04) 1px, transparent 1px),
+linear-gradient(90deg, rgba(255,255,255,.04) 1px, transparent 1px);
+background-size:60px 60px;
+opacity:.12;
+z-index:-1;
+}
 
-  /* INPUT AREA */
-  .input-bar {
-    display: flex;
-    padding: 12px;
-    border-top: 1px solid #1f2937;
-    background: #0f172a;
-  }
+/* ================= BOOT ================= */
+#boot{
+position:fixed;
+inset:0;
+background:black;
+display:flex;
+flex-direction:column;
+justify-content:center;
+align-items:center;
+z-index:99999;
+}
 
-  input {
-    flex: 1;
-    padding: 12px;
-    border: none;
-    border-radius: 8px;
-    outline: none;
-    background: #111827;
-    color: white;
-  }
+.bootText{
+margin-top:20px;
+opacity:.6;
+letter-spacing:3px;
+}
 
-  button {
-    margin-left: 10px;
-    padding: 12px 16px;
-    border: none;
-    border-radius: 8px;
-    background: #22c55e;
-    color: black;
-    font-weight: bold;
-    cursor: pointer;
-  }
+/* ================= NAV ================= */
+nav{
+position:fixed;
+top:0;
+width:100%;
+padding:18px 8%;
+display:flex;
+justify-content:space-between;
+align-items:center;
+backdrop-filter:blur(25px);
+background:rgba(0,0,0,.5);
+z-index:100;
+}
 
-  button:hover {
-    background: #16a34a;
-  }
+/* ================= SECTIONS ================= */
+section{
+min-height:100vh;
+padding:120px 8%;
+opacity:0;
+transform:translateY(40px);
+transition:1s ease;
+}
 
-  .typing {
-    font-style: italic;
-    opacity: 0.7;
-  }
+section.active{
+opacity:1;
+transform:translateY(0);
+}
+
+/* ================= HERO ================= */
+.hero h1{
+font-size:clamp(3rem,7vw,7rem);
+line-height:1;
+font-weight:500;
+}
+
+/* ================= TERMINAL ================= */
+.terminal{
+margin-top:20px;
+padding:20px;
+background:#050505;
+border:1px solid rgba(255,255,255,.1);
+font-family:monospace;
+line-height:1.8;
+height:300px;
+overflow-y:auto;
+}
+
+/* ================= INPUT ================= */
+.inputRow{
+display:flex;
+gap:10px;
+margin-top:15px;
+}
+
+input{
+flex:1;
+padding:12px;
+background:#000;
+border:1px solid rgba(255,255,255,.2);
+color:white;
+font-family:monospace;
+outline:none;
+}
+
+button{
+padding:12px 18px;
+background:white;
+color:black;
+border:none;
+cursor:pointer;
+}
+
 </style>
 </head>
 
 <body>
 
-<div class="topbar">⚡ Continuum OS</div>
+<!-- CURSOR -->
+<div id="cursor"></div>
 
-<div id="chat" class="chat"></div>
-
-<div class="input-bar">
-  <input id="input" placeholder="Ask Continuum..." />
-  <button onclick="send()">Send</button>
+<!-- BOOT -->
+<div id="boot">
+<div class="bootText">INITIALIZING CONTINUUM OS</div>
 </div>
 
+<!-- NAV -->
+<nav>
+<div>CONTINUUM OS</div>
+</nav>
+
+<!-- HERO -->
+<section class="active">
+<div class="hero">
+<h1>Continuum OS</h1>
+<p>Neural execution layer for intent-driven computing.</p>
+</div>
+</section>
+
+<!-- STATUS -->
+<section>
+<h2>SYSTEM ONLINE</h2>
+<p>Memory ACTIVE • Agents STANDBY</p>
+</section>
+
+<!-- CHAT SECTION -->
+<section>
+<h2>NEURAL INTERFACE</h2>
+
+<div class="terminal" id="chatBox"></div>
+
+<div class="inputRow">
+<input id="input" placeholder="Enter command..." />
+<button onclick="send()">EXEC</button>
+</div>
+
+</section>
+
 <script>
-const chat = document.getElementById("chat");
-const input = document.getElementById("input");
 
-function addMessage(text, type) {
-  const div = document.createElement("div");
-  div.className = "msg " + type;
-  div.textContent = text;
-  chat.appendChild(div);
-  chat.scrollTop = chat.scrollHeight;
-}
+/* ================= BOOT ================= */
+setTimeout(()=>{
+document.getElementById("boot").style.display="none";
+},1500);
 
-async function send() {
-  const message = input.value.trim();
-  if (!message) return;
+/* ================= CURSOR ================= */
+const cursor=document.getElementById("cursor");
 
-  addMessage(message, "user");
-  input.value = "";
-
-  const typing = document.createElement("div");
-  typing.className = "msg ai typing";
-  typing.textContent = "Thinking...";
-  chat.appendChild(typing);
-  chat.scrollTop = chat.scrollHeight;
-
-  try {
-    const res = await fetch("/api/chat", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json"
-      },
-      body: JSON.stringify({ message })
-    });
-
-    const data = await res.json();
-
-    typing.remove();
-    addMessage(data.reply || data.error || "No response", "ai");
-
-  } catch (err) {
-    typing.remove();
-    addMessage("Error connecting to server", "ai");
-  }
-}
-
-input.addEventListener("keydown", (e) => {
-  if (e.key === "Enter") send();
+document.addEventListener("mousemove",(e)=>{
+cursor.style.left=e.clientX+"px";
+cursor.style.top=e.clientY+"px";
 });
+
+/* ================= SCROLL ================= */
+const sections=document.querySelectorAll("section");
+
+window.addEventListener("scroll",()=>{
+sections.forEach(s=>{
+if(s.getBoundingClientRect().top < window.innerHeight-100){
+s.classList.add("active");
+}
+});
+});
+
+/* ================= CHAT ================= */
+const chatBox=document.getElementById("chatBox");
+const input=document.getElementById("input");
+
+function add(text, type="ai"){
+const div=document.createElement("div");
+div.textContent=(type==="user"?"> ":"AI: ")+text;
+chatBox.appendChild(div);
+chatBox.scrollTop=chatBox.scrollHeight;
+}
+
+async function send(){
+const message=input.value.trim();
+if(!message) return;
+
+add(message,"user");
+input.value="";
+
+add("processing...","ai");
+
+try{
+const res=await fetch("/api/chat",{
+method:"POST",
+headers:{"Content-Type":"application/json"},
+body:JSON.stringify({message})
+});
+
+const data=await res.json();
+
+chatBox.lastChild.remove();
+add(data.reply || data.error,"ai");
+
+}catch(err){
+chatBox.lastChild.remove();
+add("connection error","ai");
+}
+}
+
+input.addEventListener("keydown",(e)=>{
+if(e.key==="Enter") send();
+});
+
 </script>
 
 </body>
