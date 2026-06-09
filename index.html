@@ -1,371 +1,871 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Continuum One</title>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Continuum One — The Operating Layer for Intelligence</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
-<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;700&display=swap" rel="stylesheet">
+    :root {
+      --bg: #000000;
+      --text: #ffffff;
+      --text-secondary: rgba(255,255,255,0.60);
+      --text-tertiary: rgba(255,255,255,0.35);
+      --border: rgba(255,255,255,0.09);
+      --border-hover: rgba(255,255,255,0.22);
+      --card-bg: rgba(255,255,255,0.03);
+      --card-bg-hover: rgba(255,255,255,0.055);
+    }
 
-<style>
+    html { scroll-behavior: smooth; }
 
-/* ================= BASE ================= */
-*{
-margin:0;
-padding:0;
-box-sizing:border-box;
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: 'Space Grotesk', sans-serif;
+      -webkit-font-smoothing: antialiased;
+      overflow-x: hidden;
+      line-height: 1.6;
+    }
+
+    /* ─── NAV ─────────────────────────────────────────────── */
+    nav {
+      position: fixed;
+      top: 0; left: 0; right: 0;
+      z-index: 100;
+      padding: 28px 52px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      border-bottom: 1px solid transparent;
+      transition: border-color 0.4s, background 0.4s, padding 0.4s;
+    }
+    nav.scrolled {
+      background: rgba(0,0,0,0.82);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      border-bottom-color: var(--border);
+      padding-top: 18px;
+      padding-bottom: 18px;
+    }
+    .nav-logo {
+      font-size: 15px;
+      font-weight: 600;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      color: var(--text);
+      text-decoration: none;
+    }
+    .nav-links {
+      display: flex;
+      align-items: center;
+      gap: 40px;
+      list-style: none;
+    }
+    .nav-links a {
+      font-size: 13px;
+      font-weight: 400;
+      letter-spacing: 0.06em;
+      color: var(--text-secondary);
+      text-decoration: none;
+      transition: color 0.25s;
+    }
+    .nav-links a:hover { color: var(--text); }
+    .nav-cta {
+      font-size: 13px;
+      font-weight: 500;
+      letter-spacing: 0.08em;
+      color: var(--text) !important;
+      border: 1px solid var(--border-hover) !important;
+      padding: 9px 22px;
+      border-radius: 3px;
+      transition: background 0.25s, border-color 0.25s !important;
+    }
+    .nav-cta:hover { background: rgba(255,255,255,0.07) !important; }
+
+    /* ─── HERO ────────────────────────────────────────────── */
+    .hero {
+      position: relative;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      padding: 160px 32px 120px;
+      overflow: hidden;
+    }
+
+    /* Signature element: breathing orb */
+    .hero-orb {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -55%);
+      width: 900px;
+      height: 900px;
+      border-radius: 50%;
+      background: radial-gradient(
+        ellipse at center,
+        rgba(255,255,255,0.048) 0%,
+        rgba(255,255,255,0.018) 35%,
+        transparent 70%
+      );
+      animation: orbBreathe 8s ease-in-out infinite;
+      pointer-events: none;
+    }
+    @keyframes orbBreathe {
+      0%, 100% { transform: translate(-50%, -55%) scale(1); opacity: 0.7; }
+      50%       { transform: translate(-50%, -55%) scale(1.12); opacity: 1; }
+    }
+
+    /* Subtle grid overlay */
+    .hero::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background-image:
+        linear-gradient(rgba(255,255,255,0.025) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255,255,255,0.025) 1px, transparent 1px);
+      background-size: 80px 80px;
+      mask-image: radial-gradient(ellipse 60% 55% at 50% 45%, black 0%, transparent 80%);
+      -webkit-mask-image: radial-gradient(ellipse 60% 55% at 50% 45%, black 0%, transparent 80%);
+      pointer-events: none;
+    }
+
+    .hero-eyebrow {
+      font-size: 11px;
+      font-weight: 500;
+      letter-spacing: 0.28em;
+      text-transform: uppercase;
+      color: var(--text-tertiary);
+      margin-bottom: 36px;
+      position: relative;
+    }
+    .hero-eyebrow span {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .hero-eyebrow span::before,
+    .hero-eyebrow span::after {
+      content: '';
+      display: block;
+      width: 28px;
+      height: 1px;
+      background: var(--text-tertiary);
+    }
+
+    .hero-headline {
+      font-size: clamp(44px, 7.5vw, 108px);
+      font-weight: 600;
+      letter-spacing: -0.03em;
+      line-height: 1.02;
+      max-width: 960px;
+      position: relative;
+      margin-bottom: 30px;
+    }
+    .hero-headline em {
+      font-style: normal;
+      color: var(--text-secondary);
+    }
+
+    .hero-sub {
+      font-size: clamp(15px, 1.8vw, 20px);
+      font-weight: 400;
+      color: var(--text-secondary);
+      max-width: 540px;
+      line-height: 1.65;
+      margin-bottom: 60px;
+      position: relative;
+    }
+
+    .hero-buttons {
+      display: flex;
+      gap: 14px;
+      flex-wrap: wrap;
+      justify-content: center;
+      position: relative;
+    }
+    .btn-primary {
+      display: inline-block;
+      background: #fff;
+      color: #000;
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: 14px;
+      font-weight: 600;
+      letter-spacing: 0.05em;
+      padding: 14px 34px;
+      border-radius: 3px;
+      text-decoration: none;
+      transition: opacity 0.25s, transform 0.25s;
+    }
+    .btn-primary:hover { opacity: 0.88; transform: translateY(-1px); }
+
+    .btn-secondary {
+      display: inline-block;
+      background: transparent;
+      color: var(--text-secondary);
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: 14px;
+      font-weight: 500;
+      letter-spacing: 0.05em;
+      padding: 14px 34px;
+      border-radius: 3px;
+      border: 1px solid var(--border);
+      text-decoration: none;
+      transition: color 0.25s, border-color 0.25s, transform 0.25s;
+    }
+    .btn-secondary:hover {
+      color: var(--text);
+      border-color: var(--border-hover);
+      transform: translateY(-1px);
+    }
+
+    .hero-scroll-hint {
+      position: absolute;
+      bottom: 44px;
+      left: 50%;
+      transform: translateX(-50%);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 8px;
+      opacity: 0.3;
+      animation: scrollHint 2.5s ease-in-out infinite;
+    }
+    .hero-scroll-hint span {
+      font-size: 10px;
+      letter-spacing: 0.22em;
+      text-transform: uppercase;
+    }
+    .scroll-line {
+      width: 1px;
+      height: 32px;
+      background: linear-gradient(to bottom, #fff, transparent);
+    }
+    @keyframes scrollHint {
+      0%, 100% { opacity: 0.3; transform: translateX(-50%) translateY(0); }
+      50%       { opacity: 0.5; transform: translateX(-50%) translateY(6px); }
+    }
+
+    /* ─── SHARED SECTION STYLES ───────────────────────────── */
+    section {
+      padding: 140px 52px;
+    }
+    .section-inner {
+      max-width: 1120px;
+      margin: 0 auto;
+    }
+    .section-label {
+      font-size: 10.5px;
+      font-weight: 500;
+      letter-spacing: 0.3em;
+      text-transform: uppercase;
+      color: var(--text-tertiary);
+      margin-bottom: 22px;
+    }
+    .section-headline {
+      font-size: clamp(32px, 4.5vw, 62px);
+      font-weight: 600;
+      letter-spacing: -0.025em;
+      line-height: 1.08;
+      max-width: 720px;
+      margin-bottom: 22px;
+    }
+    .section-body {
+      font-size: 17px;
+      font-weight: 400;
+      color: var(--text-secondary);
+      max-width: 560px;
+      line-height: 1.7;
+    }
+
+    /* Reveal animation */
+    .reveal {
+      opacity: 0;
+      transform: translateY(28px);
+      transition: opacity 0.72s cubic-bezier(0.22,1,0.36,1),
+                  transform 0.72s cubic-bezier(0.22,1,0.36,1);
+    }
+    .reveal.visible {
+      opacity: 1;
+      transform: translateY(0);
+    }
+    .reveal-delay-1 { transition-delay: 0.08s; }
+    .reveal-delay-2 { transition-delay: 0.18s; }
+    .reveal-delay-3 { transition-delay: 0.28s; }
+    .reveal-delay-4 { transition-delay: 0.38s; }
+
+    /* ─── DIVIDER ─────────────────────────────────────────── */
+    .divider {
+      width: 100%;
+      height: 1px;
+      background: var(--border);
+      max-width: 1120px;
+      margin: 0 auto;
+    }
+
+    /* ─── PILLARS ─────────────────────────────────────────── */
+    .pillars-section {
+      padding: 140px 52px;
+    }
+    .pillars-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 1px;
+      border: 1px solid var(--border);
+      border-radius: 4px;
+      overflow: hidden;
+      margin-top: 80px;
+    }
+    .pillar-card {
+      padding: 52px 44px;
+      background: var(--card-bg);
+      transition: background 0.3s;
+      position: relative;
+    }
+    .pillar-card:not(:last-child) {
+      border-right: 1px solid var(--border);
+    }
+    .pillar-card:hover { background: var(--card-bg-hover); }
+
+    .pillar-number {
+      font-size: 11px;
+      font-weight: 500;
+      letter-spacing: 0.2em;
+      color: var(--text-tertiary);
+      margin-bottom: 36px;
+      display: block;
+    }
+    .pillar-title {
+      font-size: 28px;
+      font-weight: 600;
+      letter-spacing: -0.02em;
+      margin-bottom: 16px;
+    }
+    .pillar-body {
+      font-size: 15px;
+      font-weight: 400;
+      color: var(--text-secondary);
+      line-height: 1.7;
+    }
+
+    /* ─── STATEMENT BAND ──────────────────────────────────── */
+    .statement-section {
+      padding: 120px 52px;
+      text-align: center;
+      border-top: 1px solid var(--border);
+      border-bottom: 1px solid var(--border);
+    }
+    .statement-quote {
+      font-size: clamp(26px, 4vw, 54px);
+      font-weight: 500;
+      letter-spacing: -0.02em;
+      line-height: 1.2;
+      max-width: 900px;
+      margin: 0 auto;
+      color: var(--text-secondary);
+    }
+    .statement-quote strong {
+      color: var(--text);
+      font-weight: 600;
+    }
+
+    /* ─── ROADMAP ─────────────────────────────────────────── */
+    .roadmap-section { padding: 140px 52px; }
+    .roadmap-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 0;
+      margin-top: 80px;
+      border-top: 1px solid var(--border);
+      padding-top: 52px;
+    }
+    .roadmap-phase {
+      padding-right: 40px;
+      position: relative;
+    }
+    .roadmap-phase:not(:first-child) {
+      padding-left: 40px;
+      border-left: 1px solid var(--border);
+      padding-right: 0;
+    }
+    .phase-tag {
+      font-size: 10px;
+      font-weight: 600;
+      letter-spacing: 0.25em;
+      text-transform: uppercase;
+      color: var(--text-tertiary);
+      margin-bottom: 20px;
+      display: block;
+    }
+    .phase-name {
+      font-size: 20px;
+      font-weight: 600;
+      letter-spacing: -0.01em;
+      margin-bottom: 20px;
+    }
+    .phase-list {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+    .phase-list li {
+      font-size: 14px;
+      font-weight: 400;
+      color: var(--text-secondary);
+      display: flex;
+      align-items: flex-start;
+      gap: 10px;
+    }
+    .phase-list li::before {
+      content: '→';
+      color: var(--text-tertiary);
+      flex-shrink: 0;
+      margin-top: 1px;
+    }
+    .phase-active .phase-name { color: var(--text); }
+    .phase-active .phase-tag { color: rgba(255,255,255,0.55); }
+    .phase-future .phase-name { color: var(--text-secondary); }
+    .phase-future .phase-list li { color: var(--text-tertiary); }
+
+    /* ─── FOUNDER ─────────────────────────────────────────── */
+    .founder-section { padding: 140px 52px; }
+    .founder-inner {
+      max-width: 1120px;
+      margin: 0 auto;
+      display: grid;
+      grid-template-columns: 1fr 420px;
+      gap: 100px;
+      align-items: center;
+    }
+    .founder-portrait{
+  width:100%;
+  aspect-ratio:3/4;
+  max-width:340px;
+  position:relative;
+  overflow:hidden;
+  justify-self:end;
+
+  border-radius:12px;
+
+  border:1px solid rgba(255,255,255,.18);
+
+  box-shadow:
+  0 0 25px rgba(255,255,255,.08),
+  0 0 60px rgba(255,255,255,.04);
+
+  background:#050505;
+
+  transition:.4s ease;
 }
 
-body{
-background:#000;
-color:white;
-font-family:'Space Grotesk',sans-serif;
-overflow-x:hidden;
+.founder-portrait:hover{
+  transform:translateY(-4px);
+  box-shadow:
+  0 0 35px rgba(255,255,255,.12),
+  0 0 80px rgba(255,255,255,.06);
 }
 
-/* ================= BACKGROUND DEPTH ================= */
-body::before{
-content:"";
-position:fixed;
-inset:0;
-background:
-radial-gradient(circle at 20% 20%, rgba(255,255,255,.06), transparent 40%),
-radial-gradient(circle at 80% 30%, rgba(0,255,255,.03), transparent 45%),
-radial-gradient(circle at 40% 80%, rgba(255,0,255,.03), transparent 50%);
-z-index:-1;
+.founder-portrait img{
+  width:100%;
+  height:100%;
+  object-fit:cover;
+  display:block;
 }
 
-body::after{
-content:"";
-position:fixed;
-inset:0;
-background-image:
-linear-gradient(rgba(255,255,255,.03) 1px, transparent 1px),
-linear-gradient(90deg, rgba(255,255,255,.03) 1px, transparent 1px);
-background-size:90px 90px;
-opacity:.12;
-z-index:-1;
+.founder-portrait::after{
+  content:"";
+  position:absolute;
+  inset:0;
+
+  background:
+  linear-gradient(
+    to top,
+    rgba(0,0,0,.35),
+    transparent 35%
+  );
+
+  pointer-events:none;
+}
 }
 
-/* ================= NAV ================= */
-nav{
-position:fixed;
-top:0;
-width:100%;
-padding:22px 8%;
-display:flex;
-justify-content:space-between;
-align-items:center;
-background:rgba(0,0,0,.6);
-backdrop-filter:blur(20px);
-border-bottom:1px solid rgba(255,255,255,.05);
-z-index:100;
-}
+    .founder-content { }
+    .founder-headline {
+      font-size: clamp(32px, 4vw, 52px);
+      font-weight: 600;
+      letter-spacing: -0.025em;
+      line-height: 1.08;
+      margin-bottom: 28px;
+    }
+    .founder-body {
+      font-size: 17px;
+      font-weight: 400;
+      color: var(--text-secondary);
+      line-height: 1.72;
+      margin-bottom: 32px;
+    }
+    .founder-meta {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      padding-top: 28px;
+      border-top: 1px solid var(--border);
+    }
+    .founder-meta-row {
+      display: flex;
+      gap: 16px;
+      font-size: 13px;
+    }
+    .meta-label {
+      color: var(--text-tertiary);
+      font-weight: 400;
+      letter-spacing: 0.04em;
+      min-width: 80px;
+    }
+    .meta-value {
+      color: var(--text-secondary);
+      font-weight: 500;
+    }
 
-.logo{
-display:flex;
-align-items:center;
-gap:12px;
-text-decoration:none;
-color:white;
-}
+    /* ─── CTA SECTION ─────────────────────────────────────── */
+    .cta-section {
+      padding: 160px 52px;
+      text-align: center;
+      border-top: 1px solid var(--border);
+    }
+    .cta-eyebrow {
+      font-size: 10.5px;
+      font-weight: 500;
+      letter-spacing: 0.28em;
+      text-transform: uppercase;
+      color: var(--text-tertiary);
+      margin-bottom: 28px;
+    }
+    .cta-headline {
+      font-size: clamp(38px, 6vw, 84px);
+      font-weight: 600;
+      letter-spacing: -0.03em;
+      line-height: 1.04;
+      margin-bottom: 22px;
+    }
+    .cta-body {
+      font-size: 18px;
+      color: var(--text-secondary);
+      max-width: 480px;
+      margin: 0 auto 54px;
+      line-height: 1.65;
+    }
 
-.logo img{
-height:38px;
-}
+    /* ─── FOOTER ──────────────────────────────────────────── */
+    footer {
+      padding: 54px 52px;
+      border-top: 1px solid var(--border);
+    }
+    .footer-inner {
+      max-width: 1120px;
+      margin: 0 auto;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 28px;
+    }
+    .footer-brand { }
+    .footer-logo {
+      font-size: 14px;
+      font-weight: 600;
+      letter-spacing: 0.16em;
+      text-transform: uppercase;
+      margin-bottom: 7px;
+    }
+    .footer-tagline {
+      font-size: 13px;
+      color: var(--text-tertiary);
+    }
+    .footer-links {
+      display: flex;
+      gap: 34px;
+      list-style: none;
+    }
+    .footer-links a {
+      font-size: 13px;
+      font-weight: 400;
+      letter-spacing: 0.04em;
+      color: var(--text-tertiary);
+      text-decoration: none;
+      transition: color 0.22s;
+    }
+    .footer-links a:hover { color: var(--text); }
+    .footer-copy {
+      font-size: 12px;
+      color: var(--text-tertiary);
+      letter-spacing: 0.03em;
+    }
 
-/* ================= HERO ================= */
-.hero{
-min-height:100vh;
-display:flex;
-justify-content:space-between;
-align-items:center;
-padding:0 8%;
-}
-
-.left{
-max-width:700px;
-}
-
-.left h1{
-font-size:clamp(3.5rem,7vw,7rem);
-line-height:1;
-font-weight:500;
-letter-spacing:-1px;
-}
-
-.left p{
-margin-top:18px;
-opacity:.75;
-font-size:1.1rem;
-line-height:1.7;
-max-width:600px;
-}
-
-/* ================= BUTTONS ================= */
-.btn{
-display:inline-block;
-margin-top:35px;
-padding:15px 30px;
-border:1px solid rgba(255,255,255,.2);
-color:white;
-text-decoration:none;
-letter-spacing:2px;
-transition:.35s;
-}
-
-.btn:hover{
-background:white;
-color:black;
-transform:translateY(-3px);
-}
-
-.instaBtn{
-margin-left:15px;
-}
-
-/* ================= SECTIONS ================= */
-section{
-min-height:100vh;
-padding:130px 8%;
-opacity:0;
-transform:translateY(50px);
-transition:1s cubic-bezier(.2,.8,.2,1);
-}
-
-section.show{
-opacity:1;
-transform:translateY(0);
-}
-
-/* ================= TEXT ================= */
-.kicker{
-letter-spacing:7px;
-opacity:.5;
-margin-bottom:18px;
-font-size:.85rem;
-}
-
-.big{
-font-size:clamp(2.7rem,5vw,5rem);
-line-height:1.05;
-font-weight:500;
-}
-
-.text{
-margin-top:22px;
-opacity:.75;
-line-height:1.85;
-max-width:850px;
-}
-
-/* ================= COUNTDOWN ================= */
-.countdown{
-display:flex;
-gap:18px;
-flex-wrap:wrap;
-margin-top:45px;
-}
-
-.timeBox{
-padding:22px;
-border:1px solid rgba(255,255,255,.08);
-background:rgba(255,255,255,.02);
-min-width:140px;
-text-align:center;
-border-radius:14px;
-transition:.3s;
-}
-
-.timeBox:hover{
-transform:translateY(-5px);
-border-color:rgba(255,255,255,.25);
-}
-
-.timeBox h2{
-font-size:2.6rem;
-}
-
-/* ================= CARDS ================= */
-.grid{
-display:grid;
-grid-template-columns:repeat(auto-fit,minmax(240px,1fr));
-gap:22px;
-margin-top:50px;
-}
-
-.card{
-padding:28px;
-border:1px solid rgba(255,255,255,.08);
-background:rgba(255,255,255,.02);
-border-radius:16px;
-transition:.4s;
-}
-
-.card:hover{
-transform:translateY(-10px) scale(1.02);
-border-color:rgba(255,255,255,.35);
-}
-
-/* ================= FOOTER ================= */
-footer{
-padding:90px;
-text-align:center;
-opacity:.55;
-}
-
-/* ================= SCROLL ================= */
-html{
-scroll-behavior:smooth;
-}
-
-</style>
+    /* ─── RESPONSIVE ──────────────────────────────────────── */
+    @media (max-width: 900px) {
+      nav { padding: 22px 28px; }
+      nav.scrolled { padding: 16px 28px; }
+      .nav-links { display: none; }
+      section, .pillars-section, .roadmap-section,
+      .founder-section, .cta-section { padding: 100px 28px; }
+      .pillars-grid { grid-template-columns: 1fr; }
+      .pillar-card:not(:last-child) { border-right: none; border-bottom: 1px solid var(--border); }
+      .roadmap-grid {
+        grid-template-columns: 1fr 1fr;
+        gap: 44px;
+      }
+      .roadmap-phase { padding-right: 0; }
+      .roadmap-phase:not(:first-child) { padding-left: 0; border-left: none; }
+      .founder-inner { grid-template-columns: 1fr; gap: 56px; }
+      .founder-portrait { max-width: 220px; justify-self: start; }
+      .footer-inner { flex-direction: column; align-items: flex-start; gap: 22px; }
+    }
+    @media (max-width: 520px) {
+      .hero-buttons { flex-direction: column; align-items: stretch; }
+      .btn-primary, .btn-secondary { text-align: center; }
+      .roadmap-grid { grid-template-columns: 1fr; }
+      .hero-orb { width: 480px; height: 480px; }
+    }
+    @media (prefers-reduced-motion: reduce) {
+      .hero-orb { animation: none; }
+      .hero-scroll-hint { animation: none; }
+      .reveal { opacity: 1; transform: none; transition: none; }
+    }
+  </style>
 </head>
-
 <body>
 
-<!-- NAV -->
-<nav>
-<a class="logo" href="index.html">
-<img src="assets/logo.png">
-<div>CONTINUUM ONE</div>
-</a>
-</nav>
+  <!-- NAV -->
+  <nav id="nav">
+    <a class="nav-logo" href="#">Continuum One</a>
+    <ul class="nav-links">
+      <li><a href="#vision">Vision</a></li>
+      <li><a href="#roadmap">Roadmap</a></li>
+      <li><a href="#founder">Founder</a></li>
+      <li><a href="os.html" class="nav-cta">Launch OS</a></li>
+    </ul>
+  </nav>
 
-<!-- HERO -->
-<div class="hero">
+  <!-- HERO -->
+  <section class="hero" id="home">
+    <div class="hero-orb"></div>
+    <p class="hero-eyebrow reveal"><span>Continuum One</span></p>
+    <h1 class="hero-headline reveal reveal-delay-1">
+      The Next Interface<br/><em>Is Understanding.</em>
+    </h1>
+    <p class="hero-sub reveal reveal-delay-2">
+      Building the operating layer for the age of intelligence.
+    </p>
+    <div class="hero-buttons reveal reveal-delay-3">
+      <a href="os.html" class="btn-primary">Launch Continuum OS</a>
+      <a href="https://instagram.com/continuumonelabs" target="_blank" rel="noopener" class="btn-secondary">Follow @continuumonelabs</a>
+    </div>
+    <div class="hero-scroll-hint">
+      <div class="scroll-line"></div>
+      <span>Scroll</span>
+    </div>
+  </section>
 
-<div class="left">
+  <!-- STATEMENT BAND -->
+  <div class="statement-section">
+    <p class="statement-quote reveal">
+      <strong>Traditional computers require commands.</strong><br/>
+      Continuum One understands goals.
+    </p>
+  </div>
 
-<h1>The next interface is understanding.</h1>
+  <!-- PILLARS -->
+  <section class="pillars-section" id="vision">
+    <div class="section-inner">
+      <p class="section-label reveal">Intelligence Pillars</p>
+      <h2 class="section-headline reveal reveal-delay-1">
+        Three principles.<br/>One operating layer.
+      </h2>
+      <div class="pillars-grid">
+        <div class="pillar-card reveal reveal-delay-1">
+          <span class="pillar-number">I</span>
+          <h3 class="pillar-title">Intent</h3>
+          <p class="pillar-body">Computers were built to follow commands. Continuum One is built to understand goals — translating what you mean into what you need.</p>
+        </div>
+        <div class="pillar-card reveal reveal-delay-2">
+          <span class="pillar-number">II</span>
+          <h3 class="pillar-title">Intelligence</h3>
+          <p class="pillar-body">Transform raw information into understanding, planning, and execution. Not a tool that answers questions — a system that reasons toward outcomes.</p>
+        </div>
+        <div class="pillar-card reveal reveal-delay-3">
+          <span class="pillar-number">III</span>
+          <h3 class="pillar-title">Infinity</h3>
+          <p class="pillar-body">A long-term intelligence platform designed to scale with humanity's ambitions — from individual thought to organizational memory.</p>
+        </div>
+      </div>
+    </div>
+  </section>
 
-<p>
-Computers follow commands.  
-We are building systems that understand intent, plan execution, and act autonomously.
-</p>
+  <!-- ROADMAP -->
+  <section class="roadmap-section" id="roadmap">
+    <div class="section-inner">
+      <p class="section-label reveal">Product Roadmap</p>
+      <h2 class="section-headline reveal reveal-delay-1">
+        Starting small.<br/>Thinking large.
+      </h2>
+      <p class="section-body reveal reveal-delay-2">
+        Every intelligence platform begins somewhere. Continuum One's roadmap is a deliberate expansion from workspace to operating layer.
+      </p>
+      <div class="roadmap-grid">
+        <div class="roadmap-phase phase-active reveal reveal-delay-1">
+          <span class="phase-tag">Phase 01 — Now</span>
+          <p class="phase-name">AI Workspace</p>
+          <ul class="phase-list">
+            <li>Conversation</li>
+            <li>Research</li>
+            <li>Writing</li>
+            <li>Planning</li>
+            <li>Analysis</li>
+          </ul>
+        </div>
+        <div class="roadmap-phase phase-future reveal reveal-delay-2">
+          <span class="phase-tag">Phase 02</span>
+          <p class="phase-name">Agent Systems</p>
+          <ul class="phase-list">
+            <li>Task execution</li>
+            <li>Automation</li>
+            <li>Multi-step reasoning</li>
+            <li>Project management</li>
+          </ul>
+        </div>
+        <div class="roadmap-phase phase-future reveal reveal-delay-3">
+          <span class="phase-tag">Phase 03</span>
+          <p class="phase-name">Enterprise Layer</p>
+          <ul class="phase-list">
+            <li>Knowledge systems</li>
+            <li>Org memory</li>
+            <li>Large-scale analysis</li>
+            <li>Strategic support</li>
+          </ul>
+        </div>
+        <div class="roadmap-phase phase-future reveal reveal-delay-4">
+          <span class="phase-tag">Phase 04 — Vision</span>
+          <p class="phase-name">AI Operating System</p>
+          <ul class="phase-list">
+            <li>Native intelligence layer</li>
+            <li>Intent-driven computing</li>
+            <li>Universal context</li>
+            <li>A professional JARVIS</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </section>
 
-<a class="btn" href="os.html">LAUNCH PROTOTYPE</a>
+  <!-- SECOND STATEMENT -->
+  <div class="statement-section">
+    <p class="statement-quote reveal">
+      The future of computing is not software.<br/>
+      <strong>The future of computing is understanding.</strong>
+    </p>
+  </div>
 
-<a class="btn instaBtn" target="_blank"
-href="https://www.instagram.com/continuumonelabs/">
-FOLLOW INSTAGRAM
-</a>
-
+  <!-- FOUNDER -->
+  <section class="founder-section" id="founder">
+    <div class="founder-inner">
+      <div class="founder-content">
+        <p class="section-label reveal">Founder</p>
+        <h2 class="founder-headline reveal reveal-delay-1">
+          Built by<br/>Pradyumn Lavania.
+        </h2>
+        <p class="founder-body reveal reveal-delay-2">
+          Continuum One began from a simple belief: computers should understand intent, not commands. At sixteen, Pradyumn started building the foundation of an AI-native operating layer — designed to help people think, create, analyze, and execute at a level previously reserved for large organizations.
+        </p>
+        <p class="founder-body reveal reveal-delay-3" style="margin-top: -10px;">
+          This is a long-term vision. Not a product. A direction.
+        </p>
+        <div class="founder-meta reveal reveal-delay-4">
+          <div class="founder-meta-row">
+            <span class="meta-label">Role</span>
+            <span class="meta-value">Founder &amp; Builder</span>
+          </div>
+          <div class="founder-meta-row">
+            <span class="meta-label">Focus</span>
+            <span class="meta-value">AI-native operating layer</span>
+          </div>
+          <div class="founder-meta-row">
+            <span class="meta-label">Platform</span>
+            <span class="meta-value">@continuumonelabs</span>
+          </div>
+        </div>
+      </div>
+      <div class="founder-portrait reveal reveal-delay-2">
+  <img
+    src="assets/pradyumn.png"
+    alt="Pradyumn Lavania"
+  >
 </div>
+    </div>
+  </section>
 
-</div>
+  <!-- CTA -->
+  <section class="cta-section" id="workspace">
+    <div class="section-inner" style="text-align:center;">
+      <p class="cta-eyebrow reveal">AI Workspace</p>
+      <h2 class="cta-headline reveal reveal-delay-1">Experience<br/>Continuum OS.</h2>
+      <p class="cta-body reveal reveal-delay-2">
+        Enter the workspace and interact with the first layer of the Continuum ecosystem.
+      </p>
+      <a href="os.html" class="btn-primary reveal reveal-delay-3">Enter Workspace</a>
+    </div>
+  </section>
 
-<!-- STATUS -->
-<section>
-<div class="kicker">SYSTEM STATUS</div>
-<div class="big">Continuum Core Online</div>
-<div class="text">
-Neural execution layer active.<br>
-Memory graph initialized.<br>
-Agent framework ready.
-</div>
-</section>
+  <!-- FOOTER -->
+  <footer>
+    <div class="footer-inner">
+      <div class="footer-brand">
+        <p class="footer-logo">Continuum One</p>
+        <p class="footer-tagline">Building the operating layer for the age of intelligence.</p>
+      </div>
+      <ul class="footer-links">
+        <li><a href="os.html">Workspace</a></li>
+        <li><a href="https://instagram.com/continuumonelabs" target="_blank" rel="noopener">Instagram</a></li>
+        <li><a href="mailto:hello@continuumone.ai">Contact</a></li>
+      </ul>
+      <p class="footer-copy">© 2025 Continuum One</p>
+    </div>
+  </footer>
 
-<!-- MODES -->
-<section>
-<div class="kicker">MISSION MODES</div>
-<div class="big">Choose execution workflow</div>
+  <script>
+    // Nav scroll behavior
+    const nav = document.getElementById('nav');
+    window.addEventListener('scroll', () => {
+      nav.classList.toggle('scrolled', window.scrollY > 50);
+    }, { passive: true });
 
-<div class="grid">
-<div class="card">RESEARCH — Deep knowledge synthesis</div>
-<div class="card">BUILD — Software & system creation</div>
-<div class="card">ANALYZE — Pattern detection & reasoning</div>
-<div class="card">CREATE — Design & ideation engine</div>
-<div class="card">EXECUTE — Task automation layer</div>
-<div class="card">DEEP THINK — Long reasoning mode</div>
-</div>
+    // Reveal on scroll
+    const reveals = document.querySelectorAll('.reveal');
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach(e => {
+        if (e.isIntersecting) {
+          e.target.classList.add('visible');
+          observer.unobserve(e.target);
+        }
+      });
+    }, { threshold: 0.12, rootMargin: '0px 0px -40px 0px' });
 
-</section>
+    // Hero elements visible immediately
+    document.querySelectorAll('.hero .reveal').forEach(el => {
+      el.classList.add('visible');
+    });
 
-<!-- TERMINAL -->
-<section>
-<div class="kicker">COMMAND CENTER</div>
-<div class="big">Execution Layer Preview</div>
-
-<div class="text">
-> initializing neural pipeline<br>
-> scanning intent space<br>
-> generating structured output<br><br>
-SYSTEM READY
-</div>
-</section>
-
-<!-- COUNTDOWN -->
-<section>
-<div class="kicker">PROTOTYPE 01</div>
-<div class="big">Launching June 10</div>
-
-<div class="countdown">
-<div class="timeBox">
-<h2 id="days">00</h2><span>DAYS</span>
-</div>
-
-<div class="timeBox">
-<h2 id="hours">00</h2><span>HOURS</span>
-</div>
-
-<div class="timeBox">
-<h2 id="minutes">00</h2><span>MINUTES</span>
-</div>
-
-<div class="timeBox">
-<h2 id="seconds">00</h2><span>SECONDS</span>
-</div>
-</div>
-
-</section>
-
-<!-- ROADMAP -->
-<section>
-<div class="kicker">ROADMAP</div>
-<div class="big">Building Continuum</div>
-
-<div class="text">
-Prototype 01 — Core OS Interface<br>
-Prototype 02 — Agent System Layer<br>
-Prototype 03 — Autonomous Execution Engine<br><br>
-
-Final goal: a unified intelligence operating system.
-</div>
-</section>
-
-<!-- FOOTER -->
-<footer>
-CONTINUUM ONE — BUILDING THE INTELLIGENCE OPERATING LAYER
-</footer>
-
-<script>
-
-/* ================= SCROLL REVEAL ================= */
-const sections=document.querySelectorAll("section");
-
-window.addEventListener("scroll",()=>{
-sections.forEach(s=>{
-if(s.getBoundingClientRect().top < window.innerHeight-120){
-s.classList.add("show");
-}
-});
-});
-
-/* ================= COUNTDOWN ================= */
-const target = new Date("June 10, 2026").getTime();
-
-setInterval(()=>{
-let now=new Date().getTime();
-let d=target-now;
-
-document.getElementById("days").innerText=Math.floor(d/86400000);
-document.getElementById("hours").innerText=Math.floor(d%86400000/3600000);
-document.getElementById("minutes").innerText=Math.floor(d%3600000/60000);
-document.getElementById("seconds").innerText=Math.floor(d%60000/1000);
-},1000);
-
-</script>
-
+    // Observe rest
+    reveals.forEach(el => {
+      if (!el.closest('.hero')) observer.observe(el);
+    });
+  </script>
 </body>
 </html>
