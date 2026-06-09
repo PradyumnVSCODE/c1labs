@@ -1,21 +1,19 @@
-import express from "express";
-import cors from "cors";
-import dotenv from "dotenv";
-import Groq from "groq-sdk";
-import { fileURLToPath } from "url";
-import { dirname } from "path";
+const express = require("express");
+const cors = require("cors");
+const dotenv = require("dotenv");
+const Groq = require("groq-sdk");
+const path = require("path");
 
 dotenv.config();
 
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = dirname(__filename);
+const __dirname = path.dirname(require.main.filename);
 
 const app = express();
 app.use(cors());
 app.use(express.json());
 app.use(express.static(__dirname));
 
-const groq = new Groq({
+const groq = new Groq.default({
   apiKey: process.env.GROQ_API_KEY || "",
 });
 
