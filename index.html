@@ -52,13 +52,26 @@
       padding-top: 18px;
       padding-bottom: 18px;
     }
-    .nav-logo {
-      font-size: 15px;
-      font-weight: 600;
-      letter-spacing: 0.18em;
-      text-transform: uppercase;
-      color: var(--text);
-      text-decoration: none;
+   .nav-logo {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+
+  font-size: 15px;
+  font-weight: 600;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--text);
+  text-decoration: none;
+}
+
+.nav-logo img {
+  width: 32px;
+  height: 32px;
+  object-fit: contain;
+
+  filter: drop-shadow(0 0 8px rgba(255,255,255,0.25));
+}
     }
     .nav-links {
       display: flex;
