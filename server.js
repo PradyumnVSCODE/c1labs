@@ -31,6 +31,8 @@ async function run(prompt) {
 app.post("/api/chat", async (req, res) => {
   try {
     const message = req.body.message;
+    console.log("Received message:", message);
+    console.log("API Key present:", !!process.env.GROQ_API_KEY);
     
     if (!message) {
       return res.status(400).json({ error: "No message provided" });
@@ -41,13 +43,14 @@ app.post("/api/chat", async (req, res) => {
     }
 
     const reply = await run(message);
+    console.log("Got reply:", reply);
 
     res.json({
       reply: reply || "No response",
     });
 
   } catch (err) {
-    console.error("Error:", err.message);
+    console.error("Error in /api/chat:", err);
     res.status(500).json({ error: err.message });
   }
 });
