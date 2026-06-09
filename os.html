@@ -2,204 +2,96 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Continuum OS</title>
 
-<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500&display=swap" rel="stylesheet">
 
 <style>
 
-/* ================= BASE ================= */
-*{
-margin:0;
-padding:0;
-box-sizing:border-box;
-}
-
 body{
-background:#000;
-color:white;
-font-family:'Space Grotesk',sans-serif;
-overflow:hidden;
+  margin:0;
+  background:#000;
+  color:#fff;
+  font-family:"Space Grotesk";
 }
 
-/* ================= SUBTLE BACKGROUND ================= */
-body::before{
-content:"";
-position:fixed;
-inset:0;
-background:
-radial-gradient(circle at 20% 20%, rgba(255,255,255,.06), transparent 40%),
-radial-gradient(circle at 80% 70%, rgba(120,120,255,.05), transparent 50%);
-z-index:-2;
-}
-
-body::after{
-content:"";
-position:fixed;
-inset:0;
-background-image:
-linear-gradient(rgba(255,255,255,.04) 1px, transparent 1px),
-linear-gradient(90deg, rgba(255,255,255,.04) 1px, transparent 1px);
-background-size:70px 70px;
-opacity:.08;
-z-index:-1;
-}
-
-/* ================= TOP BAR ================= */
-.topbar{
-position:fixed;
-top:0;
-left:0;
-right:0;
-height:50px;
-display:flex;
-align-items:center;
-justify-content:space-between;
-padding:0 20px;
-background:rgba(0,0,0,.55);
-backdrop-filter:blur(20px);
-border-bottom:1px solid rgba(255,255,255,.08);
-font-size:12px;
-letter-spacing:2px;
-z-index:100;
-}
-
-/* ================= LAYOUT ================= */
+/* layout */
 .container{
-display:flex;
-height:100vh;
-padding-top:50px;
+  display:flex;
+  height:100vh;
 }
 
-/* ================= SIDEBAR ================= */
+/* sidebar */
 .sidebar{
-width:240px;
-padding:20px;
-border-right:1px solid rgba(255,255,255,.08);
-background:rgba(255,255,255,.02);
-backdrop-filter:blur(10px);
+  width:240px;
+  border-right:1px solid rgba(255,255,255,0.08);
+  padding:20px;
+  opacity:0.8;
 }
 
-.app{
-padding:12px;
-margin-bottom:10px;
-border-radius:10px;
-cursor:pointer;
-transition:.2s;
-border:1px solid rgba(255,255,255,.06);
-font-size:13px;
-}
-
-.app:hover{
-background:rgba(255,255,255,.06);
-}
-
-/* ================= CHAT ================= */
+/* chat area */
 .main{
-flex:1;
-display:flex;
-flex-direction:column;
+  flex:1;
+  display:flex;
+  flex-direction:column;
 }
 
+/* messages */
 .chat{
-flex:1;
-padding:30px;
-overflow-y:auto;
-display:flex;
-flex-direction:column;
-gap:18px;
+  flex:1;
+  padding:20px;
+  overflow-y:auto;
+  display:flex;
+  flex-direction:column;
+  gap:12px;
 }
 
-/* ================= MESSAGE ================= */
+/* bubbles */
 .msg{
-max-width:70%;
-padding:14px 16px;
-border-radius:16px;
-font-size:14px;
-line-height:1.5;
-white-space:pre-wrap;
-
-/* ✨ smooth entry animation */
-opacity:0;
-transform:translateY(6px);
-animation:pop .18s ease forwards;
+  max-width:70%;
+  padding:12px 14px;
+  border-radius:12px;
+  font-size:14px;
+  line-height:1.5;
 }
 
-@keyframes pop{
-to{
-opacity:1;
-transform:translateY(0);
-}
-}
-
-/* USER */
 .user{
-align-self:flex-end;
-background:rgba(80,140,255,.25);
-border:1px solid rgba(120,160,255,.25);
+  align-self:flex-end;
+  background:rgba(255,255,255,0.12);
 }
 
-/* AI */
 .ai{
-align-self:flex-start;
-background:rgba(255,255,255,.06);
-border:1px solid rgba(255,255,255,.08);
+  align-self:flex-start;
+  background:rgba(255,255,255,0.05);
+  border:1px solid rgba(255,255,255,0.08);
 }
 
-/* SYSTEM */
-.sys{
-align-self:center;
-opacity:.6;
-font-size:12px;
-}
-
-/* ================= INPUT ================= */
+/* input bar */
 .inputBar{
-display:flex;
-padding:20px;
-border-top:1px solid rgba(255,255,255,.08);
-background:rgba(0,0,0,.6);
-backdrop-filter:blur(15px);
+  display:flex;
+  padding:14px;
+  border-top:1px solid rgba(255,255,255,0.08);
 }
 
 input{
-flex:1;
-padding:14px;
-border-radius:12px;
-background:rgba(255,255,255,.05);
-border:1px solid rgba(255,255,255,.1);
-color:white;
-outline:none;
-font-size:14px;
+  flex:1;
+  background:transparent;
+  border:none;
+  outline:none;
+  color:white;
+  font-size:14px;
 }
 
 button{
-margin-left:10px;
-padding:14px 18px;
-border-radius:12px;
-border:none;
-background:white;
-color:black;
-font-weight:600;
-cursor:pointer;
-transition:.2s;
+  background:white;
+  border:none;
+  padding:10px 16px;
+  cursor:pointer;
+  font-weight:500;
 }
 
 button:hover{
-opacity:.8;
-}
-
-/* ================= TYPING DOTS ================= */
-.dots::after{
-content:'...';
-animation:blink 1s infinite steps(3);
-}
-
-@keyframes blink{
-0%{content:"."}
-33%{content:".."}
-66%{content:"..."}
+  opacity:0.85;
 }
 
 </style>
@@ -207,101 +99,31 @@ animation:blink 1s infinite steps(3);
 
 <body>
 
-<div class="topbar">
-<div>CONTINUUM OS</div>
-<div>NEURAL AI WORKSPACE</div>
-</div>
-
 <div class="container">
 
-<div class="sidebar">
-<div class="app" onclick="sysMsg('System check complete')">System</div>
-<div class="app" onclick="sysMsg('Memory module active')">Memory</div>
-<div class="app" onclick="sysMsg('AI engine online')">AI Core</div>
-<div class="app" onclick="clearChat()">Clear</div>
+  <div class="sidebar">
+    <h3>CONTINUUM OS</h3>
+    <p>Memory</p>
+    <p>Reasoning</p>
+    <p>Tools</p>
+  </div>
+
+  <div class="main">
+
+    <div class="chat" id="chat">
+      <div class="msg ai">Continuum online.</div>
+    </div>
+
+    <div class="inputBar">
+      <input id="input" placeholder="Enter intent..." onkeypress="if(event.key==='Enter') send()" />
+      <button onclick="send()">Send</button>
+    </div>
+
+  </div>
+
 </div>
 
-<div class="main">
-
-<div class="chat" id="chat"></div>
-
-<div class="inputBar">
-<input id="input" placeholder="Message Continuum..." />
-<button onclick="send()">Send</button>
-</div>
-
-</div>
-
-</div>
-
-<script>
-
-const chat=document.getElementById("chat");
-const input=document.getElementById("input");
-
-function add(text,type){
-const div=document.createElement("div");
-div.className="msg "+type;
-div.textContent=text;
-chat.appendChild(div);
-chat.scrollTop=chat.scrollHeight;
-return div;
-}
-
-function sysMsg(text){
-add(text,"sys");
-}
-
-function clearChat(){
-chat.innerHTML="";
-}
-
-/* ================= AI CALL ================= */
-async function send(){
-
-const msg=input.value.trim();
-if(!msg) return;
-
-input.value="";
-
-add(msg,"user");
-
-/* ✨ animated thinking bubble */
-const loading = add("Thinking","ai");
-loading.classList.add("dots");
-
-try{
-
-const res=await fetch("/api/chat",{
-method:"POST",
-headers:{"Content-Type":"application/json"},
-body:JSON.stringify({message:msg})
-});
-
-const data=await res.json();
-
-loading.remove();
-
-/* SAFE fallback */
-const reply =
-data.reply ||
-data.research ||
-"Error: No response";
-
-add(reply,"ai");
-
-}catch(e){
-loading.remove();
-add("Connection error","sys");
-}
-
-}
-
-input.addEventListener("keydown",(e)=>{
-if(e.key==="Enter") send();
-});
-
-</script>
+<script src="ap.js"></script>
 
 </body>
 </html>
