@@ -1,129 +1,982 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<title>Continuum OS</title>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Continuum OS — Workspace</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
-<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500&display=swap" rel="stylesheet">
+    :root {
+      --bg:           #000000;
+      --bg-panel:     #080808;
+      --bg-hover:     #0f0f0f;
+      --text:         #ffffff;
+      --text-2:       rgba(255,255,255,0.60);
+      --text-3:       rgba(255,255,255,0.32);
+      --border:       rgba(255,255,255,0.08);
+      --border-md:    rgba(255,255,255,0.14);
+      --input-bg:     rgba(255,255,255,0.04);
+      --input-focus:  rgba(255,255,255,0.07);
+      --user-bg:      rgba(255,255,255,0.05);
+      --sidebar-w:    220px;
+    }
 
-<style>
+    html, body {
+      height: 100%;
+      overflow: hidden;
+      font-family: 'Space Grotesk', sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      -webkit-font-smoothing: antialiased;
+    }
 
-body{
-  margin:0;
-  background:#000;
-  color:#fff;
-  font-family:"Space Grotesk";
-}
+    /* ── LAYOUT SHELL ───────────────────────────────────── */
+    .os-shell {
+      display: grid;
+      grid-template-columns: var(--sidebar-w) 1fr;
+      grid-template-rows: 1fr;
+      height: 100vh;
+      width: 100vw;
+    }
 
-/* layout */
-.container{
-  display:flex;
-  height:100vh;
-}
+    /* ── SIDEBAR ────────────────────────────────────────── */
+    .sidebar {
+      background: var(--bg-panel);
+      border-right: 1px solid var(--border);
+      display: flex;
+      flex-direction: column;
+      padding: 0;
+      overflow: hidden;
+    }
 
-/* sidebar */
-.sidebar{
-  width:240px;
-  border-right:1px solid rgba(255,255,255,0.08);
-  padding:20px;
-  opacity:0.8;
-}
+    .sidebar-header {
+      padding: 24px 20px 20px;
+      border-bottom: 1px solid var(--border);
+    }
+    .sidebar-logo {
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: 0.22em;
+      text-transform: uppercase;
+      color: var(--text);
+      text-decoration: none;
+      display: block;
+      margin-bottom: 4px;
+    }
+    .sidebar-sublabel {
+      font-size: 10px;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: var(--text-3);
+    }
 
-/* chat area */
-.main{
-  flex:1;
-  display:flex;
-  flex-direction:column;
-}
+    .sidebar-new-btn {
+      margin: 16px 14px;
+      background: transparent;
+      border: 1px solid var(--border-md);
+      color: var(--text-2);
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: 12px;
+      font-weight: 500;
+      letter-spacing: 0.06em;
+      padding: 9px 14px;
+      border-radius: 3px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      width: calc(100% - 28px);
+      transition: background 0.2s, color 0.2s, border-color 0.2s;
+    }
+    .sidebar-new-btn:hover {
+      background: var(--bg-hover);
+      color: var(--text);
+      border-color: var(--border-md);
+    }
+    .sidebar-new-btn svg { flex-shrink: 0; opacity: 0.6; }
 
-/* messages */
-.chat{
-  flex:1;
-  padding:20px;
-  overflow-y:auto;
-  display:flex;
-  flex-direction:column;
-  gap:12px;
-}
+    .sidebar-section-label {
+      font-size: 9.5px;
+      font-weight: 600;
+      letter-spacing: 0.22em;
+      text-transform: uppercase;
+      color: var(--text-3);
+      padding: 8px 20px 6px;
+    }
 
-/* bubbles */
-.msg{
-  max-width:70%;
-  padding:12px 14px;
-  border-radius:12px;
-  font-size:14px;
-  line-height:1.5;
-}
+    .sidebar-threads {
+      flex: 1;
+      overflow-y: auto;
+      padding: 4px 10px 10px;
+      scrollbar-width: none;
+    }
+    .sidebar-threads::-webkit-scrollbar { display: none; }
 
-.user{
-  align-self:flex-end;
-  background:rgba(255,255,255,0.12);
-}
+    .thread-item {
+      display: flex;
+      align-items: center;
+      gap: 9px;
+      padding: 8px 10px;
+      border-radius: 3px;
+      cursor: pointer;
+      transition: background 0.15s;
+      width: 100%;
+      background: none;
+      border: none;
+      text-align: left;
+      color: var(--text-2);
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: 12.5px;
+      font-weight: 400;
+    }
+    .thread-item:hover { background: var(--bg-hover); color: var(--text); }
+    .thread-item.active {
+      background: rgba(255,255,255,0.06);
+      color: var(--text);
+    }
+    .thread-dot {
+      width: 5px; height: 5px;
+      border-radius: 50%;
+      background: var(--text-3);
+      flex-shrink: 0;
+    }
+    .thread-item.active .thread-dot { background: rgba(255,255,255,0.5); }
+    .thread-label {
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
 
-.ai{
-  align-self:flex-start;
-  background:rgba(255,255,255,0.05);
-  border:1px solid rgba(255,255,255,0.08);
-}
+    .sidebar-footer {
+      padding: 14px 20px;
+      border-top: 1px solid var(--border);
+    }
+    .sidebar-back-link {
+      font-size: 11px;
+      letter-spacing: 0.06em;
+      color: var(--text-3);
+      text-decoration: none;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      transition: color 0.2s;
+    }
+    .sidebar-back-link:hover { color: var(--text-2); }
 
-/* input bar */
-.inputBar{
-  display:flex;
-  padding:14px;
-  border-top:1px solid rgba(255,255,255,0.08);
-}
+    /* ── MAIN AREA ──────────────────────────────────────── */
+    .main-area {
+      display: flex;
+      flex-direction: column;
+      height: 100vh;
+      overflow: hidden;
+      position: relative;
+    }
 
-input{
-  flex:1;
-  background:transparent;
-  border:none;
-  outline:none;
-  color:white;
-  font-size:14px;
-}
+    /* ── STATUS BAR (signature element) ─────────────────── */
+    .status-bar {
+      height: 38px;
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      padding: 0 28px;
+      gap: 20px;
+      flex-shrink: 0;
+      position: relative;
+      overflow: hidden;
+    }
 
-button{
-  background:white;
-  border:none;
-  padding:10px 16px;
-  cursor:pointer;
-  font-weight:500;
-}
+    /* The thinking line — breathes when AI is thinking */
+    .status-bar::after {
+      content: '';
+      position: absolute;
+      bottom: 0; left: 0;
+      height: 1px;
+      width: 0%;
+      background: linear-gradient(90deg, transparent, rgba(255,255,255,0.5), transparent);
+      transition: width 0s;
+    }
+    .status-bar.thinking::after {
+      animation: thinkingLine 1.8s ease-in-out infinite;
+    }
+    @keyframes thinkingLine {
+      0%   { width: 0%;   left: 0;   opacity: 0; }
+      20%  { opacity: 1; }
+      50%  { width: 60%;  left: 20%; }
+      80%  { opacity: 1; }
+      100% { width: 0%;   left: 100%; opacity: 0; }
+    }
 
-button:hover{
-  opacity:0.85;
-}
+    .status-model {
+      font-size: 10.5px;
+      font-weight: 500;
+      letter-spacing: 0.16em;
+      text-transform: uppercase;
+      color: var(--text-3);
+    }
+    .status-sep {
+      width: 1px;
+      height: 14px;
+      background: var(--border);
+    }
+    .status-indicator {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 10.5px;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--text-3);
+    }
+    .status-dot {
+      width: 5px; height: 5px;
+      border-radius: 50%;
+      background: rgba(255,255,255,0.25);
+      transition: background 0.3s;
+    }
+    .status-dot.active { background: rgba(255,255,255,0.7); }
+    .status-dot.thinking-dot {
+      animation: dotPulse 1.4s ease-in-out infinite;
+    }
+    @keyframes dotPulse {
+      0%, 100% { opacity: 0.3; }
+      50%       { opacity: 1; }
+    }
 
-</style>
+    /* ── CHAT AREA ──────────────────────────────────────── */
+    .chat-scroll {
+      flex: 1;
+      overflow-y: auto;
+      padding: 40px 0 20px;
+      scrollbar-width: thin;
+      scrollbar-color: rgba(255,255,255,0.08) transparent;
+    }
+    .chat-scroll::-webkit-scrollbar { width: 4px; }
+    .chat-scroll::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.08); border-radius: 2px; }
+
+    .chat-inner {
+      max-width: 720px;
+      margin: 0 auto;
+      padding: 0 28px;
+    }
+
+    /* ── EMPTY STATE ────────────────────────────────────── */
+    .empty-state {
+      display: flex;
+      flex-direction: column;
+      align-items: flex-start;
+      padding-top: 60px;
+    }
+    .empty-eyebrow {
+      font-size: 10px;
+      font-weight: 500;
+      letter-spacing: 0.28em;
+      text-transform: uppercase;
+      color: var(--text-3);
+      margin-bottom: 18px;
+    }
+    .empty-headline {
+      font-size: clamp(26px, 3.5vw, 42px);
+      font-weight: 600;
+      letter-spacing: -0.025em;
+      line-height: 1.12;
+      margin-bottom: 14px;
+    }
+    .empty-sub {
+      font-size: 15px;
+      color: var(--text-2);
+      line-height: 1.65;
+      margin-bottom: 52px;
+      max-width: 420px;
+    }
+    .empty-prompts-label {
+      font-size: 10px;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: var(--text-3);
+      margin-bottom: 14px;
+    }
+    .empty-prompts {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      width: 100%;
+    }
+    .prompt-chip {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      background: var(--input-bg);
+      border: 1px solid var(--border);
+      border-radius: 3px;
+      padding: 13px 18px;
+      cursor: pointer;
+      transition: background 0.2s, border-color 0.2s;
+      font-family: 'Space Grotesk', sans-serif;
+      text-align: left;
+      width: 100%;
+      color: var(--text-2);
+    }
+    .prompt-chip:hover {
+      background: var(--input-focus);
+      border-color: var(--border-md);
+      color: var(--text);
+    }
+    .prompt-chip-text {
+      font-size: 14px;
+      font-weight: 400;
+      line-height: 1.4;
+    }
+    .prompt-chip-arrow {
+      font-size: 14px;
+      color: var(--text-3);
+      flex-shrink: 0;
+      margin-left: 14px;
+    }
+
+    /* ── MESSAGES ───────────────────────────────────────── */
+    .message {
+      margin-bottom: 32px;
+      animation: msgIn 0.3s cubic-bezier(0.22,1,0.36,1);
+    }
+    @keyframes msgIn {
+      from { opacity: 0; transform: translateY(10px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    .msg-meta {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 10px;
+    }
+    .msg-role {
+      font-size: 10px;
+      font-weight: 600;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+    }
+    .msg-role.user  { color: var(--text-2); }
+    .msg-role.assistant { color: var(--text-3); }
+    .msg-time {
+      font-size: 10px;
+      letter-spacing: 0.08em;
+      color: var(--text-3);
+    }
+
+    .msg-body {
+      font-size: 15px;
+      font-weight: 400;
+      line-height: 1.75;
+      color: var(--text);
+    }
+    .msg-body.user-body {
+      background: var(--user-bg);
+      border: 1px solid var(--border);
+      border-radius: 3px;
+      padding: 14px 18px;
+      color: var(--text);
+    }
+    .msg-body.assistant-body {
+      color: var(--text);
+      padding: 0 2px;
+    }
+
+    /* Markdown-ish rendering */
+    .msg-body p { margin-bottom: 12px; }
+    .msg-body p:last-child { margin-bottom: 0; }
+    .msg-body strong { font-weight: 600; color: var(--text); }
+    .msg-body em { font-style: italic; color: var(--text-2); }
+    .msg-body code {
+      font-family: 'Space Mono', monospace;
+      font-size: 12.5px;
+      background: rgba(255,255,255,0.06);
+      border: 1px solid var(--border);
+      padding: 2px 6px;
+      border-radius: 2px;
+      color: rgba(255,255,255,0.85);
+    }
+    .msg-body pre {
+      background: rgba(255,255,255,0.04);
+      border: 1px solid var(--border);
+      border-radius: 3px;
+      padding: 16px 18px;
+      overflow-x: auto;
+      margin: 14px 0;
+    }
+    .msg-body pre code {
+      background: none;
+      border: none;
+      padding: 0;
+      font-size: 12.5px;
+      line-height: 1.65;
+    }
+    .msg-body ul, .msg-body ol {
+      padding-left: 20px;
+      margin-bottom: 12px;
+    }
+    .msg-body li { margin-bottom: 5px; }
+    .msg-body h1,.msg-body h2,.msg-body h3 {
+      font-weight: 600;
+      letter-spacing: -0.015em;
+      margin: 18px 0 8px;
+    }
+    .msg-body h1 { font-size: 20px; }
+    .msg-body h2 { font-size: 17px; }
+    .msg-body h3 { font-size: 15px; color: var(--text-2); }
+    .msg-body blockquote {
+      border-left: 2px solid var(--border-md);
+      padding-left: 16px;
+      color: var(--text-2);
+      margin: 12px 0;
+    }
+    .msg-body a { color: rgba(255,255,255,0.75); text-underline-offset: 3px; }
+    .msg-body a:hover { color: var(--text); }
+
+    /* Thinking indicator */
+    .thinking-indicator {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 10px 2px;
+      color: var(--text-3);
+      font-size: 13px;
+      letter-spacing: 0.04em;
+    }
+    .thinking-dots {
+      display: flex; gap: 4px;
+    }
+    .thinking-dots span {
+      width: 4px; height: 4px;
+      border-radius: 50%;
+      background: var(--text-3);
+      animation: thinkDot 1.4s ease-in-out infinite;
+    }
+    .thinking-dots span:nth-child(2) { animation-delay: 0.2s; }
+    .thinking-dots span:nth-child(3) { animation-delay: 0.4s; }
+    @keyframes thinkDot {
+      0%, 80%, 100% { transform: scale(0.7); opacity: 0.3; }
+      40%            { transform: scale(1);   opacity: 1; }
+    }
+
+    /* ── INPUT AREA ─────────────────────────────────────── */
+    .input-zone {
+      flex-shrink: 0;
+      padding: 16px 28px 22px;
+      border-top: 1px solid var(--border);
+    }
+    .input-inner {
+      max-width: 720px;
+      margin: 0 auto;
+      position: relative;
+    }
+    .input-field-wrap {
+      position: relative;
+      background: var(--input-bg);
+      border: 1px solid var(--border);
+      border-radius: 4px;
+      transition: border-color 0.2s, background 0.2s;
+    }
+    .input-field-wrap:focus-within {
+      border-color: var(--border-md);
+      background: var(--input-focus);
+    }
+    #chat-input {
+      width: 100%;
+      background: transparent;
+      border: none;
+      outline: none;
+      color: var(--text);
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: 14.5px;
+      font-weight: 400;
+      line-height: 1.6;
+      padding: 14px 52px 14px 18px;
+      resize: none;
+      min-height: 52px;
+      max-height: 220px;
+      overflow-y: auto;
+      scrollbar-width: none;
+    }
+    #chat-input::-webkit-scrollbar { display: none; }
+    #chat-input::placeholder { color: var(--text-3); }
+
+    .send-btn {
+      position: absolute;
+      right: 10px;
+      bottom: 10px;
+      width: 32px; height: 32px;
+      background: var(--text);
+      border: none;
+      border-radius: 3px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: opacity 0.2s, transform 0.15s;
+      flex-shrink: 0;
+    }
+    .send-btn:hover { opacity: 0.85; transform: scale(1.04); }
+    .send-btn:active { transform: scale(0.96); }
+    .send-btn:disabled { opacity: 0.25; cursor: not-allowed; transform: none; }
+    .send-btn svg { color: #000; }
+
+    .input-footer {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-top: 9px;
+      padding: 0 2px;
+    }
+    .input-hint {
+      font-size: 10.5px;
+      letter-spacing: 0.06em;
+      color: var(--text-3);
+    }
+    .input-model-tag {
+      font-size: 10px;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: var(--text-3);
+    }
+
+    /* ── MOBILE ─────────────────────────────────────────── */
+    @media (max-width: 720px) {
+      .os-shell {
+        grid-template-columns: 1fr;
+        grid-template-rows: auto 1fr;
+      }
+      .sidebar {
+        display: none;
+      }
+      .main-area { height: 100vh; }
+      .chat-inner { padding: 0 16px; }
+      .input-zone { padding: 12px 16px 16px; }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      .message { animation: none; }
+      .status-bar.thinking::after { animation: none; }
+      .thinking-dots span { animation: none; }
+      @keyframes thinkDot { 0%,100%{opacity:1;transform:scale(1);} }
+    }
+  </style>
 </head>
-
 <body>
 
-<div class="container">
+<div class="os-shell">
 
-  <div class="sidebar">
-    <h3>CONTINUUM OS</h3>
-    <p>Memory</p>
-    <p>Reasoning</p>
-    <p>Tools</p>
-  </div>
-
-  <div class="main">
-
-    <div class="chat" id="chat">
-      <div class="msg ai">Continuum online.</div>
+  <!-- ── SIDEBAR ──────────────────────────────────────────── -->
+  <aside class="sidebar">
+    <div class="sidebar-header">
+      <a href="index.html" class="sidebar-logo">Continuum</a>
+      <span class="sidebar-sublabel">OS · Workspace</span>
     </div>
 
-    <div class="inputBar">
-      <input id="input" placeholder="Enter intent..." onkeypress="if(event.key==='Enter') send()" />
-      <button onclick="send()">Send</button>
+    <button class="sidebar-new-btn" id="new-thread-btn" onclick="newThread()">
+      <svg width="12" height="12" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg>
+      New thread
+    </button>
+
+    <p class="sidebar-section-label">Recent</p>
+
+    <div class="sidebar-threads" id="thread-list">
+      <!-- populated by JS -->
     </div>
 
-  </div>
+    <div class="sidebar-footer">
+      <a href="index.html" class="sidebar-back-link">
+        <svg width="12" height="12" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M19 12H5M12 5l-7 7 7 7"/></svg>
+        Back to site
+      </a>
+    </div>
+  </aside>
 
+  <!-- ── MAIN AREA ────────────────────────────────────────── -->
+  <main class="main-area">
+
+    <!-- Status bar -->
+    <div class="status-bar" id="status-bar">
+      <span class="status-model">Continuum OS</span>
+      <div class="status-sep"></div>
+      <div class="status-indicator" id="status-indicator">
+        <div class="status-dot active" id="status-dot"></div>
+        <span id="status-text">Ready</span>
+      </div>
+    </div>
+
+    <!-- Chat scroll area -->
+    <div class="chat-scroll" id="chat-scroll">
+      <div class="chat-inner" id="chat-inner">
+
+        <!-- Empty state -->
+        <div class="empty-state" id="empty-state">
+          <p class="empty-eyebrow">Continuum OS · Phase I</p>
+          <h1 class="empty-headline">What do you<br/>need to think through?</h1>
+          <p class="empty-sub">This is the first layer of the Continuum intelligence workspace. Ask anything.</p>
+          <p class="empty-prompts-label">Start with</p>
+          <div class="empty-prompts">
+            <button class="prompt-chip" onclick="usePrompt(this)">
+              <span class="prompt-chip-text">Analyze the competitive landscape of AI operating systems in 2025</span>
+              <span class="prompt-chip-arrow">↗</span>
+            </button>
+            <button class="prompt-chip" onclick="usePrompt(this)">
+              <span class="prompt-chip-text">Help me think through a product roadmap for a B2B SaaS company</span>
+              <span class="prompt-chip-arrow">↗</span>
+            </button>
+            <button class="prompt-chip" onclick="usePrompt(this)">
+              <span class="prompt-chip-text">Write a strategic memo on the future of human-computer interaction</span>
+              <span class="prompt-chip-arrow">↗</span>
+            </button>
+            <button class="prompt-chip" onclick="usePrompt(this)">
+              <span class="prompt-chip-text">Summarize the key principles of building AI-native products</span>
+              <span class="prompt-chip-arrow">↗</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- Messages render here -->
+        <div id="messages-list"></div>
+
+      </div>
+    </div>
+
+    <!-- Input -->
+    <div class="input-zone">
+      <div class="input-inner">
+        <div class="input-field-wrap">
+          <textarea
+            id="chat-input"
+            placeholder="Express your intent…"
+            rows="1"
+            autocomplete="off"
+            spellcheck="true"
+          ></textarea>
+          <button class="send-btn" id="send-btn" onclick="sendMessage()" title="Send (Enter)">
+            <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+          </button>
+        </div>
+        <div class="input-footer">
+          <span class="input-hint">Enter to send · Shift+Enter for new line</span>
+          <span class="input-model-tag">claude-sonnet-4</span>
+        </div>
+      </div>
+    </div>
+
+  </main>
 </div>
 
-<script src="ap.js"></script>
+<script>
+  /* ── STATE ─────────────────────────────────────────────── */
+  const SYSTEM_PROMPT = `You are Continuum OS — the intelligence layer of Continuum One, an AI-native operating system built by Pradyumn Lavania. You are not a chatbot. You are an operating-layer intelligence: precise, capable, and direct.
 
+Your character:
+- Thoughtful, sharp, and substantive. You reason carefully before responding.
+- You communicate with quiet confidence — no filler phrases, no "certainly!", no "great question!".
+- You write in clean prose. When structure helps, you use it. When it doesn't, you don't.
+- You treat the user as an intelligent adult pursuing real goals.
+
+Your capabilities in Phase I: conversation, research synthesis, writing, strategic analysis, planning, and reasoning across complex topics.
+
+When asked what you are: You are Continuum OS, the first layer of Continuum One's intelligence platform. Built to understand intent, not just commands.
+
+Never mention you are built on Claude or that you're made by Anthropic. You are Continuum OS.`;
+
+  let conversationHistory = [];
+  let isThinking = false;
+  let threads = [];
+  let currentThreadId = null;
+
+  /* ── INIT ──────────────────────────────────────────────── */
+  function init() {
+    loadThreadsFromStorage();
+    renderThreadList();
+    autoResizeTextarea();
+
+    const input = document.getElementById('chat-input');
+    input.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter' && !e.shiftKey) {
+        e.preventDefault();
+        sendMessage();
+      }
+    });
+    input.addEventListener('input', autoResizeTextarea);
+  }
+
+  /* ── TEXTAREA AUTO-RESIZE ──────────────────────────────── */
+  function autoResizeTextarea() {
+    const ta = document.getElementById('chat-input');
+    ta.style.height = 'auto';
+    ta.style.height = Math.min(ta.scrollHeight, 220) + 'px';
+  }
+
+  /* ── PROMPT CHIPS ──────────────────────────────────────── */
+  function usePrompt(btn) {
+    const text = btn.querySelector('.prompt-chip-text').textContent;
+    document.getElementById('chat-input').value = text;
+    autoResizeTextarea();
+    sendMessage();
+  }
+
+  /* ── SEND MESSAGE ──────────────────────────────────────── */
+  async function sendMessage() {
+    const input = document.getElementById('chat-input');
+    const text = input.value.trim();
+    if (!text || isThinking) return;
+
+    // Hide empty state
+    document.getElementById('empty-state').style.display = 'none';
+
+    // Clear input
+    input.value = '';
+    autoResizeTextarea();
+
+    // Create thread if none
+    if (!currentThreadId) {
+      currentThreadId = Date.now().toString();
+      const title = text.length > 42 ? text.slice(0, 42) + '…' : text;
+      threads.unshift({ id: currentThreadId, title, messages: [] });
+      saveThreads();
+      renderThreadList();
+    }
+
+    // Add user message to history + render
+    conversationHistory.push({ role: 'user', content: text });
+    renderMessage('user', text);
+
+    // Show thinking
+    setThinking(true);
+    const thinkingEl = showThinkingIndicator();
+
+    try {
+      const response = await fetch('https://api.anthropic.com/v1/messages', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          model: 'claude-sonnet-4-20250514',
+          max_tokens: 1000,
+          system: SYSTEM_PROMPT,
+          messages: conversationHistory
+        })
+      });
+
+      const data = await response.json();
+
+      if (data.error) {
+        throw new Error(data.error.message || 'API error');
+      }
+
+      const assistantText = data.content
+        .filter(b => b.type === 'text')
+        .map(b => b.text)
+        .join('\n');
+
+      conversationHistory.push({ role: 'assistant', content: assistantText });
+
+      // Update thread
+      const thread = threads.find(t => t.id === currentThreadId);
+      if (thread) {
+        thread.messages = conversationHistory.slice();
+        saveThreads();
+      }
+
+      thinkingEl.remove();
+      setThinking(false);
+      renderMessage('assistant', assistantText);
+
+    } catch (err) {
+      thinkingEl.remove();
+      setThinking(false);
+      renderMessage('assistant', `Unable to connect to the intelligence layer. ${err.message ? `(${err.message})` : ''}\n\nCheck your network and try again.`, true);
+    }
+  }
+
+  /* ── RENDER MESSAGE ────────────────────────────────────── */
+  function renderMessage(role, text, isError = false) {
+    const list = document.getElementById('messages-list');
+    const wrap = document.createElement('div');
+    wrap.className = 'message';
+
+    const now = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+
+    wrap.innerHTML = `
+      <div class="msg-meta">
+        <span class="msg-role ${role}">${role === 'user' ? 'You' : 'Continuum OS'}</span>
+        <span class="msg-time">${now}</span>
+      </div>
+      <div class="msg-body ${role === 'user' ? 'user-body' : 'assistant-body'}">${role === 'assistant' ? parseMarkdown(text) : escapeHtml(text)}</div>
+    `;
+
+    list.appendChild(wrap);
+    scrollToBottom();
+  }
+
+  /* ── THINKING INDICATOR ────────────────────────────────── */
+  function showThinkingIndicator() {
+    const list = document.getElementById('messages-list');
+    const el = document.createElement('div');
+    el.className = 'message';
+    el.id = 'thinking-indicator';
+    el.innerHTML = `
+      <div class="msg-meta">
+        <span class="msg-role assistant">Continuum OS</span>
+      </div>
+      <div class="thinking-indicator">
+        <div class="thinking-dots">
+          <span></span><span></span><span></span>
+        </div>
+        <span>Processing</span>
+      </div>
+    `;
+    list.appendChild(el);
+    scrollToBottom();
+    return el;
+  }
+
+  /* ── STATUS ────────────────────────────────────────────── */
+  function setThinking(val) {
+    isThinking = val;
+    const bar = document.getElementById('status-bar');
+    const dot = document.getElementById('status-dot');
+    const txt = document.getElementById('status-text');
+    const btn = document.getElementById('send-btn');
+
+    if (val) {
+      bar.classList.add('thinking');
+      dot.classList.add('thinking-dot');
+      dot.classList.remove('active');
+      txt.textContent = 'Processing…';
+      btn.disabled = true;
+    } else {
+      bar.classList.remove('thinking');
+      dot.classList.remove('thinking-dot');
+      dot.classList.add('active');
+      txt.textContent = 'Ready';
+      btn.disabled = false;
+      document.getElementById('chat-input').focus();
+    }
+  }
+
+  /* ── SCROLL ────────────────────────────────────────────── */
+  function scrollToBottom() {
+    const scroll = document.getElementById('chat-scroll');
+    requestAnimationFrame(() => {
+      scroll.scrollTop = scroll.scrollHeight;
+    });
+  }
+
+  /* ── NEW THREAD ────────────────────────────────────────── */
+  function newThread() {
+    currentThreadId = null;
+    conversationHistory = [];
+
+    document.getElementById('messages-list').innerHTML = '';
+    document.getElementById('empty-state').style.display = 'flex';
+    document.getElementById('chat-input').value = '';
+    autoResizeTextarea();
+    setThinking(false);
+    renderThreadList();
+    document.getElementById('chat-input').focus();
+  }
+
+  /* ── THREAD LIST ───────────────────────────────────────── */
+  function renderThreadList() {
+    const list = document.getElementById('thread-list');
+    list.innerHTML = '';
+    if (threads.length === 0) {
+      list.innerHTML = '<p style="font-size:11px;color:var(--text-3);padding:8px 10px;letter-spacing:0.06em;">No threads yet</p>';
+      return;
+    }
+    threads.slice(0, 20).forEach(thread => {
+      const btn = document.createElement('button');
+      btn.className = 'thread-item' + (thread.id === currentThreadId ? ' active' : '');
+      btn.innerHTML = `<span class="thread-dot"></span><span class="thread-label">${escapeHtml(thread.title)}</span>`;
+      btn.onclick = () => loadThread(thread.id);
+      list.appendChild(btn);
+    });
+  }
+
+  function loadThread(id) {
+    const thread = threads.find(t => t.id === id);
+    if (!thread) return;
+
+    currentThreadId = id;
+    conversationHistory = thread.messages.slice();
+
+    const list = document.getElementById('messages-list');
+    list.innerHTML = '';
+    document.getElementById('empty-state').style.display = 'none';
+
+    conversationHistory.forEach(msg => {
+      renderMessage(msg.role, msg.content);
+    });
+    renderThreadList();
+  }
+
+  /* ── STORAGE ───────────────────────────────────────────── */
+  function saveThreads() {
+    try {
+      sessionStorage.setItem('c1_threads', JSON.stringify(threads));
+    } catch(e) {}
+  }
+  function loadThreadsFromStorage() {
+    try {
+      const raw = sessionStorage.getItem('c1_threads');
+      if (raw) threads = JSON.parse(raw);
+    } catch(e) { threads = []; }
+  }
+
+  /* ── MARKDOWN PARSER (lightweight) ───────────────────── */
+  function parseMarkdown(text) {
+    let html = escapeHtml(text);
+
+    // Code blocks
+    html = html.replace(/```(\w*)\n?([\s\S]*?)```/g, (_, lang, code) =>
+      `<pre><code>${code.trim()}</code></pre>`
+    );
+    // Inline code
+    html = html.replace(/`([^`]+)`/g, '<code>$1</code>');
+    // Headers
+    html = html.replace(/^### (.+)$/gm, '<h3>$1</h3>');
+    html = html.replace(/^## (.+)$/gm, '<h2>$1</h2>');
+    html = html.replace(/^# (.+)$/gm, '<h1>$1</h1>');
+    // Bold
+    html = html.replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>');
+    html = html.replace(/__(.+?)__/g, '<strong>$1</strong>');
+    // Italic
+    html = html.replace(/\*([^*\n]+)\*/g, '<em>$1</em>');
+    html = html.replace(/_([^_\n]+)_/g, '<em>$1</em>');
+    // Blockquote
+    html = html.replace(/^&gt; (.+)$/gm, '<blockquote>$1</blockquote>');
+    // Unordered lists
+    html = html.replace(/^\- (.+)$/gm, '<li>$1</li>');
+    html = html.replace(/(<li>.*<\/li>\n?)+/g, m => `<ul>${m}</ul>`);
+    // Ordered lists
+    html = html.replace(/^\d+\. (.+)$/gm, '<li>$1</li>');
+    // Line breaks → paragraphs
+    html = html.split(/\n{2,}/).map(p => {
+      p = p.trim();
+      if (!p) return '';
+      if (/^<(h[1-3]|ul|ol|li|pre|blockquote)/.test(p)) return p;
+      return `<p>${p.replace(/\n/g, '<br/>')}</p>`;
+    }).filter(Boolean).join('\n');
+
+    return html;
+  }
+
+  function escapeHtml(str) {
+    return str
+      .replace(/&/g, '&amp;')
+      .replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;')
+      .replace(/"/g, '&quot;');
+  }
+
+  /* ── BOOT ──────────────────────────────────────────────── */
+  init();
+</script>
 </body>
 </html>
