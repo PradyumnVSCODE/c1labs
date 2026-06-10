@@ -963,6 +963,21 @@ musicBtn.addEventListener("click", () => {
   }
 
 });
+
+    let fadeOut = setInterval(() => {
+
+  if(music.volume > 0.02){
+    music.volume -= 0.02;
+  } else {
+
+    clearInterval(fadeOut);
+
+    music.pause();
+
+    window.location.href = "os.html";
+  }
+
+}, 40);
   </script>
 </body>
 </html>
