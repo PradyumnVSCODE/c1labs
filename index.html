@@ -621,6 +621,46 @@
       letter-spacing: 0.03em;
     }
 
+    #musicControl{
+  position:fixed;
+  bottom:28px;
+  right:28px;
+  z-index:9999;
+
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  gap:6px;
+}
+
+#musicBtn{
+  width:56px;
+  height:56px;
+
+  border:none;
+  border-radius:50%;
+
+  background:rgba(255,255,255,.08);
+  backdrop-filter:blur(20px);
+
+  color:white;
+  font-size:22px;
+  cursor:pointer;
+
+  transition:.3s;
+}
+
+#musicBtn:hover{
+  transform:scale(1.08);
+}
+
+#musicControl span{
+  font-size:11px;
+  letter-spacing:.15em;
+  text-transform:uppercase;
+  color:rgba(255,255,255,.6);
+}
+
     /* ─── RESPONSIVE ──────────────────────────────────────── */
     @media (max-width: 900px) {
       nav { padding: 22px 28px; }
@@ -655,6 +695,15 @@
 </head>
 <body>
 
+  <audio id="bgMusic" loop>
+  <source src="assets/ui music.mp3" type="audio/mpeg">
+</audio>
+
+<div id="musicControl">
+  <button id="musicBtn">🔊</button>
+  <span>Music</span>
+</div>
+
   <!-- NAV -->
   <nav id="nav">
    <a class="nav-logo" href="#">
@@ -665,7 +714,9 @@
       <li><a href="#vision">Vision</a></li>
       <li><a href="#roadmap">Roadmap</a></li>
       <li><a href="#founder">Founder</a></li>
-      <li><a href="os.html" class="nav-cta">Launch OS</a></li>
+      <li><a href="os.html" class="nav-cta launch-os">
+  Launch OS
+</a></li>
     </ul>
   </nav>
 
@@ -680,7 +731,9 @@
       Building the operating layer for the age of intelligence.
     </p>
     <div class="hero-buttons reveal reveal-delay-3">
-      <a href="os.html" class="btn-primary">Launch Continuum OS</a>
+     <a href="os.html" class="btn-primary launch-os">
+  Launch Continuum OS
+</a>
       <a href="https://instagram.com/continuumonelabs" target="_blank" rel="noopener" class="btn-secondary">Follow @continuumonelabs</a>
     </div>
     <div class="hero-scroll-hint">
@@ -881,6 +934,23 @@
     reveals.forEach(el => {
       if (!el.closest('.hero')) observer.observe(el);
     });
+
+    document.querySelectorAll(".launch-os").forEach(btn => {
+
+  btn.addEventListener("click", function(e){
+
+    e.preventDefault();
+
+    music.pause();
+    music.currentTime = 0;
+
+    setTimeout(() => {
+      window.location.href = "os.html";
+    }, 250);
+
+  });
+
+});
   </script>
 </body>
 </html>
