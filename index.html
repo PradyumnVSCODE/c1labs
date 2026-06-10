@@ -935,20 +935,32 @@
       if (!el.closest('.hero')) observer.observe(el);
     });
 
-    document.querySelectorAll(".launch-os").forEach(btn => {
+   const music = document.getElementById("bgMusic");
+const musicBtn = document.getElementById("musicBtn");
 
-  btn.addEventListener("click", function(e){
+let playing = false;
 
-    e.preventDefault();
+music.volume = 0.35;
+
+musicBtn.addEventListener("click", () => {
+
+  if (!playing) {
+
+    music.play();
+
+    musicBtn.textContent = "🔊";
+
+    playing = true;
+
+  } else {
 
     music.pause();
-    music.currentTime = 0;
 
-    setTimeout(() => {
-      window.location.href = "os.html";
-    }, 250);
+    musicBtn.textContent = "🔇";
 
-  });
+    playing = false;
+
+  }
 
 });
   </script>
