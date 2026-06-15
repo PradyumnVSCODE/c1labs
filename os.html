@@ -1,0 +1,336 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>ContinuumOS Prototype-2 — ContinuumOne</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet" />
+
+  <style>
+    *, *::before, *::after {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    :root {
+      --bg: #000000;
+      --text-primary: #ffffff;
+      --text-secondary: rgba(255, 255, 255, 0.6);
+      --text-muted: rgba(255, 255, 255, 0.25);
+      --glow-white: rgba(255, 255, 255, 0.08);
+      --glow-blue: rgba(160, 200, 255, 0.12);
+      --border-faint: rgba(255, 255, 255, 0.07);
+      --border-mid: rgba(255, 255, 255, 0.12);
+    }
+
+    html, body {
+      width: 100%;
+      height: 100%;
+      background: var(--bg);
+      color: var(--text-primary);
+      font-family: 'Space Grotesk', sans-serif;
+      overflow: hidden;
+    }
+
+    /* ── Noise / grid background ── */
+    body::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background-image:
+        linear-gradient(rgba(255,255,255,0.022) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255,255,255,0.022) 1px, transparent 1px);
+      background-size: 60px 60px;
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    /* Radial ambient bloom */
+    body::after {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background:
+        radial-gradient(ellipse 55% 45% at 50% 52%, rgba(160, 200, 255, 0.055) 0%, transparent 70%),
+        radial-gradient(ellipse 30% 30% at 50% 50%, rgba(255,255,255,0.03) 0%, transparent 60%);
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    /* ── Page wrapper ── */
+    .page {
+      position: relative;
+      z-index: 1;
+      width: 100vw;
+      height: 100vh;
+      display: flex;
+      flex-direction: column;
+      opacity: 0;
+      animation: fadeIn 1.2s cubic-bezier(0.22, 1, 0.36, 1) 0.1s forwards;
+    }
+
+    @keyframes fadeIn {
+      to { opacity: 1; }
+    }
+
+    /* ── Header / Nav ── */
+    header {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      z-index: 10;
+      padding: 28px 40px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      border-bottom: 1px solid var(--border-faint);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      background: rgba(0, 0, 0, 0.45);
+      animation: slideDown 0.9s cubic-bezier(0.22, 1, 0.36, 1) 0.2s both;
+    }
+
+    @keyframes slideDown {
+      from { transform: translateY(-16px); opacity: 0; }
+      to   { transform: translateY(0);     opacity: 1; }
+    }
+
+    .logo-link {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      text-decoration: none;
+      color: var(--text-primary);
+      transition: opacity 0.25s;
+    }
+
+    .logo-link:hover {
+      opacity: 0.75;
+    }
+
+    .logo-img {
+      width: 34px;
+      height: 34px;
+      object-fit: contain;
+      filter: brightness(1);
+    }
+
+    .logo-name {
+      font-size: 14px;
+      font-weight: 500;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      color: var(--text-primary);
+    }
+
+    .header-badge {
+      font-family: 'Space Mono', monospace;
+      font-size: 10px;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: var(--text-muted);
+      border: 1px solid var(--border-faint);
+      padding: 5px 12px;
+      border-radius: 2px;
+    }
+
+    /* ── Main center content ── */
+    main {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      padding: 0 24px;
+      gap: 0;
+    }
+
+    /* Eyebrow label */
+    .eyebrow {
+      font-family: 'Space Mono', monospace;
+      font-size: 10px;
+      letter-spacing: 0.22em;
+      text-transform: uppercase;
+      color: var(--text-muted);
+      margin-bottom: 36px;
+      animation: riseUp 0.8s cubic-bezier(0.22, 1, 0.36, 1) 0.55s both;
+    }
+
+    /* Primary heading */
+    .headline {
+      font-size: clamp(52px, 9vw, 110px);
+      font-weight: 700;
+      letter-spacing: -0.03em;
+      line-height: 0.92;
+      color: var(--text-primary);
+      position: relative;
+      cursor: default;
+      animation: riseUp 0.9s cubic-bezier(0.22, 1, 0.36, 1) 0.65s both;
+      transition: text-shadow 0.4s ease;
+    }
+
+    .headline:hover {
+      text-shadow:
+        0 0 40px rgba(255, 255, 255, 0.18),
+        0 0 80px rgba(160, 200, 255, 0.10);
+    }
+
+    /* Divider bar */
+    .divider {
+      width: 1px;
+      height: 48px;
+      background: linear-gradient(to bottom, transparent, rgba(255,255,255,0.18), transparent);
+      margin: 36px auto;
+      animation: riseUp 0.8s cubic-bezier(0.22, 1, 0.36, 1) 0.78s both;
+    }
+
+    /* Sub-text */
+    .subline {
+      font-size: clamp(13px, 1.5vw, 16px);
+      font-weight: 300;
+      letter-spacing: 0.28em;
+      text-transform: uppercase;
+      color: var(--text-secondary);
+      animation: riseUp 0.8s cubic-bezier(0.22, 1, 0.36, 1) 0.88s both;
+    }
+
+    /* Breathing glow orb behind headline */
+    .glow-orb {
+      position: fixed;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      width: 520px;
+      height: 320px;
+      border-radius: 50%;
+      background: radial-gradient(ellipse, rgba(160, 200, 255, 0.06) 0%, transparent 70%);
+      animation: breathe 5s ease-in-out infinite;
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    @keyframes breathe {
+      0%, 100% { transform: translate(-50%, -50%) scale(1);   opacity: 0.7; }
+      50%       { transform: translate(-50%, -50%) scale(1.12); opacity: 1;   }
+    }
+
+    @keyframes riseUp {
+      from { transform: translateY(20px); opacity: 0; }
+      to   { transform: translateY(0);    opacity: 1; }
+    }
+
+    /* ── Status pill (bottom center) ── */
+    .status-bar {
+      position: fixed;
+      bottom: 36px;
+      left: 50%;
+      transform: translateX(-50%);
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 10px 20px;
+      border: 1px solid var(--border-mid);
+      border-radius: 100px;
+      background: rgba(255, 255, 255, 0.03);
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+      animation: riseUp 0.9s cubic-bezier(0.22, 1, 0.36, 1) 1.05s both;
+    }
+
+    .status-dot {
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: rgba(160, 200, 255, 0.7);
+      animation: pulse 2.4s ease-in-out infinite;
+    }
+
+    @keyframes pulse {
+      0%, 100% { opacity: 0.4; transform: scale(1); }
+      50%       { opacity: 1;   transform: scale(1.25); box-shadow: 0 0 8px rgba(160, 200, 255, 0.6); }
+    }
+
+    .status-text {
+      font-family: 'Space Mono', monospace;
+      font-size: 10px;
+      letter-spacing: 0.16em;
+      text-transform: uppercase;
+      color: var(--text-muted);
+    }
+
+    /* ── Corner decorations ── */
+    .corner {
+      position: fixed;
+      width: 18px;
+      height: 18px;
+      pointer-events: none;
+      z-index: 1;
+      opacity: 0.3;
+    }
+
+    .corner--tl { top: 84px;   left: 24px;  border-top: 1px solid #fff;  border-left: 1px solid #fff;  }
+    .corner--tr { top: 84px;   right: 24px; border-top: 1px solid #fff;  border-right: 1px solid #fff; }
+    .corner--bl { bottom: 24px; left: 24px;  border-bottom: 1px solid #fff; border-left: 1px solid #fff;  }
+    .corner--br { bottom: 24px; right: 24px; border-bottom: 1px solid #fff; border-right: 1px solid #fff; }
+
+    /* ── Responsive tweaks ── */
+    @media (max-width: 600px) {
+      header { padding: 20px 20px; }
+      .header-badge { display: none; }
+      .headline { letter-spacing: -0.02em; }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after {
+        animation-duration: 0.01ms !important;
+        transition-duration: 0.01ms !important;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="glow-orb"></div>
+
+  <div class="corner corner--tl"></div>
+  <div class="corner corner--tr"></div>
+  <div class="corner corner--bl"></div>
+  <div class="corner corner--br"></div>
+
+  <div class="page">
+
+    <!-- Header -->
+    <header>
+      <a class="logo-link" href="index.html" aria-label="ContinuumOne — return to home">
+        <img class="logo-img" src="assets/logo.png" alt="ContinuumOne logo" />
+        <span class="logo-name">ContinuumOne</span>
+      </a>
+      <span class="header-badge">ContinuumOS &nbsp;/&nbsp; Prototype-2</span>
+    </header>
+
+    <!-- Main content -->
+    <main>
+      <p class="eyebrow">ContinuumOS &nbsp;&bull;&nbsp; Prototype-2 &nbsp;&bull;&nbsp; Build 0.2.0</p>
+
+      <h1 class="headline">UNDER<br>DEVELOPMENT</h1>
+
+      <div class="divider"></div>
+
+      <p class="subline">Coming Soon&nbsp;&nbsp;&nbsp;&middot;&nbsp;&nbsp;&nbsp;Intent-Driven Computing</p>
+    </main>
+
+    <!-- Status pill -->
+    <div class="status-bar" role="status" aria-label="System status">
+      <span class="status-dot"></span>
+      <span class="status-text">System Initialising</span>
+    </div>
+
+  </div>
+
+</body>
+</html>
