@@ -8,290 +8,542 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet" />
 
-  <style>
-    *, *::before, *::after {
-      box-sizing: border-box;
-      margin: 0;
-      padding: 0;
-    }
+ <!-- Premium Typography: Plus Jakarta Sans -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
 
+<style>
     :root {
-      --bg: #000000;
-      --text-primary: #ffffff;
-      --text-secondary: rgba(255, 255, 255, 0.6);
-      --text-muted: rgba(255, 255, 255, 0.25);
-      --glow-white: rgba(255, 255, 255, 0.08);
-      --glow-blue: rgba(160, 200, 255, 0.12);
-      --border-faint: rgba(255, 255, 255, 0.07);
-      --border-mid: rgba(255, 255, 255, 0.12);
+        --bg-color: #000000;
+        --glass-bg: rgba(255, 255, 255, 0.03);
+        --glass-border: rgba(255, 255, 255, 0.09);
+        --accent-glow: rgba(255, 255, 255, 0.12);
+        --text-primary: #ffffff;
+        --text-secondary: #8a8a8a;
+        --sidebar-width: 260px;
+        --header-height: 60px;
+        --transition-smooth: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
     }
 
-    html, body {
-      width: 100%;
-      height: 100%;
-      background: var(--bg);
-      color: var(--text-primary);
-      font-family: 'Space Grotesk', sans-serif;
-      overflow: hidden;
+    * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+        font-family: 'Plus Jakarta Sans', -apple-system, sans-serif;
     }
 
-    /* ── Noise / grid background ── */
-    body::before {
-      content: '';
-      position: fixed;
-      inset: 0;
-      background-image:
-        linear-gradient(rgba(255,255,255,0.022) 1px, transparent 1px),
-        linear-gradient(90deg, rgba(255,255,255,0.022) 1px, transparent 1px);
-      background-size: 60px 60px;
-      pointer-events: none;
-      z-index: 0;
+    body {
+        background-color: var(--bg-color);
+        color: var(--text-primary);
+        height: 100vh;
+        overflow: hidden;
+        display: flex;
+        flex-direction: column;
+        -webkit-font-smoothing: antialiased;
     }
 
-    /* Radial ambient bloom */
-    body::after {
-      content: '';
-      position: fixed;
-      inset: 0;
-      background:
-        radial-gradient(ellipse 55% 45% at 50% 52%, rgba(160, 200, 255, 0.055) 0%, transparent 70%),
-        radial-gradient(ellipse 30% 30% at 50% 50%, rgba(255,255,255,0.03) 0%, transparent 60%);
-      pointer-events: none;
-      z-index: 0;
+    /* --- Luxury Aesthetic Layers --- */
+    .noise-overlay {
+        position: fixed;
+        top: 0; left: 0; width: 100%; height: 100%;
+        background: url('https://grainy-gradients.vercel.app/noise.svg');
+        opacity: 0.05;
+        pointer-events: none;
+        z-index: 1000;
     }
 
-    /* ── Page wrapper ── */
-    .page {
-      position: relative;
-      z-index: 1;
-      width: 100vw;
-      height: 100vh;
-      display: flex;
-      flex-direction: column;
-      opacity: 0;
-      animation: fadeIn 1.2s cubic-bezier(0.22, 1, 0.36, 1) 0.1s forwards;
+    .grid-overlay {
+        position: fixed;
+        top: 0; left: 0; width: 100%; height: 100%;
+        background-image: 
+            linear-gradient(var(--glass-border) 1px, transparent 1px),
+            linear-gradient(90deg, var(--glass-border) 1px, transparent 1px);
+        background-size: 50px 50px;
+        mask-image: radial-gradient(circle at 50% 50%, black, transparent 90%);
+        z-index: -2;
+        opacity: 0.15;
     }
 
-    @keyframes fadeIn {
-      to { opacity: 1; }
+    .orb-container {
+        position: fixed;
+        width: 100vw;
+        height: 100vh;
+        z-index: -1;
+        overflow: hidden;
+        filter: blur(100px);
     }
 
-    /* ── Header / Nav ── */
-    header {
-      position: fixed;
-      top: 0;
-      left: 0;
-      right: 0;
-      z-index: 10;
-      padding: 28px 40px;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      border-bottom: 1px solid var(--border-faint);
-      backdrop-filter: blur(12px);
-      -webkit-backdrop-filter: blur(12px);
-      background: rgba(0, 0, 0, 0.45);
-      animation: slideDown 0.9s cubic-bezier(0.22, 1, 0.36, 1) 0.2s both;
+    .breathing-orb {
+        position: absolute;
+        border-radius: 50%;
+        background: radial-gradient(circle, var(--accent-glow) 0%, transparent 70%);
+        mix-blend-mode: screen;
+        animation: breathe infinite ease-in-out;
     }
 
-    @keyframes slideDown {
-      from { transform: translateY(-16px); opacity: 0; }
-      to   { transform: translateY(0);     opacity: 1; }
-    }
-
-    .logo-link {
-      display: flex;
-      align-items: center;
-      gap: 12px;
-      text-decoration: none;
-      color: var(--text-primary);
-      transition: opacity 0.25s;
-    }
-
-    .logo-link:hover {
-      opacity: 0.75;
-    }
-
-    .logo-img {
-      width: 34px;
-      height: 34px;
-      object-fit: contain;
-      filter: brightness(1);
-    }
-
-    .logo-name {
-      font-size: 14px;
-      font-weight: 500;
-      letter-spacing: 0.06em;
-      text-transform: uppercase;
-      color: var(--text-primary);
-    }
-
-    .header-badge {
-      font-family: 'Space Mono', monospace;
-      font-size: 10px;
-      letter-spacing: 0.14em;
-      text-transform: uppercase;
-      color: var(--text-muted);
-      border: 1px solid var(--border-faint);
-      padding: 5px 12px;
-      border-radius: 2px;
-    }
-
-    /* ── Main center content ── */
-    main {
-      flex: 1;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      text-align: center;
-      padding: 0 24px;
-      gap: 0;
-    }
-
-    /* Eyebrow label */
-    .eyebrow {
-      font-family: 'Space Mono', monospace;
-      font-size: 10px;
-      letter-spacing: 0.22em;
-      text-transform: uppercase;
-      color: var(--text-muted);
-      margin-bottom: 36px;
-      animation: riseUp 0.8s cubic-bezier(0.22, 1, 0.36, 1) 0.55s both;
-    }
-
-    /* Primary heading */
-    .headline {
-      font-size: clamp(52px, 9vw, 110px);
-      font-weight: 700;
-      letter-spacing: -0.03em;
-      line-height: 0.92;
-      color: var(--text-primary);
-      position: relative;
-      cursor: default;
-      animation: riseUp 0.9s cubic-bezier(0.22, 1, 0.36, 1) 0.65s both;
-      transition: text-shadow 0.4s ease;
-    }
-
-    .headline:hover {
-      text-shadow:
-        0 0 40px rgba(255, 255, 255, 0.18),
-        0 0 80px rgba(160, 200, 255, 0.10);
-    }
-
-    /* Divider bar */
-    .divider {
-      width: 1px;
-      height: 48px;
-      background: linear-gradient(to bottom, transparent, rgba(255,255,255,0.18), transparent);
-      margin: 36px auto;
-      animation: riseUp 0.8s cubic-bezier(0.22, 1, 0.36, 1) 0.78s both;
-    }
-
-    /* Sub-text */
-    .subline {
-      font-size: clamp(13px, 1.5vw, 16px);
-      font-weight: 300;
-      letter-spacing: 0.28em;
-      text-transform: uppercase;
-      color: var(--text-secondary);
-      animation: riseUp 0.8s cubic-bezier(0.22, 1, 0.36, 1) 0.88s both;
-    }
-
-    /* Breathing glow orb behind headline */
-    .glow-orb {
-      position: fixed;
-      top: 50%;
-      left: 50%;
-      transform: translate(-50%, -50%);
-      width: 520px;
-      height: 320px;
-      border-radius: 50%;
-      background: radial-gradient(ellipse, rgba(160, 200, 255, 0.06) 0%, transparent 70%);
-      animation: breathe 5s ease-in-out infinite;
-      pointer-events: none;
-      z-index: 0;
-    }
+    .orb-1 { width: 600px; height: 600px; bottom: -200px; right: -100px; animation-duration: 15s; opacity: 0.5; }
+    .orb-2 { width: 400px; height: 400px; top: -100px; left: -50px; animation-duration: 12s; animation-delay: -2s; opacity: 0.3; }
 
     @keyframes breathe {
-      0%, 100% { transform: translate(-50%, -50%) scale(1);   opacity: 0.7; }
-      50%       { transform: translate(-50%, -50%) scale(1.12); opacity: 1;   }
+        0%, 100% { transform: scale(1) translate(0, 0); opacity: 0.3; }
+        50% { transform: scale(1.15) translate(-20px, -30px); opacity: 0.6; }
     }
 
-    @keyframes riseUp {
-      from { transform: translateY(20px); opacity: 0; }
-      to   { transform: translateY(0);    opacity: 1; }
+    /* --- Structural Components --- */
+    .glass-panel {
+        background: var(--glass-bg);
+        backdrop-filter: blur(16px);
+        -webkit-backdrop-filter: blur(16px);
+        border: 1px solid var(--glass-border);
     }
 
-    /* ── Status pill (bottom center) ── */
-    .status-bar {
-      position: fixed;
-      bottom: 36px;
-      left: 50%;
-      transform: translateX(-50%);
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      padding: 10px 20px;
-      border: 1px solid var(--border-mid);
-      border-radius: 100px;
-      background: rgba(255, 255, 255, 0.03);
-      backdrop-filter: blur(10px);
-      -webkit-backdrop-filter: blur(10px);
-      animation: riseUp 0.9s cubic-bezier(0.22, 1, 0.36, 1) 1.05s both;
+    .top-nav {
+        height: var(--header-height);
+        width: 100%;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 0 32px;
+        z-index: 100;
+        border-bottom: 1px solid var(--glass-border);
+    }
+
+    .brand {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        font-weight: 600;
+        letter-spacing: -0.5px;
+        cursor: pointer;
+    }
+
+    .brand-logo-svg { width: 22px; height: 22px; fill: #fff; }
+
+    .nav-center {
+        font-size: 0.75rem;
+        color: var(--text-secondary);
+        text-transform: uppercase;
+        letter-spacing: 3px;
+        font-weight: 500;
+    }
+
+    .status-indicator {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        font-size: 0.7rem;
+        font-weight: 600;
+        letter-spacing: 1px;
     }
 
     .status-dot {
-      width: 6px;
-      height: 6px;
-      border-radius: 50%;
-      background: rgba(160, 200, 255, 0.7);
-      animation: pulse 2.4s ease-in-out infinite;
+        width: 8px;
+        height: 8px;
+        background: #00ffaa;
+        border-radius: 50%;
+        box-shadow: 0 0 12px rgba(0, 255, 170, 0.6);
+        animation: heartbeat 2s infinite ease-in-out;
     }
 
-    @keyframes pulse {
-      0%, 100% { opacity: 0.4; transform: scale(1); }
-      50%       { opacity: 1;   transform: scale(1.25); box-shadow: 0 0 8px rgba(160, 200, 255, 0.6); }
+    @keyframes heartbeat {
+        0%, 100% { opacity: 0.5; transform: scale(0.9); }
+        50% { opacity: 1; transform: scale(1.1); }
     }
 
-    .status-text {
-      font-family: 'Space Mono', monospace;
-      font-size: 10px;
-      letter-spacing: 0.16em;
-      text-transform: uppercase;
-      color: var(--text-muted);
+    /* --- Sidebar --- */
+    .workspace-container { flex: 1; display: flex; overflow: hidden; }
+
+    .sidebar {
+        width: var(--sidebar-width);
+        border-right: 1px solid var(--glass-border);
+        padding: 32px 16px;
+        display: flex;
+        flex-direction: column;
+        gap: 6px;
+        z-index: 10;
     }
 
-    /* ── Corner decorations ── */
-    .corner {
-      position: fixed;
-      width: 18px;
-      height: 18px;
-      pointer-events: none;
-      z-index: 1;
-      opacity: 0.3;
+    @media (max-width: 900px) { .sidebar { display: none; } }
+
+    .nav-item {
+        padding: 12px 20px;
+        border-radius: 10px;
+        cursor: pointer;
+        transition: var(--transition-smooth);
+        color: var(--text-secondary);
+        display: flex;
+        align-items: center;
+        gap: 14px;
+        font-size: 0.85rem;
+        border: 1px solid transparent;
     }
 
-    .corner--tl { top: 84px;   left: 24px;  border-top: 1px solid #fff;  border-left: 1px solid #fff;  }
-    .corner--tr { top: 84px;   right: 24px; border-top: 1px solid #fff;  border-right: 1px solid #fff; }
-    .corner--bl { bottom: 24px; left: 24px;  border-bottom: 1px solid #fff; border-left: 1px solid #fff;  }
-    .corner--br { bottom: 24px; right: 24px; border-bottom: 1px solid #fff; border-right: 1px solid #fff; }
-
-    /* ── Responsive tweaks ── */
-    @media (max-width: 600px) {
-      header { padding: 20px 20px; }
-      .header-badge { display: none; }
-      .headline { letter-spacing: -0.02em; }
+    .nav-item:hover {
+        background: var(--glass-bg);
+        color: var(--text-primary);
+        border-color: var(--glass-border);
+        transform: translateX(4px);
     }
 
-    @media (prefers-reduced-motion: reduce) {
-      *, *::before, *::after {
-        animation-duration: 0.01ms !important;
-        transition-duration: 0.01ms !important;
-      }
+    .nav-item.active {
+        background: rgba(255, 255, 255, 0.05);
+        color: var(--text-primary);
+        border: 1px solid var(--glass-border);
     }
-  </style>
+
+    /* --- Chat Experience --- */
+    .chat-view {
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        padding: 0 20px;
+        overflow-y: auto;
+        position: relative;
+        mask-image: linear-gradient(to bottom, transparent 0%, black 10%, black 90%, transparent 100%);
+    }
+
+    .chat-inner {
+        width: 100%;
+        max-width: 760px;
+        display: flex;
+        flex-direction: column;
+        gap: 32px;
+        padding: 80px 0 160px 0;
+    }
+
+    .empty-state { text-align: center; margin-top: 5vh; }
+    
+    .hero-title {
+        font-size: 3rem;
+        font-weight: 300;
+        margin-bottom: 24px;
+        letter-spacing: -2px;
+        background: linear-gradient(180deg, #fff 0%, #888 100%);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+    }
+
+    .hero-subtitle {
+        font-size: 1.1rem;
+        color: var(--text-secondary);
+        max-width: 500px;
+        margin: 0 auto 60px auto;
+        line-height: 1.6;
+    }
+
+    .principles-grid {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 20px;
+        text-align: left;
+    }
+
+    @media (max-width: 768px) { .principles-grid { grid-template-columns: 1fr; } }
+
+    .principle-card { padding: 24px; border-radius: 16px; }
+    .principle-card h3 { font-size: 0.75rem; text-transform: uppercase; letter-spacing: 2px; color: var(--text-primary); margin-bottom: 12px; }
+    .principle-card p { font-size: 0.85rem; line-height: 1.6; color: var(--text-secondary); }
+
+    /* --- Message Bubbles & Markdown --- */
+    .message {
+        max-width: 85%;
+        padding: 20px 24px;
+        border-radius: 20px;
+        line-height: 1.7;
+        font-size: 0.95rem;
+        animation: slideUp 0.5s cubic-bezier(0.2, 0.8, 0.2, 1);
+    }
+
+    @keyframes slideUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+
+    .user-message {
+        align-self: flex-end;
+        background: #fff;
+        color: #000;
+        font-weight: 500;
+        border-bottom-right-radius: 4px;
+    }
+
+    .ai-message {
+        align-self: flex-start;
+        background: var(--glass-bg);
+        border: 1px solid var(--glass-border);
+        color: var(--text-primary);
+        border-bottom-left-radius: 4px;
+    }
+
+    /* Basic Markdown Styling */
+    .ai-message strong { font-weight: 600; color: #fff; }
+    .ai-message ul { margin-left: 20px; margin-top: 10px; }
+    .ai-message li { margin-bottom: 5px; }
+
+    /* --- Thinking Animation --- */
+    .thinking-wave { display: flex; gap: 6px; padding: 12px 0; }
+    .thinking-wave span {
+        width: 6px; height: 6px; background: var(--text-secondary); border-radius: 50%;
+        animation: wavePulse 1.4s infinite ease-in-out both;
+    }
+    .thinking-wave span:nth-child(1) { animation-delay: -0.32s; }
+    .thinking-wave span:nth-child(2) { animation-delay: -0.16s; }
+
+    @keyframes wavePulse { 0%, 80%, 100% { transform: scale(0); opacity: 0.3; } 40% { transform: scale(1); opacity: 1; } }
+
+    /* --- Input Dock --- */
+    .input-dock {
+        position: fixed;
+        bottom: 40px; left: 50%; transform: translateX(-50%);
+        width: 100%; max-width: 800px; padding: 0 24px; z-index: 100;
+    }
+
+    .input-bar {
+        display: flex; align-items: center; gap: 16px;
+        padding: 12px 24px; border-radius: 100px; height: 64px;
+    }
+
+    input { flex: 1; background: transparent; border: none; color: #fff; outline: none; font-size: 1rem; font-weight: 400; }
+    input::placeholder { color: #555; }
+
+    .action-icon {
+        background: transparent; border: none; color: var(--text-secondary);
+        cursor: pointer; transition: var(--transition-smooth);
+        display: flex; align-items: center; justify-content: center;
+    }
+    .action-icon:hover { color: #fff; transform: scale(1.1); }
+
+    .send-btn {
+        background: #fff; color: #000; width: 32px; height: 32px;
+        border-radius: 50%; font-weight: bold;
+    }
+
+    /* --- Controls & Modal --- */
+    .ambient-trigger {
+        position: fixed; bottom: 40px; right: 40px; z-index: 101;
+    }
+
+    .modal-overlay {
+        position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+        background: rgba(0,0,0,0.85); backdrop-filter: blur(8px);
+        display: none; z-index: 1000; transition: opacity 0.3s;
+    }
+
+    .system-modal {
+        position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%);
+        width: 90%; max-width: 540px; padding: 48px; border-radius: 32px;
+        display: none; z-index: 1001;
+    }
+
+    .modal-close { position: absolute; top: 24px; right: 24px; cursor: pointer; color: var(--text-secondary); }
+
+    .roadmap-list { margin-top: 24px; border-top: 1px solid var(--glass-border); padding-top: 24px; }
+    .roadmap-phase { margin-bottom: 16px; font-size: 0.85rem; color: var(--text-secondary); }
+    .roadmap-phase strong { color: #fff; display: block; margin-bottom: 4px; font-weight: 500; }
+</style>
+<div class="noise-overlay"></div>
+<div class="grid-overlay"></div>
+<div class="orb-container">
+    <div class="breathing-orb orb-1"></div>
+    <div class="breathing-orb orb-2"></div>
+</div>
+
+<header class="top-nav glass-panel">
+    <div class="brand">
+        <svg class="brand-logo-svg" viewBox="0 0 24 24"><path d="M12 2L4.5 20.29l.71.71L12 18l6.79 3 .71-.71z"/></svg>
+        <span>ContinuumOne</span>
+    </div>
+    <div class="nav-center">ContinuumOS Prototype-2</div>
+    <div class="status-indicator">
+        <div class="status-dot"></div>
+        <span>INTELLIGENCE ONLINE</span>
+    </div>
+</header>
+
+<div class="workspace-container">
+    <aside class="sidebar">
+        <div class="nav-item active"><span>⬚</span> Workspace</div>
+        <div class="nav-item"><span>✦</span> New Chat</div>
+        <div class="nav-item"><span>◷</span> History</div>
+        <div class="nav-item"><span>◎</span> Research</div>
+        <div class="nav-item"><span>✎</span> Writing</div>
+        <div class="nav-item"><span>⫘</span> Planning</div>
+        <div class="nav-item"><span>⚲</span> Analysis</div>
+        <div style="flex: 1;"></div>
+        <div class="nav-item" onclick="toggleModal()"><span>ⓘ</span> System Architecture</div>
+    </aside>
+
+    <main class="chat-view" id="chatView">
+        <div class="chat-inner" id="chatInner">
+            <div class="empty-state" id="emptyState">
+                <h1 class="hero-title">The Next Interface Is Understanding.</h1>
+                <p class="hero-subtitle">Traditional computers require commands. <br><strong>Continuum One understands goals.</strong></p>
+                
+                <div class="principles-grid">
+                    <div class="principle-card glass-panel">
+                        <h3>I. Intent</h3>
+                        <p>Translating what you mean into what you need. Built for goals, not commands.</p>
+                    </div>
+                    <div class="principle-card glass-panel">
+                        <h3>II. Intelligence</h3>
+                        <p>Not a tool that answers questions — a system that reasons toward outcomes.</p>
+                    </div>
+                    <div class="principle-card glass-panel">
+                        <h3>III. Infinity</h3>
+                        <p>Scaling from individual thought to organizational memory. A platform for ambition.</p>
+                    </div>
+                </div>
+            </div>
+            <!-- Interactive Stream Appends Here -->
+        </div>
+    </main>
+</div>
+
+<div class="input-dock">
+    <div class="input-bar glass-panel">
+        <button class="action-icon">📎</button>
+        <input type="text" id="userInput" placeholder="Define a goal or ask a question..." onkeypress="handleKey(event)">
+        <button class="action-icon">🎤</button>
+        <button class="action-icon send-btn" onclick="sendMessage()">↑</button>
+    </div>
+</div>
+
+<div class="ambient-trigger">
+    <button class="action-icon glass-panel" style="width: 50px; height: 50px; border-radius: 50%;" onclick="toggleAmbient()">
+        <span id="ambientIcon" style="font-size: 1.2rem;">◈</span>
+    </button>
+</div>
+
+<!-- About Modal -->
+<div class="modal-overlay" id="modalOverlay" onclick="toggleModal()"></div>
+<div class="system-modal glass-panel" id="systemModal">
+    <div class="modal-close" onclick="toggleModal()">✕</div>
+    <h2 style="font-weight: 300; font-size: 1.8rem; margin-bottom: 24px; letter-spacing: -1px;">Architecture</h2>
+    <div style="font-size: 0.95rem; color: var(--text-secondary); line-height: 1.7;">
+        <p><strong>Founder:</strong> Pradyumn Lavania</p>
+        <p style="margin-top: 12px;">Continuum One began from a simple belief: computers should understand intent. At sixteen, Pradyumn started building this foundation to help humanity think, create, and execute at scale.</p>
+        
+        <div class="roadmap-list">
+            <div class="roadmap-phase"><strong>Phase 01: AI Workspace</strong> Workspace interaction, Research, Writing, Analysis.</div>
+            <div class="roadmap-phase"><strong>Phase 02: Agent Systems</strong> Automation, Multi-step reasoning, Task execution.</div>
+            <div class="roadmap-phase"><strong>Phase 03: Enterprise Layer</strong> Org memory, Strategic support, Knowledge systems.</div>
+            <div class="roadmap-phase"><strong>Phase 04: AI Operating System</strong> The professional JARVIS. Native intent-driven computing.</div>
+        </div>
+    </div>
+</div>
+
+<audio id="bgMusic" loop>
+    <source src="assets/ui-music.mp3" type="audio/mpeg">
+</audio>
+
+<script>
+    /**
+     * ContinuumOS Core Logic
+     * UI Architect: Senior Creative Technologist
+     */
+
+    const GROQ_API_KEY = ""; // Insert Groq API Key here
+
+    let isMusicPlaying = false;
+    const bgMusic = document.getElementById('bgMusic');
+    const chatInner = document.getElementById('chatInner');
+    const emptyState = document.getElementById('emptyState');
+    const userInput = document.getElementById('userInput');
+
+    function toggleAmbient() {
+        if (isMusicPlaying) {
+            bgMusic.pause();
+            document.getElementById('ambientIcon').innerText = "◈";
+        } else {
+            bgMusic.play().catch(e => console.warn("Ambient asset 'ui-music.mp3' missing. Visual feedback only."));
+            document.getElementById('ambientIcon').innerText = "❙❙";
+        }
+        isMusicPlaying = !isMusicPlaying;
+    }
+
+    function toggleModal() {
+        const m = document.getElementById('systemModal');
+        const o = document.getElementById('modalOverlay');
+        const show = m.style.display !== 'block';
+        m.style.display = show ? 'block' : 'none';
+        o.style.display = show ? 'block' : 'none';
+    }
+
+    function handleKey(e) { if (e.key === 'Enter') sendMessage(); }
+
+    // Simple Markdown-to-HTML Parser for "Intelligence" legibility
+    function parseMarkdown(text) {
+        return text
+            .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
+            .replace(/\*(.*?)\*/g, '<em>$1</em>')
+            .replace(/^\s*-\s+(.*)/gm, '<li>$1</li>')
+            .replace(/(<li>.*<\/li>)/s, '<ul>$1</ul>')
+            .replace(/\n/g, '<br>');
+    }
+
+    async function sendMessage() {
+        const prompt = userInput.value.trim();
+        if (!prompt) return;
+
+        emptyState.style.display = 'none';
+        appendMessage(prompt, 'user');
+        userInput.value = '';
+
+        // Thinking State
+        const thinkingId = 'think-' + Date.now();
+        const thinkingDiv = document.createElement('div');
+        thinkingDiv.className = 'message ai-message';
+        thinkingDiv.id = thinkingId;
+        thinkingDiv.innerHTML = `<div class="thinking-wave"><span></span><span></span><span></span></div>`;
+        chatInner.appendChild(thinkingDiv);
+        scrollToBottom();
+
+        try {
+            const response = await fetchGroqResponse(prompt);
+            document.getElementById(thinkingId).innerHTML = parseMarkdown(response);
+        } catch (err) {
+            document.getElementById(thinkingId).innerHTML = "<em>System Error: The Intelligence Layer is currently unreachable. Check API configuration.</em>";
+        } finally {
+            scrollToBottom();
+        }
+    }
+
+    function appendMessage(text, type) {
+        const div = document.createElement('div');
+        div.className = `message ${type}-message`;
+        div.innerHTML = type === 'user' ? text : parseMarkdown(text);
+        chatInner.appendChild(div);
+    }
+
+    function scrollToBottom() {
+        const view = document.getElementById('chatView');
+        view.scrollTo({ top: view.scrollHeight, behavior: 'smooth' });
+    }
+
+    async function fetchGroqResponse(userPrompt) {
+        if (!GROQ_API_KEY) {
+            return "**Intelligence Offline.** Please provide a valid Groq API Key in the source code to engage with the AI Operating Layer.";
+        }
+
+        const response = await fetch("https://api.groq.com/openai/v1/chat/completions", {
+            method: "POST",
+            headers: {
+                "Authorization": `Bearer ${GROQ_API_KEY}`,
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify({
+                model: "mixtral-8x7b-32768",
+                messages: [
+                    { role: "system", content: "You are ContinuumOS, a high-end AI operating layer. Your tone is professional, visionary, and concise. You help users achieve goals rather than just answering commands. Format output in markdown." },
+                    { role: "user", content: userPrompt }
+                ],
+                temperature: 0.7
+            })
+        });
+        const data = await response.json();
+        return data.choices[0].message.content;
+    }
+</script>
+
 </head>
 <body>
 
