@@ -13,537 +13,717 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
 
-<style>
-    :root {
-        --bg-color: #000000;
-        --glass-bg: rgba(255, 255, 255, 0.03);
-        --glass-border: rgba(255, 255, 255, 0.09);
-        --accent-glow: rgba(255, 255, 255, 0.12);
-        --text-primary: #ffffff;
-        --text-secondary: #8a8a8a;
-        --sidebar-width: 260px;
-        --header-height: 60px;
-        --transition-smooth: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-    }
-
-    * {
+ * {
         margin: 0;
         padding: 0;
         box-sizing: border-box;
-        font-family: 'Plus Jakarta Sans', -apple-system, sans-serif;
-    }
-
-    body {
-        background-color: var(--bg-color);
-        color: var(--text-primary);
-        height: 100vh;
-        overflow: hidden;
-        display: flex;
-        flex-direction: column;
+        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
         -webkit-font-smoothing: antialiased;
     }
 
-    /* --- Luxury Aesthetic Layers --- */
-    .noise-overlay {
+    body, html {
+        background-color: var(--bg-color);
+        color: var(--primary-text);
+        height: 100vh;
+        overflow: hidden;
+        user-select: none;
+    }
+
+    /* --- BACKGROUND SYSTEM --- */
+    #digital-atmosphere {
         position: fixed;
-        top: 0; left: 0; width: 100%; height: 100%;
-        background: url('https://grainy-gradients.vercel.app/noise.svg');
-        opacity: 0.05;
-        pointer-events: none;
-        z-index: 1000;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        z-index: -1;
+        overflow: hidden;
     }
 
     .grid-overlay {
-        position: fixed;
-        top: 0; left: 0; width: 100%; height: 100%;
+        position: absolute;
+        width: 200%;
+        height: 200%;
+        top: -50%;
+        left: -50%;
         background-image: 
-            linear-gradient(var(--glass-border) 1px, transparent 1px),
-            linear-gradient(90deg, var(--glass-border) 1px, transparent 1px);
+            linear-gradient(rgba(255, 255, 255, 0.03) 1px, transparent 1px),
+            linear-gradient(90deg, rgba(255, 255, 255, 0.03) 1px, transparent 1px);
         background-size: 50px 50px;
-        mask-image: radial-gradient(circle at 50% 50%, black, transparent 90%);
-        z-index: -2;
-        opacity: 0.15;
+        transform: perspective(1000px) rotateX(60deg);
+        animation: grid-move 20s linear infinite;
     }
 
-    .orb-container {
-        position: fixed;
-        width: 100vw;
-        height: 100vh;
-        z-index: -1;
-        overflow: hidden;
-        filter: blur(100px);
+    @keyframes grid-move {
+        0% { transform: perspective(1000px) rotateX(60deg) translateY(0); }
+        100% { transform: perspective(1000px) rotateX(60deg) translateY(50px); }
     }
 
     .breathing-orb {
         position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        width: 600px;
+        height: 600px;
+        background: radial-gradient(circle, rgba(255, 255, 255, 0.08) 0%, rgba(173, 216, 230, 0.02) 50%, transparent 70%);
         border-radius: 50%;
-        background: radial-gradient(circle, var(--accent-glow) 0%, transparent 70%);
-        mix-blend-mode: screen;
-        animation: breathe infinite ease-in-out;
+        filter: blur(60px);
+        animation: breath 8s ease-in-out infinite;
     }
 
-    .orb-1 { width: 600px; height: 600px; bottom: -200px; right: -100px; animation-duration: 15s; opacity: 0.5; }
-    .orb-2 { width: 400px; height: 400px; top: -100px; left: -50px; animation-duration: 12s; animation-delay: -2s; opacity: 0.3; }
-
-    @keyframes breathe {
-        0%, 100% { transform: scale(1) translate(0, 0); opacity: 0.3; }
-        50% { transform: scale(1.15) translate(-20px, -30px); opacity: 0.6; }
+    @keyframes breath {
+        0%, 100% { transform: translate(-50%, -50%) scale(1); opacity: 0.5; }
+        50% { transform: translate(-50%, -50%) scale(1.2); opacity: 0.8; }
     }
 
-    /* --- Structural Components --- */
-    .glass-panel {
-        background: var(--glass-bg);
-        backdrop-filter: blur(16px);
-        -webkit-backdrop-filter: blur(16px);
-        border: 1px solid var(--glass-border);
-    }
-
-    .top-nav {
-        height: var(--header-height);
+    canvas#particles {
+        position: absolute;
+        top: 0;
+        left: 0;
         width: 100%;
+        height: 100%;
+        opacity: 0.4;
+    }
+
+    /* --- LAYOUT --- */
+    .os-container {
         display: flex;
-        align-items: center;
-        justify-content: space-between;
-        padding: 0 32px;
-        z-index: 100;
-        border-bottom: 1px solid var(--glass-border);
-    }
-
-    .brand {
-        display: flex;
-        align-items: center;
-        gap: 12px;
-        font-weight: 600;
-        letter-spacing: -0.5px;
-        cursor: pointer;
-    }
-
-    .brand-logo-svg { width: 22px; height: 22px; fill: #fff; }
-
-    .nav-center {
-        font-size: 0.75rem;
-        color: var(--text-secondary);
-        text-transform: uppercase;
-        letter-spacing: 3px;
-        font-weight: 500;
-    }
-
-    .status-indicator {
-        display: flex;
-        align-items: center;
-        gap: 10px;
-        font-size: 0.7rem;
-        font-weight: 600;
-        letter-spacing: 1px;
-    }
-
-    .status-dot {
-        width: 8px;
-        height: 8px;
-        background: #00ffaa;
-        border-radius: 50%;
-        box-shadow: 0 0 12px rgba(0, 255, 170, 0.6);
-        animation: heartbeat 2s infinite ease-in-out;
-    }
-
-    @keyframes heartbeat {
-        0%, 100% { opacity: 0.5; transform: scale(0.9); }
-        50% { opacity: 1; transform: scale(1.1); }
-    }
-
-    /* --- Sidebar --- */
-    .workspace-container { flex: 1; display: flex; overflow: hidden; }
-
-    .sidebar {
-        width: var(--sidebar-width);
-        border-right: 1px solid var(--glass-border);
-        padding: 32px 16px;
-        display: flex;
-        flex-direction: column;
-        gap: 6px;
+        height: 100vh;
+        width: 100%;
+        padding: 20px;
+        gap: 20px;
+        position: relative;
         z-index: 10;
     }
 
-    @media (max-width: 900px) { .sidebar { display: none; } }
+    /* --- TOP NAVIGATION --- */
+    .top-nav {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 64px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 0 40px;
+        border-bottom: 1px solid var(--border-color);
+        background: rgba(0, 0, 0, 0.2);
+        backdrop-filter: blur(10px);
+        z-index: 100;
+    }
 
-    .nav-item {
-        padding: 12px 20px;
-        border-radius: 10px;
-        cursor: pointer;
-        transition: var(--transition-smooth);
-        color: var(--text-secondary);
+    .nav-left {
         display: flex;
         align-items: center;
-        gap: 14px;
-        font-size: 0.85rem;
-        border: 1px solid transparent;
+        gap: 12px;
+        cursor: pointer;
+        text-decoration: none;
+        color: inherit;
     }
 
-    .nav-item:hover {
-        background: var(--glass-bg);
-        color: var(--text-primary);
-        border-color: var(--glass-border);
-        transform: translateX(4px);
+    .nav-left img {
+        height: 24px;
+        width: auto;
     }
 
-    .nav-item.active {
+    .nav-left span {
+        font-weight: 500;
+        letter-spacing: 0.5px;
+        font-size: 14px;
+    }
+
+    .nav-center {
+        font-size: 13px;
+        color: var(--secondary-text);
+        text-transform: uppercase;
+        letter-spacing: 2px;
+    }
+
+    .status-badge {
+        display: flex;
+        align-items: center;
+        gap: 8px;
         background: rgba(255, 255, 255, 0.05);
-        color: var(--text-primary);
-        border: 1px solid var(--glass-border);
+        padding: 6px 14px;
+        border-radius: 20px;
+        border: 1px solid var(--border-color);
+        font-size: 11px;
+        font-weight: 600;
+        letter-spacing: 1px;
+        box-shadow: 0 0 15px var(--accent-glow);
     }
 
-    /* --- Chat Experience --- */
-    .chat-view {
+    .status-dot {
+        width: 6px;
+        height: 6px;
+        background: #00FFCC;
+        border-radius: 50%;
+        box-shadow: 0 0 8px #00FFCC;
+        animation: pulse 2s infinite;
+    }
+
+    @keyframes pulse {
+        0% { opacity: 1; }
+        50% { opacity: 0.4; }
+        100% { opacity: 1; }
+    }
+
+    /* --- SIDEBAR --- */
+    .sidebar {
+        width: 260px;
+        height: calc(100vh - 104px);
+        margin-top: 64px;
+        background: var(--card-bg);
+        backdrop-filter: blur(var(--glass-blur));
+        border: 1px solid var(--border-color);
+        border-radius: 18px;
+        display: flex;
+        flex-direction: column;
+        padding: 24px 16px;
+        transition: all var(--transition-speed);
+    }
+
+    @media (max-width: 1024px) {
+        .sidebar { display: none; }
+    }
+
+    .sidebar-section {
+        margin-bottom: 32px;
+    }
+
+    .sidebar-label {
+        font-size: 11px;
+        color: var(--secondary-text);
+        text-transform: uppercase;
+        letter-spacing: 1.5px;
+        margin-bottom: 16px;
+        padding-left: 12px;
+    }
+
+    .sidebar-item {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        padding: 10px 14px;
+        border-radius: 10px;
+        color: var(--secondary-text);
+        text-decoration: none;
+        font-size: 14px;
+        transition: all 0.2s;
+        cursor: pointer;
+        margin-bottom: 4px;
+    }
+
+    .sidebar-item i {
+        font-size: 16px;
+        width: 20px;
+        text-align: center;
+    }
+
+    .sidebar-item:hover, .sidebar-item.active {
+        background: var(--hover-color);
+        color: var(--primary-text);
+    }
+
+    .sidebar-item.active {
+        border: 1px solid var(--border-color);
+    }
+
+    /* --- CHAT INTERFACE --- */
+    .main-stage {
         flex: 1;
+        height: calc(100vh - 104px);
+        margin-top: 64px;
         display: flex;
         flex-direction: column;
         align-items: center;
-        padding: 0 20px;
-        overflow-y: auto;
         position: relative;
-        mask-image: linear-gradient(to bottom, transparent 0%, black 10%, black 90%, transparent 100%);
     }
 
-    .chat-inner {
+    .chat-container {
         width: 100%;
-        max-width: 760px;
+        max-width: 900px;
+        height: 100%;
+        background: var(--card-bg);
+        backdrop-filter: blur(var(--glass-blur));
+        border: 1px solid var(--border-color);
+        border-radius: 24px;
+        display: flex;
+        flex-direction: column;
+        overflow: hidden;
+        box-shadow: 0 20px 50px rgba(0, 0, 0, 0.5), 0 0 20px var(--accent-glow);
+    }
+
+    .messages-area {
+        flex: 1;
+        overflow-y: auto;
+        padding: 40px;
         display: flex;
         flex-direction: column;
         gap: 32px;
-        padding: 80px 0 160px 0;
+        scrollbar-width: none;
     }
 
-    .empty-state { text-align: center; margin-top: 5vh; }
-    
-    .hero-title {
-        font-size: 3rem;
-        font-weight: 300;
-        margin-bottom: 24px;
-        letter-spacing: -2px;
-        background: linear-gradient(180deg, #fff 0%, #888 100%);
-        -webkit-background-clip: text;
-        -webkit-text-fill-color: transparent;
-    }
+    .messages-area::-webkit-scrollbar { display: none; }
 
-    .hero-subtitle {
-        font-size: 1.1rem;
-        color: var(--text-secondary);
-        max-width: 500px;
-        margin: 0 auto 60px auto;
-        line-height: 1.6;
-    }
-
-    .principles-grid {
-        display: grid;
-        grid-template-columns: repeat(3, 1fr);
-        gap: 20px;
-        text-align: left;
-    }
-
-    @media (max-width: 768px) { .principles-grid { grid-template-columns: 1fr; } }
-
-    .principle-card { padding: 24px; border-radius: 16px; }
-    .principle-card h3 { font-size: 0.75rem; text-transform: uppercase; letter-spacing: 2px; color: var(--text-primary); margin-bottom: 12px; }
-    .principle-card p { font-size: 0.85rem; line-height: 1.6; color: var(--text-secondary); }
-
-    /* --- Message Bubbles & Markdown --- */
     .message {
-        max-width: 85%;
-        padding: 20px 24px;
-        border-radius: 20px;
-        line-height: 1.7;
-        font-size: 0.95rem;
-        animation: slideUp 0.5s cubic-bezier(0.2, 0.8, 0.2, 1);
+        max-width: 80%;
+        display: flex;
+        flex-direction: column;
+        animation: slideUp 0.5s ease forwards;
+        opacity: 0;
     }
 
-    @keyframes slideUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+    @keyframes slideUp {
+        from { transform: translateY(20px); opacity: 0; }
+        to { transform: translateY(0); opacity: 1; }
+    }
 
-    .user-message {
+    .message.user {
         align-self: flex-end;
-        background: #fff;
-        color: #000;
-        font-weight: 500;
+        align-items: flex-end;
+    }
+
+    .message.ai {
+        align-self: flex-start;
+        align-items: flex-start;
+    }
+
+    .bubble {
+        padding: 16px 24px;
+        border-radius: 18px;
+        font-size: 15px;
+        line-height: 1.6;
+        position: relative;
+    }
+
+    .user .bubble {
+        background: rgba(255, 255, 255, 0.1);
+        border: 1px solid rgba(255, 255, 255, 0.2);
+        color: #FFFFFF;
         border-bottom-right-radius: 4px;
     }
 
-    .ai-message {
-        align-self: flex-start;
-        background: var(--glass-bg);
-        border: 1px solid var(--glass-border);
-        color: var(--text-primary);
+    .ai .bubble {
+        background: rgba(255, 255, 255, 0.05);
+        border: 1px solid var(--border-color);
+        color: var(--primary-text);
         border-bottom-left-radius: 4px;
     }
 
-    /* Basic Markdown Styling */
-    .ai-message strong { font-weight: 600; color: #fff; }
-    .ai-message ul { margin-left: 20px; margin-top: 10px; }
-    .ai-message li { margin-bottom: 5px; }
-
-    /* --- Thinking Animation --- */
-    .thinking-wave { display: flex; gap: 6px; padding: 12px 0; }
-    .thinking-wave span {
-        width: 6px; height: 6px; background: var(--text-secondary); border-radius: 50%;
-        animation: wavePulse 1.4s infinite ease-in-out both;
-    }
-    .thinking-wave span:nth-child(1) { animation-delay: -0.32s; }
-    .thinking-wave span:nth-child(2) { animation-delay: -0.16s; }
-
-    @keyframes wavePulse { 0%, 80%, 100% { transform: scale(0); opacity: 0.3; } 40% { transform: scale(1); opacity: 1; } }
-
-    /* --- Input Dock --- */
-    .input-dock {
-        position: fixed;
-        bottom: 40px; left: 50%; transform: translateX(-50%);
-        width: 100%; max-width: 800px; padding: 0 24px; z-index: 100;
+    .ai-card {
+        background: rgba(255, 255, 255, 0.02);
+        border: 1px solid var(--border-color);
+        border-radius: 12px;
+        padding: 20px;
+        margin-top: 12px;
+        width: 100%;
     }
 
-    .input-bar {
-        display: flex; align-items: center; gap: 16px;
-        padding: 12px 24px; border-radius: 100px; height: 64px;
+    /* --- THINKING EFFECT --- */
+    .thinking {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        color: var(--secondary-text);
+        font-size: 13px;
+        font-style: italic;
+        margin-left: 10px;
+        display: none;
     }
 
-    input { flex: 1; background: transparent; border: none; color: #fff; outline: none; font-size: 1rem; font-weight: 400; }
-    input::placeholder { color: #555; }
-
-    .action-icon {
-        background: transparent; border: none; color: var(--text-secondary);
-        cursor: pointer; transition: var(--transition-smooth);
-        display: flex; align-items: center; justify-content: center;
+    .dots {
+        display: flex;
+        gap: 4px;
     }
-    .action-icon:hover { color: #fff; transform: scale(1.1); }
+
+    .dot {
+        width: 4px;
+        height: 4px;
+        background: var(--secondary-text);
+        border-radius: 50%;
+        animation: dot-pulse 1.5s infinite;
+    }
+
+    .dot:nth-child(2) { animation-delay: 0.2s; }
+    .dot:nth-child(3) { animation-delay: 0.4s; }
+
+    @keyframes dot-pulse {
+        0%, 100% { opacity: 0.3; transform: scale(1); }
+        50% { opacity: 1; transform: scale(1.2); }
+    }
+
+    /* --- INPUT SYSTEM --- */
+    .input-wrapper {
+        padding: 24px 40px 40px;
+        width: 100%;
+        background: linear-gradient(to top, rgba(0,0,0,0.5), transparent);
+    }
+
+    .input-box {
+        background: rgba(255, 255, 255, 0.05);
+        border: 1px solid var(--border-color);
+        border-radius: 16px;
+        padding: 8px 12px;
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        transition: border-color 0.3s;
+    }
+
+    .input-box:focus-within {
+        border-color: rgba(255, 255, 255, 0.3);
+        box-shadow: 0 0 20px var(--accent-glow);
+    }
+
+    .input-box input {
+        flex: 1;
+        background: transparent;
+        border: none;
+        color: var(--primary-text);
+        padding: 12px;
+        font-size: 15px;
+        outline: none;
+    }
+
+    .input-box input::placeholder {
+        color: rgba(255, 255, 255, 0.3);
+    }
+
+    .input-actions {
+        display: flex;
+        gap: 8px;
+    }
+
+    .action-btn {
+        width: 40px;
+        height: 40px;
+        border-radius: 10px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: transparent;
+        border: none;
+        color: var(--secondary-text);
+        cursor: pointer;
+        transition: all 0.2s;
+    }
+
+    .action-btn:hover {
+        background: var(--hover-color);
+        color: var(--primary-text);
+    }
 
     .send-btn {
-        background: #fff; color: #000; width: 32px; height: 32px;
-        border-radius: 50%; font-weight: bold;
+        background: var(--primary-text);
+        color: var(--bg-color);
     }
 
-    /* --- Controls & Modal --- */
-    .ambient-trigger {
-        position: fixed; bottom: 40px; right: 40px; z-index: 101;
+    .send-btn:hover {
+        background: #E0E0E0;
+        transform: scale(1.05);
     }
 
-    .modal-overlay {
-        position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-        background: rgba(0,0,0,0.85); backdrop-filter: blur(8px);
-        display: none; z-index: 1000; transition: opacity 0.3s;
+    /* --- AUDIO CONTROL --- */
+    .audio-control {
+        position: fixed;
+        bottom: 30px;
+        right: 40px;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 8px;
+        z-index: 1000;
     }
 
-    .system-modal {
-        position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%);
-        width: 90%; max-width: 540px; padding: 48px; border-radius: 32px;
-        display: none; z-index: 1001;
+    .audio-btn {
+        width: 50px;
+        height: 50px;
+        border-radius: 50%;
+        background: var(--card-bg);
+        border: 1px solid var(--border-color);
+        backdrop-filter: blur(10px);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        transition: all 0.3s;
+        color: var(--secondary-text);
     }
 
-    .modal-close { position: absolute; top: 24px; right: 24px; cursor: pointer; color: var(--text-secondary); }
+    .audio-btn:hover {
+        background: var(--hover-color);
+        border-color: rgba(255,255,255,0.3);
+        box-shadow: 0 0 15px var(--accent-glow);
+    }
 
-    .roadmap-list { margin-top: 24px; border-top: 1px solid var(--glass-border); padding-top: 24px; }
-    .roadmap-phase { margin-bottom: 16px; font-size: 0.85rem; color: var(--text-secondary); }
-    .roadmap-phase strong { color: #fff; display: block; margin-bottom: 4px; font-weight: 500; }
+    .audio-btn.playing {
+        color: var(--primary-text);
+        box-shadow: 0 0 20px rgba(255, 255, 255, 0.2);
+    }
+
+    .audio-label {
+        font-size: 10px;
+        text-transform: uppercase;
+        letter-spacing: 2px;
+        color: var(--secondary-text);
+    }
+
+    /* --- RESPONSIVENESS --- */
+    @media (max-width: 768px) {
+        .os-container { padding: 10px; }
+        .top-nav { padding: 0 20px; }
+        .nav-center { display: none; }
+        .messages-area { padding: 20px; }
+        .input-wrapper { padding: 20px; }
+        .audio-control { bottom: 20px; right: 20px; }
+    }
 </style>
-<div class="noise-overlay"></div>
-<div class="grid-overlay"></div>
-<div class="orb-container">
-    <div class="breathing-orb orb-1"></div>
-    <div class="breathing-orb orb-2"></div>
+<!-- BACKGROUND -->
+<div id="digital-atmosphere">
+    <div class="grid-overlay"></div>
+    <div class="breathing-orb"></div>
+    <canvas id="particles"></canvas>
 </div>
 
-<header class="top-nav glass-panel">
-    <div class="brand">
-        <svg class="brand-logo-svg" viewBox="0 0 24 24"><path d="M12 2L4.5 20.29l.71.71L12 18l6.79 3 .71-.71z"/></svg>
+<!-- TOP NAVIGATION -->
+<header class="top-nav">
+    <a href="index.html" class="nav-left">
+        <img src="assets/logo.png" alt="ContinuumOne">
         <span>ContinuumOne</span>
-    </div>
+    </a>
     <div class="nav-center">ContinuumOS Prototype-2</div>
-    <div class="status-indicator">
-        <div class="status-dot"></div>
-        <span>INTELLIGENCE ONLINE</span>
+    <div class="nav-right">
+        <div class="status-badge">
+            <div class="status-dot"></div>
+            ONLINE
+        </div>
     </div>
 </header>
 
-<div class="workspace-container">
+<div class="os-container">
+    <!-- SIDEBAR -->
     <aside class="sidebar">
-        <div class="nav-item active"><span>⬚</span> Workspace</div>
-        <div class="nav-item"><span>✦</span> New Chat</div>
-        <div class="nav-item"><span>◷</span> History</div>
-        <div class="nav-item"><span>◎</span> Research</div>
-        <div class="nav-item"><span>✎</span> Writing</div>
-        <div class="nav-item"><span>⫘</span> Planning</div>
-        <div class="nav-item"><span>⚲</span> Analysis</div>
-        <div style="flex: 1;"></div>
-        <div class="nav-item" onclick="toggleModal()"><span>ⓘ</span> System Architecture</div>
+        <div class="sidebar-section">
+            <div class="sidebar-label">Platform</div>
+            <div class="sidebar-item active"><i class="fas fa-layer-group"></i> Workspace</div>
+            <div class="sidebar-item"><i class="fas fa-plus"></i> New Chat</div>
+            <div class="sidebar-item"><i class="fas fa-history"></i> History</div>
+        </div>
+        <div class="sidebar-section">
+            <div class="sidebar-label">Intelligence</div>
+            <div class="sidebar-item"><i class="fas fa-microscope"></i> Research</div>
+            <div class="sidebar-item"><i class="fas fa-map"></i> Planning</div>
+            <div class="sidebar-item"><i class="fas fa-chart-network"></i> Analysis</div>
+        </div>
     </aside>
 
-    <main class="chat-view" id="chatView">
-        <div class="chat-inner" id="chatInner">
-            <div class="empty-state" id="emptyState">
-                <h1 class="hero-title">The Next Interface Is Understanding.</h1>
-                <p class="hero-subtitle">Traditional computers require commands. <br><strong>Continuum One understands goals.</strong></p>
-                
-                <div class="principles-grid">
-                    <div class="principle-card glass-panel">
-                        <h3>I. Intent</h3>
-                        <p>Translating what you mean into what you need. Built for goals, not commands.</p>
-                    </div>
-                    <div class="principle-card glass-panel">
-                        <h3>II. Intelligence</h3>
-                        <p>Not a tool that answers questions — a system that reasons toward outcomes.</p>
-                    </div>
-                    <div class="principle-card glass-panel">
-                        <h3>III. Infinity</h3>
-                        <p>Scaling from individual thought to organizational memory. A platform for ambition.</p>
+    <!-- MAIN INTERFACE -->
+    <main class="main-stage">
+        <div class="chat-container">
+            <div class="messages-area" id="chat-messages">
+                <!-- AI INITIAL GREETING -->
+                <div class="message ai">
+                    <div class="bubble">
+                        Welcome to the operating layer for intelligence. Intent synchronization complete. How can I assist your objectives today?
                     </div>
                 </div>
             </div>
-            <!-- Interactive Stream Appends Here -->
+
+            <!-- THINKING STATE -->
+            <div class="thinking" id="thinking-indicator">
+                <span>Continuum reasoning</span>
+                <div class="dots">
+                    <div class="dot"></div>
+                    <div class="dot"></div>
+                    <div class="dot"></div>
+                </div>
+            </div>
+
+            <div class="input-wrapper">
+                <form class="input-box" id="chat-form">
+                    <button type="button" class="action-btn"><i class="fas fa-paperclip"></i></button>
+                    <input type="text" id="user-input" placeholder="What would you like to accomplish?" autocomplete="off">
+                    <div class="input-actions">
+                        <button type="button" class="action-btn"><i class="fas fa-microphone"></i></button>
+                        <button type="submit" class="action-btn send-btn"><i class="fas fa-arrow-up"></i></button>
+                    </div>
+                </form>
+            </div>
         </div>
     </main>
 </div>
 
-<div class="input-dock">
-    <div class="input-bar glass-panel">
-        <button class="action-icon">📎</button>
-        <input type="text" id="userInput" placeholder="Define a goal or ask a question..." onkeypress="handleKey(event)">
-        <button class="action-icon">🎤</button>
-        <button class="action-icon send-btn" onclick="sendMessage()">↑</button>
+<!-- AUDIO SYSTEM -->
+<div class="audio-control">
+    <div class="audio-btn" id="audio-toggle">
+        <i class="fas fa-waveform"></i>
     </div>
+    <span class="audio-label">Ambient</span>
+    <audio id="bg-music" loop src="assets/ui-music.mp3"></audio>
 </div>
-
-<div class="ambient-trigger">
-    <button class="action-icon glass-panel" style="width: 50px; height: 50px; border-radius: 50%;" onclick="toggleAmbient()">
-        <span id="ambientIcon" style="font-size: 1.2rem;">◈</span>
-    </button>
-</div>
-
-<!-- About Modal -->
-<div class="modal-overlay" id="modalOverlay" onclick="toggleModal()"></div>
-<div class="system-modal glass-panel" id="systemModal">
-    <div class="modal-close" onclick="toggleModal()">✕</div>
-    <h2 style="font-weight: 300; font-size: 1.8rem; margin-bottom: 24px; letter-spacing: -1px;">Architecture</h2>
-    <div style="font-size: 0.95rem; color: var(--text-secondary); line-height: 1.7;">
-        <p><strong>Founder:</strong> Pradyumn Lavania</p>
-        <p style="margin-top: 12px;">Continuum One began from a simple belief: computers should understand intent. At sixteen, Pradyumn started building this foundation to help humanity think, create, and execute at scale.</p>
-        
-        <div class="roadmap-list">
-            <div class="roadmap-phase"><strong>Phase 01: AI Workspace</strong> Workspace interaction, Research, Writing, Analysis.</div>
-            <div class="roadmap-phase"><strong>Phase 02: Agent Systems</strong> Automation, Multi-step reasoning, Task execution.</div>
-            <div class="roadmap-phase"><strong>Phase 03: Enterprise Layer</strong> Org memory, Strategic support, Knowledge systems.</div>
-            <div class="roadmap-phase"><strong>Phase 04: AI Operating System</strong> The professional JARVIS. Native intent-driven computing.</div>
-        </div>
-    </div>
-</div>
-
-<audio id="bgMusic" loop>
-    <source src="assets/ui-music.mp3" type="audio/mpeg">
-</audio>
 
 <script>
-    /**
-     * ContinuumOS Core Logic
-     * UI Architect: Senior Creative Technologist
-     */
+    // --- GROQ API CONFIGURATION ---
+    
+    // GROQ API KEY HERE
+    const GROQ_API_KEY = "";
 
-    const GROQ_API_KEY = ""; // Insert Groq API Key here
-
-    let isMusicPlaying = false;
-    const bgMusic = document.getElementById('bgMusic');
-    const chatInner = document.getElementById('chatInner');
-    const emptyState = document.getElementById('emptyState');
-    const userInput = document.getElementById('userInput');
-
-    function toggleAmbient() {
-        if (isMusicPlaying) {
-            bgMusic.pause();
-            document.getElementById('ambientIcon').innerText = "◈";
-        } else {
-            bgMusic.play().catch(e => console.warn("Ambient asset 'ui-music.mp3' missing. Visual feedback only."));
-            document.getElementById('ambientIcon').innerText = "❙❙";
+    // GROQ API REQUEST FUNCTION
+    async function getGroqChatCompletion(messages) {
+        if (!GROQ_API_KEY) {
+            return "API Key missing. Please configure GROQ_API_KEY in the source code.";
         }
-        isMusicPlaying = !isMusicPlaying;
-    }
-
-    function toggleModal() {
-        const m = document.getElementById('systemModal');
-        const o = document.getElementById('modalOverlay');
-        const show = m.style.display !== 'block';
-        m.style.display = show ? 'block' : 'none';
-        o.style.display = show ? 'block' : 'none';
-    }
-
-    function handleKey(e) { if (e.key === 'Enter') sendMessage(); }
-
-    // Simple Markdown-to-HTML Parser for "Intelligence" legibility
-    function parseMarkdown(text) {
-        return text
-            .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
-            .replace(/\*(.*?)\*/g, '<em>$1</em>')
-            .replace(/^\s*-\s+(.*)/gm, '<li>$1</li>')
-            .replace(/(<li>.*<\/li>)/s, '<ul>$1</ul>')
-            .replace(/\n/g, '<br>');
-    }
-
-    async function sendMessage() {
-        const prompt = userInput.value.trim();
-        if (!prompt) return;
-
-        emptyState.style.display = 'none';
-        appendMessage(prompt, 'user');
-        userInput.value = '';
-
-        // Thinking State
-        const thinkingId = 'think-' + Date.now();
-        const thinkingDiv = document.createElement('div');
-        thinkingDiv.className = 'message ai-message';
-        thinkingDiv.id = thinkingId;
-        thinkingDiv.innerHTML = `<div class="thinking-wave"><span></span><span></span><span></span></div>`;
-        chatInner.appendChild(thinkingDiv);
-        scrollToBottom();
 
         try {
-            const response = await fetchGroqResponse(prompt);
-            document.getElementById(thinkingId).innerHTML = parseMarkdown(response);
-        } catch (err) {
-            document.getElementById(thinkingId).innerHTML = "<em>System Error: The Intelligence Layer is currently unreachable. Check API configuration.</em>";
-        } finally {
-            scrollToBottom();
+            const response = await fetch("https://api.groq.com/openai/v1/chat/completions", {
+                method: "POST",
+                headers: {
+                    "Authorization": `Bearer ${GROQ_API_KEY}`,
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify({
+                    model: "llama3-70b-8192",
+                    messages: messages,
+                    temperature: 0.7,
+                    max_tokens: 1024,
+                    stream: false
+                })
+            });
+
+            const data = await response.json();
+            return data.choices.message.content;
+        } catch (error) {
+            console.error("Groq API Error:", error);
+            return "Protocol error. Unable to establish link with intelligence layer.";
         }
     }
 
-    function appendMessage(text, type) {
-        const div = document.createElement('div');
-        div.className = `message ${type}-message`;
-        div.innerHTML = type === 'user' ? text : parseMarkdown(text);
-        chatInner.appendChild(div);
+    // --- UI LOGIC ---
+
+    const chatMessages = document.getElementById('chat-messages');
+    const chatForm = document.getElementById('chat-form');
+    const userInput = document.getElementById('user-input');
+    const thinkingIndicator = document.getElementById('thinking-indicator');
+    
+    let messageHistory = [
+        { role: "system", content: "You are ContinuumOS, a futuristic AI operating system. Your design philosophy is Black Luxury, Premium, and Minimal. Your core principles are Intent, Intelligence, and Infinity. You don't just answer questions; you reason toward outcomes." }
+    ];
+
+    function addMessage(content, role) {
+        const msgDiv = document.createElement('div');
+        msgDiv.className = `message ${role}`;
+        
+        const bubble = document.createElement('div');
+        bubble.className = 'bubble';
+        bubble.innerText = content;
+        
+        msgDiv.appendChild(bubble);
+        chatMessages.appendChild(msgDiv);
+        
+        // Auto scroll
+        chatMessages.scrollTop = chatMessages.scrollHeight;
     }
 
-    function scrollToBottom() {
-        const view = document.getElementById('chatView');
-        view.scrollTo({ top: view.scrollHeight, behavior: 'smooth' });
-    }
+    chatForm.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const text = userInput.value.trim();
+        if (!text) return;
 
-    async function fetchGroqResponse(userPrompt) {
-        if (!GROQ_API_KEY) {
-            return "**Intelligence Offline.** Please provide a valid Groq API Key in the source code to engage with the AI Operating Layer.";
+        // User UI
+        addMessage(text, 'user');
+        userInput.value = '';
+        messageHistory.push({ role: "user", content: text });
+
+        // Show Thinking
+        thinkingIndicator.style.display = 'flex';
+        chatMessages.scrollTop = chatMessages.scrollHeight;
+
+        // API Call
+        const aiResponse = await getGroqChatCompletion(messageHistory);
+        
+        // Hide Thinking
+        thinkingIndicator.style.display = 'none';
+
+        // AI UI
+        addMessage(aiResponse, 'ai');
+        messageHistory.push({ role: "assistant", content: aiResponse });
+    });
+
+    // --- AUDIO SYSTEM ---
+    const audioBtn = document.getElementById('audio-toggle');
+    const bgMusic = document.getElementById('bg-music');
+    let isPlaying = false;
+
+    audioBtn.addEventListener('click', () => {
+        if (isPlaying) {
+            bgMusic.pause();
+            audioBtn.classList.remove('playing');
+            audioBtn.innerHTML = '<i class="fas fa-waveform"></i>';
+        } else {
+            bgMusic.play().catch(e => console.log("Audio play blocked by browser."));
+            audioBtn.classList.add('playing');
+            audioBtn.innerHTML = '<i class="fas fa-volume-up"></i>';
         }
+        isPlaying = !isPlaying;
+    });
 
-        const response = await fetch("https://api.groq.com/openai/v1/chat/completions", {
-            method: "POST",
-            headers: {
-                "Authorization": `Bearer ${GROQ_API_KEY}`,
-                "Content-Type": "application/json"
-            },
-            body: JSON.stringify({
-                model: "mixtral-8x7b-32768",
-                messages: [
-                    { role: "system", content: "You are ContinuumOS, a high-end AI operating layer. Your tone is professional, visionary, and concise. You help users achieve goals rather than just answering commands. Format output in markdown." },
-                    { role: "user", content: userPrompt }
-                ],
-                temperature: 0.7
-            })
+    // --- PARTICLE SYSTEM ---
+    const canvas = document.getElementById('particles');
+    const ctx = canvas.getContext('2d');
+    let particles = [];
+
+    function resize() {
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight;
+    }
+
+    class Particle {
+        constructor() {
+            this.reset();
+        }
+        reset() {
+            this.x = Math.random() * canvas.width;
+            this.y = Math.random() * canvas.height;
+            this.size = Math.random() * 1.5 + 0.5;
+            this.speedX = Math.random() * 0.5 - 0.25;
+            this.speedY = Math.random() * 0.5 - 0.25;
+            this.life = Math.random() * 1;
+        }
+        update() {
+            this.x += this.speedX;
+            this.y += this.speedY;
+            if (this.x < 0 || this.x > canvas.width || this.y < 0 || this.y > canvas.height) this.reset();
+        }
+        draw() {
+            ctx.fillStyle = `rgba(255, 255, 255, ${this.life * 0.3})`;
+            ctx.beginPath();
+            ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+            ctx.fill();
+        }
+    }
+
+    function initParticles() {
+        for (let i = 0; i < 100; i++) particles.push(new Particle());
+    }
+
+    function animate() {
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        particles.forEach(p => {
+            p.update();
+            p.draw();
         });
-        const data = await response.json();
-        return data.choices[0].message.content;
+        requestAnimationFrame(animate);
     }
-</script>
 
+    window.addEventListener('resize', resize);
+    resize();
+    initParticles();
+    animate();
+
+</script>
 </head>
 <body>
 
