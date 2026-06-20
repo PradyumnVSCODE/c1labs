@@ -447,6 +447,77 @@
     .phase-future .phase-name { color: var(--text-secondary); }
     .phase-future .phase-list li { color: var(--text-tertiary); }
 
+    .phase-complete .phase-name { color: var(--text-secondary); }
+    .phase-complete .phase-tag { color: var(--text-tertiary); }
+    .phase-complete .phase-list li { color: var(--text-tertiary); }
+    .phase-complete .phase-list li::before { content: '✓'; color: rgba(255,255,255,0.3); }
+
+    /* Active-phase glow highlight */
+    .roadmap-phase.phase-active {
+      position: relative;
+    }
+    .roadmap-phase.phase-active::before {
+      content: '';
+      position: absolute;
+      top: -28px;
+      left: -24px;
+      right: 0;
+      bottom: -16px;
+      background: radial-gradient(ellipse at 0% 0%, rgba(255,255,255,0.05) 0%, transparent 65%);
+      border-radius: 8px;
+      pointer-events: none;
+      z-index: -1;
+    }
+    .roadmap-phase.phase-active .phase-tag {
+      position: relative;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .roadmap-phase.phase-active .phase-tag::before {
+      content: '';
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: rgba(255,255,255,0.85);
+      box-shadow: 0 0 8px rgba(255,255,255,0.7), 0 0 18px rgba(255,255,255,0.35);
+      animation: phaseGlowPulse 2.2s ease-in-out infinite;
+    }
+    @keyframes phaseGlowPulse {
+      0%, 100% { opacity: 0.6; transform: scale(1); }
+      50%       { opacity: 1;   transform: scale(1.25); }
+    }
+
+    /* Phase status note (e.g. "Phase ended on ...") */
+    .phase-status-note {
+      font-size: 11.5px;
+      font-weight: 400;
+      letter-spacing: 0.04em;
+      color: var(--text-tertiary);
+      margin-top: 22px;
+      padding-top: 18px;
+      border-top: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .phase-status-note::before {
+      content: '';
+      width: 5px;
+      height: 5px;
+      border-radius: 50%;
+      background: rgba(255,255,255,0.32);
+      flex-shrink: 0;
+    }
+    .phase-status-note strong {
+      color: var(--text-secondary);
+      font-weight: 500;
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      .roadmap-phase.phase-active .phase-tag::before { animation: none; }
+    }
+
     /* ─── FOUNDER ─────────────────────────────────────────── */
     .founder-section { padding: 140px 52px; }
     .founder-inner {
@@ -1134,8 +1205,8 @@
         Every intelligence platform begins somewhere. Continuum One's roadmap is a deliberate expansion from workspace to operating layer.
       </p>
       <div class="roadmap-grid">
-        <div class="roadmap-phase phase-active reveal reveal-delay-1">
-          <span class="phase-tag">Phase 01 — Now</span>
+        <div class="roadmap-phase phase-complete reveal reveal-delay-1">
+          <span class="phase-tag">Phase 01 — Complete</span>
           <p class="phase-name">AI Workspace</p>
           <ul class="phase-list">
             <li>Conversation</li>
@@ -1144,9 +1215,10 @@
             <li>Planning</li>
             <li>Analysis</li>
           </ul>
+          <p class="phase-status-note">Update: <strong>Phase ended on 17th June</strong></p>
         </div>
-        <div class="roadmap-phase phase-future reveal reveal-delay-2">
-          <span class="phase-tag">Phase 02</span>
+        <div class="roadmap-phase phase-active reveal reveal-delay-2">
+          <span class="phase-tag">Phase 02 — Now</span>
           <p class="phase-name">Agent Systems</p>
           <ul class="phase-list">
             <li>Task execution</li>
