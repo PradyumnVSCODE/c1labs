@@ -906,72 +906,68 @@ async function handleSend(){
     thinkingRow.remove();
     appendAIMessage(
       "ContinuumOS could not reach the reasoning core. " +
-      "Add your Groq API key in the integration section of this file to activate live responses.\n\n" +
+     "ContinuumOS could not reach the reasoning core.\n\n" +
+"Check the Gemini API configuration or network connection.\n\n" +
       "(" + (err && err.message ? err.message : "No API key configured") + ")"
     );
   }
 }
 
-/* ============================================================
-   GROQ API INTEGRATION
-   Paste your key below to activate live model responses.
-   Nothing is hardcoded — leave GROQ_API_KEY empty for offline/demo mode.
-   ============================================================ */
 
-// GROQ API KEY HERE
-const GROQ_API_KEY = "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";
+ // GOOGLE AI STUDIO API KEY
+const GEMINI_API_KEY = "AQ.Ab8RN6Idz-k2D0_Rv0YtUgVQTldemjFgFiTMiN1zqxAplK-fig";
 
-const GROQ_CONFIG = {
-  endpoint: "https://api.groq.com/openai/v1/chat/completions",
-  model: "llama-3.3-70b-versatile",
+const GEMINI_CONFIG = {
+  model: "gemini-2.5-flash",
   systemPrompt:
     "You are the reasoning core of ContinuumOS, an AI operating layer built by ContinuumOne. " +
     "Respond with precision, calm confidence, and minimal filler — like an operating system " +
-    "speaking to the person who runs it.",
-  temperature: 0.7,
-  maxTokens: 1024
+    "speaking to the person who runs it."
 };
 
-// GROQ API REQUEST FUNCTION
 async function requestCompletion(userMessage){
-  if(!GROQ_API_KEY){
-    // Offline / demo fallback so the interface remains usable before a key is added.
-    await new Promise(r => setTimeout(r, 900 + Math.random()*700));
-    return demoResponse(userMessage);
-  }
 
-  const response = await fetch(GROQ_CONFIG.endpoint, {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-      "Authorization": `Bearer ${GROQ_API_KEY}`
-    },
-    body: JSON.stringify({
-      model: GROQ_CONFIG.model,
-      temperature: GROQ_CONFIG.temperature,
-      max_tokens: GROQ_CONFIG.maxTokens,
-      messages: [
-        { role: "system", content: GROQ_CONFIG.systemPrompt },
-        { role: "user", content: userMessage }
-      ]
-    })
-  });
+  const response = await fetch(
+    `https://generativelanguage.googleapis.com/v1beta/models/${GEMINI_CONFIG.model}:generateContent?key=${GEMINI_API_KEY}`,
+    {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({
+        contents: [
+          {
+            parts: [
+              {
+                text:
+                  GEMINI_CONFIG.systemPrompt +
+                  "\n\nUser: " +
+                  userMessage
+              }
+            ]
+          }
+        ]
+      })
+    }
+  );
 
   if(!response.ok){
-    throw new Error(`Groq API error: ${response.status}`);
+    throw new Error(`Gemini API error: ${response.status}`);
   }
 
   const data = await response.json();
-  const text = data?.choices?.[0]?.message?.content;
-  if(!text) throw new Error("Empty response from reasoning core.");
+
+  const text =
+    data?.candidates?.[0]?.content?.parts?.[0]?.text;
+
+  if(!text){
+    throw new Error("Empty response from reasoning core.");
+  }
+
   return text;
 }
 
-function demoResponse(userMessage){
-  return "Reasoning core offline — running in demo mode.\n\n" +
-    "Once a Groq API key is added, ContinuumOS will process requests like \"" +
-    userMessage + "\" through the live model and respond here in real time.";
-}
+
 
 /* ---------- ambient audio control ---------- */
 const audioBtn   = document.getElementById('audioBtn');
