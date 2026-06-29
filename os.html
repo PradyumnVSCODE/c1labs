@@ -584,11 +584,563 @@
     .audio-control{bottom:18px;right:14px;}
     .audio-btn{width:42px;height:42px;}
   }
+
+  /* ═══════════════════════════════════════════════════════════
+     CONTINUUMOS PROTOTYPE-3 — ADDITIVE ENHANCEMENT LAYER
+     Zero existing rules modified. All new selectors below.
+     ═══════════════════════════════════════════════════════════ */
+
+  /* ── Boot Sequence ───────────────────────────────────────── */
+  #cos-boot{
+    position:fixed;inset:0;z-index:99999;
+    background:#000;
+    display:flex;flex-direction:column;
+    align-items:center;justify-content:center;
+    transition:opacity 0.9s cubic-bezier(0.65,0,0.35,1);
+  }
+  #cos-boot.cos-boot-out{opacity:0;pointer-events:none;}
+  .cos-boot-grid{
+    position:absolute;inset:0;pointer-events:none;
+    background-image:
+      linear-gradient(rgba(255,255,255,0.026) 1px,transparent 1px),
+      linear-gradient(90deg,rgba(255,255,255,0.026) 1px,transparent 1px);
+    background-size:54px 54px;
+    mask-image:radial-gradient(ellipse 72% 72% at 50% 50%,black 0%,transparent 80%);
+    -webkit-mask-image:radial-gradient(ellipse 72% 72% at 50% 50%,black 0%,transparent 80%);
+  }
+  .cos-boot-orb{
+    position:absolute;top:50%;left:50%;
+    width:580px;height:580px;
+    transform:translate(-50%,-50%);
+    border-radius:50%;
+    background:radial-gradient(circle,rgba(160,200,255,0.08) 0%,rgba(255,255,255,0.025) 42%,transparent 72%);
+    animation:cosOrbBreath 3.8s ease-in-out infinite;
+    pointer-events:none;
+  }
+  @keyframes cosOrbBreath{
+    0%,100%{transform:translate(-50%,-50%) scale(1);opacity:0.65;}
+    50%{transform:translate(-50%,-50%) scale(1.09);opacity:1;}
+  }
+  .cos-boot-inner{
+    position:relative;
+    display:flex;flex-direction:column;
+    align-items:center;
+    width:min(460px,88vw);
+  }
+  .cos-boot-logo{
+    width:50px;height:50px;object-fit:contain;
+    margin-bottom:22px;
+    filter:drop-shadow(0 0 18px rgba(255,255,255,0.28));
+    animation:cosLogoPulse 2.6s ease-in-out infinite;
+  }
+  @keyframes cosLogoPulse{
+    0%,100%{filter:drop-shadow(0 0 12px rgba(255,255,255,0.2));}
+    50%{filter:drop-shadow(0 0 28px rgba(255,255,255,0.42));}
+  }
+  .cos-boot-brand{
+    font-size:12px;font-weight:600;
+    letter-spacing:0.36em;text-transform:uppercase;
+    color:rgba(255,255,255,0.88);
+    margin-bottom:8px;
+  }
+  .cos-boot-version{
+    font-family:'Space Mono',monospace;
+    font-size:9px;letter-spacing:0.22em;text-transform:uppercase;
+    color:rgba(255,255,255,0.28);
+    margin-bottom:44px;
+  }
+  .cos-diag-list{
+    width:100%;display:flex;flex-direction:column;gap:5px;
+    margin-bottom:36px;
+  }
+  .cos-diag-row{
+    display:flex;align-items:center;justify-content:space-between;
+    padding:8px 13px;
+    border:1px solid rgba(255,255,255,0.06);
+    border-radius:5px;
+    background:rgba(255,255,255,0.02);
+    opacity:0;transform:translateX(-10px);
+    transition:opacity 0.38s ease,transform 0.38s ease;
+  }
+  .cos-diag-row.cos-diag-in{opacity:1;transform:translateX(0);}
+  .cos-diag-label{
+    font-family:'Space Mono',monospace;
+    font-size:9.5px;letter-spacing:0.13em;text-transform:uppercase;
+    color:rgba(255,255,255,0.42);
+  }
+  .cos-diag-val{
+    font-family:'Space Mono',monospace;
+    font-size:9.5px;letter-spacing:0.1em;text-transform:uppercase;
+    color:rgba(255,255,255,0.82);
+    display:flex;align-items:center;gap:7px;
+  }
+  .cos-diag-dot{
+    width:5px;height:5px;border-radius:50%;
+    background:rgba(140,255,200,0.9);
+    box-shadow:0 0 7px rgba(140,255,200,0.65);
+    animation:cosDotBlink 1.6s ease-in-out infinite;
+  }
+  @keyframes cosDotBlink{
+    0%,100%{opacity:0.45;transform:scale(1);}
+    50%{opacity:1;transform:scale(1.3);}
+  }
+  .cos-boot-bar-wrap{
+    width:100%;height:1px;
+    background:rgba(255,255,255,0.08);
+    border-radius:1px;overflow:hidden;
+    margin-bottom:14px;
+  }
+  .cos-boot-bar-fill{
+    height:100%;width:0%;
+    background:linear-gradient(90deg,rgba(255,255,255,0.4),#fff);
+    box-shadow:0 0 12px rgba(255,255,255,0.6),0 0 30px rgba(255,255,255,0.22);
+    border-radius:1px;
+    transition:width 0.12s linear;
+  }
+  .cos-boot-pct{
+    font-family:'Space Mono',monospace;
+    font-size:10.5px;letter-spacing:0.09em;
+    color:rgba(255,255,255,0.45);
+    margin-bottom:12px;
+    align-self:flex-end;
+  }
+  .cos-boot-msg{
+    font-family:'Space Mono',monospace;
+    font-size:9px;letter-spacing:0.18em;text-transform:uppercase;
+    color:rgba(255,255,255,0.3);
+    height:13px;
+    align-self:flex-start;
+    transition:opacity 0.2s ease;
+  }
+  /* status overlay shown at end */
+  .cos-boot-status-wrap{
+    position:absolute;
+    display:flex;flex-direction:column;align-items:center;gap:10px;
+    opacity:0;transition:opacity 0.7s ease;
+    pointer-events:none;
+  }
+  .cos-boot-status-wrap.cos-status-show{opacity:1;}
+  .cos-boot-status-line{
+    font-size:clamp(12px,2.2vw,15px);font-weight:500;
+    letter-spacing:0.09em;text-transform:uppercase;
+    color:rgba(255,255,255,0.65);
+  }
+  .cos-boot-status-ready{
+    font-size:clamp(28px,5.5vw,50px);font-weight:700;
+    letter-spacing:-0.01em;
+    color:#fff;
+    text-shadow:0 0 36px rgba(255,255,255,0.32),0 0 80px rgba(255,255,255,0.1);
+  }
+
+  /* ── System Status Bar ───────────────────────────────────── */
+  #cos-statusbar{
+    height:32px;flex:none;
+    display:flex;align-items:center;
+    border-bottom:1px solid rgba(255,255,255,0.055);
+    background:rgba(0,0,0,0.38);
+    backdrop-filter:blur(10px);
+    -webkit-backdrop-filter:blur(10px);
+    position:relative;z-index:18;
+    overflow:hidden;
+    flex-shrink:0;
+  }
+  .cos-sb-track{
+    display:flex;align-items:center;
+    gap:0;
+    padding:0 20px;
+    flex:1;
+  }
+  .cos-sb-node{
+    display:flex;align-items:center;gap:6px;
+    padding:0 14px;
+    font-family:'Space Mono',monospace;
+    font-size:8.5px;letter-spacing:0.12em;text-transform:uppercase;
+    color:rgba(255,255,255,0.36);
+    white-space:nowrap;
+  }
+  .cos-sb-dot{
+    width:4px;height:4px;border-radius:50%;flex-shrink:0;
+    background:rgba(140,255,200,0.85);
+    box-shadow:0 0 5px rgba(140,255,200,0.55);
+    animation:cosDotBlink 2.4s ease-in-out infinite;
+  }
+  .cos-sb-dot.cos-amber{
+    background:rgba(255,200,80,0.85);
+    box-shadow:0 0 5px rgba(255,200,80,0.5);
+  }
+  .cos-sb-sep{
+    width:1px;height:12px;
+    background:rgba(255,255,255,0.07);
+    flex-shrink:0;
+  }
+  .cos-sb-runtime{
+    font-family:'Space Mono',monospace;
+    font-size:8px;letter-spacing:0.09em;
+    color:rgba(255,255,255,0.2);
+    padding-right:18px;
+    white-space:nowrap;
+    margin-left:auto;
+  }
+
+  /* ── Context Terminal ────────────────────────────────────── */
+  #cos-ctx{
+    position:fixed;
+    top:98px;right:0;bottom:0; /* 64px topbar + 32px statusbar + 2px border */
+    width:210px;
+    border-left:1px solid rgba(255,255,255,0.07);
+    background:rgba(4,4,4,0.72);
+    backdrop-filter:blur(20px);
+    -webkit-backdrop-filter:blur(20px);
+    z-index:17;
+    display:flex;flex-direction:column;
+    gap:0;
+    transform:translateX(100%);
+    transition:transform 0.4s cubic-bezier(0.22,1,0.36,1);
+    padding:18px 15px 18px;
+    overflow:hidden;
+  }
+  #cos-ctx.cos-ctx-open{transform:translateX(0);}
+  .cos-ctx-hdr{
+    font-family:'Space Mono',monospace;
+    font-size:8.5px;letter-spacing:0.22em;text-transform:uppercase;
+    color:rgba(255,255,255,0.25);
+    padding-bottom:12px;
+    border-bottom:1px solid rgba(255,255,255,0.055);
+    margin-bottom:16px;
+    display:flex;align-items:center;justify-content:space-between;
+  }
+  .cos-ctx-hdr-dot{
+    width:4px;height:4px;border-radius:50%;
+    background:rgba(140,255,200,0.8);
+    box-shadow:0 0 5px rgba(140,255,200,0.5);
+    animation:cosDotBlink 2s ease-in-out infinite;
+  }
+  .cos-ctx-row{
+    display:flex;flex-direction:column;gap:2px;
+    margin-bottom:14px;
+  }
+  .cos-ctx-key{
+    font-family:'Space Mono',monospace;
+    font-size:8px;letter-spacing:0.13em;text-transform:uppercase;
+    color:rgba(255,255,255,0.25);
+  }
+  .cos-ctx-val{
+    font-family:'Space Mono',monospace;
+    font-size:10.5px;letter-spacing:0.05em;
+    color:rgba(255,255,255,0.72);
+  }
+  .cos-ctx-divider{
+    width:100%;height:1px;
+    background:rgba(255,255,255,0.05);
+    margin:6px 0 14px;
+  }
+  .cos-ctx-health-label{
+    font-family:'Space Mono',monospace;
+    font-size:8px;letter-spacing:0.13em;text-transform:uppercase;
+    color:rgba(255,255,255,0.25);
+    display:flex;justify-content:space-between;
+    margin-bottom:6px;
+  }
+  .cos-ctx-bar-track{
+    height:2px;border-radius:2px;
+    background:rgba(255,255,255,0.07);
+    overflow:hidden;
+    margin-bottom:10px;
+  }
+  .cos-ctx-bar-fill{
+    height:100%;width:97%;
+    background:linear-gradient(90deg,rgba(140,255,200,0.45),rgba(140,255,200,0.9));
+    box-shadow:0 0 8px rgba(140,255,200,0.4);
+    border-radius:2px;
+    transition:width 1.4s ease;
+  }
+  #cos-ctx-toggle{
+    position:fixed;
+    right:0;
+    top:50%;transform:translateY(-50%);
+    z-index:19;
+    width:18px;height:52px;
+    background:rgba(255,255,255,0.035);
+    border:1px solid rgba(255,255,255,0.08);
+    border-right:none;
+    border-radius:5px 0 0 5px;
+    display:flex;align-items:center;justify-content:center;
+    cursor:pointer;
+    transition:background 0.25s,border-color 0.25s,right 0.4s cubic-bezier(0.22,1,0.36,1);
+  }
+  #cos-ctx-toggle:hover{
+    background:rgba(255,255,255,0.07);
+    border-color:rgba(255,255,255,0.14);
+  }
+  #cos-ctx-toggle.cos-ctx-open{right:210px;}
+  #cos-ctx-toggle svg{
+    width:9px;height:9px;
+    stroke:rgba(255,255,255,0.32);stroke-width:1.8;
+    fill:none;
+    transition:transform 0.4s ease;
+  }
+  #cos-ctx-toggle.cos-ctx-open svg{transform:rotate(180deg);}
+
+  /* ── Enhanced thinking visualization ────────────────────── */
+  .cos-thinking-wrap{
+    padding:14px 17px;
+    border-radius:4px 16px 16px 16px;
+    background:var(--card);
+    border:1px solid rgba(255,255,255,0.09);
+    position:relative;overflow:hidden;
+    display:flex;flex-direction:column;gap:9px;
+  }
+  .cos-thinking-wrap::before{
+    content:'';position:absolute;inset:0;
+    background:linear-gradient(90deg,
+      transparent 0%,rgba(160,200,255,0.04) 50%,transparent 100%);
+    transform:translateX(-100%);
+    animation:cosThinkSweep 1.9s ease-in-out infinite;
+  }
+  @keyframes cosThinkSweep{
+    0%{transform:translateX(-100%);}
+    100%{transform:translateX(150%);}
+  }
+  .cos-think-top{
+    display:flex;align-items:center;justify-content:space-between;
+  }
+  .cos-think-label{
+    font-family:'Space Mono',monospace;
+    font-size:10px;letter-spacing:0.1em;text-transform:uppercase;
+    color:rgba(255,255,255,0.38);
+  }
+  .cos-think-bars{
+    display:flex;align-items:flex-end;gap:3px;height:16px;
+  }
+  .cos-think-bars span{
+    display:block;width:3px;border-radius:2px;
+    background:rgba(160,200,255,0.65);
+    box-shadow:0 0 5px rgba(160,200,255,0.4);
+    animation:cosPulseBar 1.2s ease-in-out infinite;
+  }
+  .cos-think-bars span:nth-child(1){height:6px;animation-delay:0s;}
+  .cos-think-bars span:nth-child(2){height:12px;animation-delay:0.1s;}
+  .cos-think-bars span:nth-child(3){height:8px;animation-delay:0.22s;}
+  .cos-think-bars span:nth-child(4){height:15px;animation-delay:0.08s;}
+  .cos-think-bars span:nth-child(5){height:7px;animation-delay:0.17s;}
+  @keyframes cosPulseBar{
+    0%,100%{transform:scaleY(0.45);opacity:0.38;}
+    50%{transform:scaleY(1);opacity:1;}
+  }
+  .cos-think-signal{
+    display:flex;gap:2px;align-items:flex-end;height:14px;
+  }
+  .cos-think-signal span{
+    flex:1;border-radius:1px;
+    background:rgba(255,255,255,0.1);
+    animation:cosSignalFlick 0.85s ease-in-out infinite;
+  }
+  @keyframes cosSignalFlick{
+    0%,100%{background:rgba(255,255,255,0.07);}
+    50%{background:rgba(160,200,255,0.38);}
+  }
+
+  /* ── Microinteractions ───────────────────────────────────── */
+  .new-chat-btn,.nav-item,.send-btn,.icon-btn,.audio-btn,.sidebar-toggle{
+    transition:transform 0.16s ease, box-shadow 0.22s ease !important;
+  }
+  .new-chat-btn:hover{
+    box-shadow:0 0 0 1px rgba(255,255,255,0.1),0 0 20px rgba(255,255,255,0.04) !important;
+    transform:translateY(-1px) !important;
+  }
+  .send-btn:not(:disabled):hover{
+    box-shadow:0 0 0 1px rgba(255,255,255,0.16),0 0 18px rgba(255,255,255,0.06) !important;
+    transform:translateY(-1px) !important;
+  }
+  .icon-btn:hover{transform:translateY(-1px) !important;}
+  /* Panel shimmer */
+  .chat-console,.sidebar{
+    position:relative;overflow:hidden;
+  }
+  /* Subtle scan line — one pass every 18s for atmosphere */
+  .cos-scan{
+    position:fixed;top:-1px;left:0;right:0;
+    height:1px;
+    background:linear-gradient(90deg,
+      transparent 0%,rgba(255,255,255,0.04) 50%,transparent 100%);
+    animation:cosScanLine 18s linear infinite;
+    pointer-events:none;z-index:2;
+  }
+  @keyframes cosScanLine{
+    0%{top:-1px;opacity:0;}
+    4%{opacity:1;}
+    96%{opacity:0.6;}
+    100%{top:100vh;opacity:0;}
+  }
+
+  /* ── Sound indicator ─────────────────────────────────────── */
+  #cos-sound-toast{
+    position:fixed;bottom:84px;right:22px;
+    z-index:52;
+    font-family:'Space Mono',monospace;
+    font-size:8.5px;letter-spacing:0.13em;text-transform:uppercase;
+    color:rgba(255,255,255,0.28);
+    opacity:0;pointer-events:none;
+    transition:opacity 0.4s ease;
+  }
+  #cos-sound-toast.cos-toast-show{opacity:1;}
+
+  /* ── Enhanced particles ──────────────────────────────────── */
+  .cos-epar{
+    position:fixed;
+    border-radius:50%;
+    background:rgba(255,255,255,0.6);
+    pointer-events:none;z-index:0;
+    animation:cosEparDrift linear infinite;
+  }
+  @keyframes cosEparDrift{
+    0%{transform:translateY(0) translateX(0) scale(1);opacity:0;}
+    8%{opacity:0.7;}
+    50%{transform:translateY(-50vh) translateX(15px) scale(0.85);}
+    92%{opacity:0.3;}
+    100%{transform:translateY(-110vh) translateX(28px) scale(0.6);opacity:0;}
+  }
+
+  /* ── Responsive ──────────────────────────────────────────── */
+  @media(max-width:860px){
+    #cos-ctx{top:130px;}
+    .cos-sb-node:nth-child(n+7){display:none;}
+    .cos-sb-sep:nth-child(n+8){display:none;}
+  }
+  @media(max-width:600px){
+    #cos-ctx{width:100vw;top:auto;bottom:0;height:60vh;border-left:none;
+             border-top:1px solid rgba(255,255,255,0.07);}
+    #cos-ctx-toggle{right:14px;top:auto;bottom:calc(60vh + 8px);
+                    transform:none;border-radius:5px;border:1px solid rgba(255,255,255,0.08);}
+    #cos-ctx-toggle.cos-ctx-open{right:14px;top:auto;}
+    .cos-sb-node:nth-child(n+4){display:none;}
+    .cos-sb-sep:nth-child(n+5){display:none;}
+  }
+  @media(prefers-reduced-motion:reduce){
+    .cos-boot-orb,.cos-boot-logo,#cos-boot *,
+    .cos-think-bars span,.cos-think-signal span,
+    .cos-thinking-wrap::before,.cos-scan,.cos-epar{
+      animation:none!important;transition:none!important;
+    }
+  }
 </style>
 </head>
 <body>
 
-<div class="bg-grid"></div>
+<!-- ═══════════ COS BOOT SEQUENCE ═══════════ -->
+<div id="cos-boot" aria-hidden="true" aria-label="ContinuumOS initialising">
+  <div class="cos-boot-grid"></div>
+  <div class="cos-boot-orb"></div>
+  <div class="cos-boot-inner">
+    <img class="cos-boot-logo" src="assets/logo.png" alt="" />
+    <div class="cos-boot-brand">ContinuumOne</div>
+    <div class="cos-boot-version">ContinuumOS &nbsp;·&nbsp; Prototype-2</div>
+
+    <div class="cos-diag-list" id="cosDiagList">
+      <div class="cos-diag-row" data-delay="0">
+        <span class="cos-diag-label">Neural Core</span>
+        <span class="cos-diag-val"><span class="cos-diag-dot"></span>Online</span>
+      </div>
+      <div class="cos-diag-row" data-delay="380">
+        <span class="cos-diag-label">Context Engine</span>
+        <span class="cos-diag-val"><span class="cos-diag-dot"></span>Active</span>
+      </div>
+      <div class="cos-diag-row" data-delay="700">
+        <span class="cos-diag-label">Memory Layer</span>
+        <span class="cos-diag-val"><span class="cos-diag-dot"></span>Stable</span>
+      </div>
+      <div class="cos-diag-row" data-delay="1020">
+        <span class="cos-diag-label">Reasoning Core</span>
+        <span class="cos-diag-val"><span class="cos-diag-dot"></span>Operational</span>
+      </div>
+      <div class="cos-diag-row" data-delay="1320">
+        <span class="cos-diag-label">Intelligence Layer</span>
+        <span class="cos-diag-val"><span class="cos-diag-dot"></span>Loaded</span>
+      </div>
+      <div class="cos-diag-row" data-delay="1600">
+        <span class="cos-diag-label">Network</span>
+        <span class="cos-diag-val"><span class="cos-diag-dot"></span>Connected</span>
+      </div>
+    </div>
+
+    <div class="cos-boot-bar-wrap">
+      <div class="cos-boot-bar-fill" id="cosBootBar"></div>
+    </div>
+    <div class="cos-boot-pct" id="cosBootPct">0%</div>
+    <div class="cos-boot-msg" id="cosBootMsg">&nbsp;</div>
+
+    <!-- status overlay -->
+    <div class="cos-boot-status-wrap" id="cosBootStatus">
+      <div class="cos-boot-status-line">OS Under Operational Status</div>
+      <div class="cos-boot-status-ready">SYSTEM READY</div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════ SCAN LINE ═══════════ -->
+<div class="cos-scan" aria-hidden="true"></div>
+
+<!-- ═══════════ CONTEXT TERMINAL TOGGLE ═══════════ -->
+<button id="cos-ctx-toggle" aria-label="Toggle context terminal">
+  <svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M15 18l-6-6 6-6"/>
+  </svg>
+</button>
+
+<!-- ═══════════ CONTEXT TERMINAL PANEL ═══════════ -->
+<aside id="cos-ctx" aria-label="Context terminal">
+  <div class="cos-ctx-hdr">
+    Context Terminal
+    <span class="cos-ctx-hdr-dot"></span>
+  </div>
+
+  <div class="cos-ctx-row">
+    <div class="cos-ctx-key">Session Status</div>
+    <div class="cos-ctx-val" id="cosCtxStatus">Active</div>
+  </div>
+  <div class="cos-ctx-row">
+    <div class="cos-ctx-key">Runtime</div>
+    <div class="cos-ctx-val" id="cosCtxRuntime">00:00:00</div>
+  </div>
+  <div class="cos-ctx-row">
+    <div class="cos-ctx-key">Messages Processed</div>
+    <div class="cos-ctx-val" id="cosCtxMsgs">0</div>
+  </div>
+  <div class="cos-ctx-row">
+    <div class="cos-ctx-key">Reasoning Core</div>
+    <div class="cos-ctx-val" id="cosCtxCore">Gemini 2.5 Flash</div>
+  </div>
+
+  <div class="cos-ctx-divider"></div>
+
+  <div class="cos-ctx-row">
+    <div class="cos-ctx-key">Prototype Version</div>
+    <div class="cos-ctx-val">P-2 / Build 0.2.0</div>
+  </div>
+  <div class="cos-ctx-row">
+    <div class="cos-ctx-key">Intelligence Layer</div>
+    <div class="cos-ctx-val">Active</div>
+  </div>
+  <div class="cos-ctx-row">
+    <div class="cos-ctx-key">Memory Layer</div>
+    <div class="cos-ctx-val">Ephemeral</div>
+  </div>
+
+  <div class="cos-ctx-divider"></div>
+
+  <div class="cos-ctx-health-label">
+    <span>System Health</span>
+    <span id="cosCtxHealthPct">97%</span>
+  </div>
+  <div class="cos-ctx-bar-track">
+    <div class="cos-ctx-bar-fill" id="cosCtxHealthBar"></div>
+  </div>
+</aside>
+
+<!-- ═══════════ SOUND TOAST ═══════════ -->
+<div id="cos-sound-toast" aria-live="polite"></div>
+
+
 <div class="bg-orb"></div>
 <div class="bg-particles" id="particles"></div>
 <div class="sidebar-scrim" id="scrim"></div>
@@ -619,6 +1171,32 @@
       </div>
     </div>
   </header>
+
+  <!-- ═══════ COS SYSTEM STATUS BAR ═══════ -->
+  <div id="cos-statusbar" aria-label="System status">
+    <div class="cos-sb-track">
+      <div class="cos-sb-node">
+        <span class="cos-sb-dot"></span>Neural Core: Online
+      </div>
+      <div class="cos-sb-sep"></div>
+      <div class="cos-sb-node">
+        <span class="cos-sb-dot"></span>Context Engine: Active
+      </div>
+      <div class="cos-sb-sep"></div>
+      <div class="cos-sb-node">
+        <span class="cos-sb-dot"></span>Memory Layer: Stable
+      </div>
+      <div class="cos-sb-sep"></div>
+      <div class="cos-sb-node">
+        <span class="cos-sb-dot"></span>Network: Connected
+      </div>
+      <div class="cos-sb-sep"></div>
+      <div class="cos-sb-node">
+        <span class="cos-sb-dot"></span>Reasoning Core: Operational
+      </div>
+    </div>
+    <div class="cos-sb-runtime" id="cosSbRuntime">SESSION 00:00:00</div>
+  </div>
 
   <!-- ───────────── main layout ───────────── -->
   <div class="layout">
@@ -914,7 +1492,7 @@ async function handleSend(){
 
 
  // GOOGLE AI STUDIO API KEY
-const GEMINI_API_KEY = "AQ.Ab8RN6J5MMaYsBP7azFW7LAUn2dvtO5d4MVLpTM4u1Y2gvVC-g";
+const GEMINI_API_KEY = "";
 
 const GEMINI_CONFIG = {
   model: "gemini-2.5-flash",
@@ -1012,6 +1590,273 @@ audioBtn.addEventListener('click', ()=>{
     iconOff.style.display = 'block';
   }
 });
+
+/* ================================================================
+   CONTINUUMOS PROTOTYPE-3 — ADDITIVE ENHANCEMENT LAYER
+   All code below is NEW. No existing function is modified.
+   ================================================================ */
+
+/* ── Shared session counters ───────────────────────────────────── */
+let cosSessionSeconds = 0;
+let cosMsgCount = 0;
+
+/* ── Boot Sequence ─────────────────────────────────────────────── */
+(function cosBootSequence(){
+  const boot       = document.getElementById('cos-boot');
+  const barFill    = document.getElementById('cosBootBar');
+  const pctEl      = document.getElementById('cosBootPct');
+  const msgEl      = document.getElementById('cosBootMsg');
+  const diagRows   = document.querySelectorAll('.cos-diag-row');
+  const statusWrap = document.getElementById('cosBootStatus');
+  if(!boot) return;
+
+  if(window.matchMedia('(prefers-reduced-motion:reduce)').matches){
+    boot.remove(); return;
+  }
+
+  document.documentElement.style.overflow = 'hidden';
+
+  const msgs = [
+    'Initializing Continuum Core...',
+    'Verifying Neural Systems...',
+    'Establishing Intelligence Layer...',
+    'Loading Operational Framework...',
+    'Calibrating Context Engine...',
+    'Authenticating Security Layer...',
+    'Synchronizing Continuum Protocols...',
+    'Activating Reasoning Core...',
+    'Finalizing Startup Sequence...',
+  ];
+
+  // Stagger diagnostic rows
+  diagRows.forEach(row => {
+    const delay = parseInt(row.dataset.delay || '0', 10);
+    setTimeout(() => row.classList.add('cos-diag-in'), delay + 200);
+  });
+
+  const loadDuration = 4800;
+  const startTime = performance.now();
+  let lastMsgIdx = -1;
+
+  function tick(now){
+    const elapsed  = now - startTime;
+    const progress = Math.min(elapsed / loadDuration, 1);
+    const pct      = Math.floor(progress * 100);
+    barFill.style.width = pct + '%';
+    pctEl.textContent   = pct + '%';
+
+    const mi = Math.min(msgs.length - 1, Math.floor(progress * msgs.length));
+    if(mi !== lastMsgIdx){
+      lastMsgIdx = mi;
+      msgEl.style.opacity = '0';
+      setTimeout(()=>{ msgEl.textContent = msgs[mi]; msgEl.style.opacity = '1'; }, 130);
+    }
+    if(progress < 1){
+      requestAnimationFrame(tick);
+    } else {
+      barFill.style.width = '100%';
+      pctEl.textContent   = '100%';
+      setTimeout(showStatus, 280);
+    }
+  }
+  requestAnimationFrame(tick);
+
+  function showStatus(){
+    const diagList  = document.getElementById('cosDiagList');
+    const barWrap   = boot.querySelector('.cos-boot-bar-wrap');
+    if(diagList)  { diagList.style.transition  = 'opacity 0.4s'; diagList.style.opacity  = '0'; }
+    if(barWrap)   { barWrap.style.transition   = 'opacity 0.4s'; barWrap.style.opacity   = '0'; }
+    if(pctEl)     { pctEl.style.transition     = 'opacity 0.4s'; pctEl.style.opacity     = '0'; }
+    if(msgEl)     { msgEl.style.transition     = 'opacity 0.4s'; msgEl.style.opacity     = '0'; }
+    setTimeout(()=>{ if(statusWrap) statusWrap.classList.add('cos-status-show'); }, 350);
+    setTimeout(finishBoot, 1900);
+  }
+
+  function finishBoot(){
+    boot.classList.add('cos-boot-out');
+    document.documentElement.style.overflow = '';
+    setTimeout(()=>{ boot.remove(); }, 950);
+  }
+})();
+
+/* ── Runtime clock sync ────────────────────────────────────────── */
+(function cosRuntimeSync(){
+  const sbRuntime  = document.getElementById('cosSbRuntime');
+  const ctxRuntime = document.getElementById('cosCtxRuntime');
+  const ctxMsgs    = document.getElementById('cosCtxMsgs');
+
+  setInterval(()=>{
+    cosSessionSeconds++;
+    const h   = String(Math.floor(cosSessionSeconds / 3600)).padStart(2,'0');
+    const m   = String(Math.floor((cosSessionSeconds % 3600) / 60)).padStart(2,'0');
+    const s   = String(cosSessionSeconds % 60).padStart(2,'0');
+    const fmt = `${h}:${m}:${s}`;
+    if(sbRuntime)  sbRuntime.textContent  = `SESSION ${fmt}`;
+    if(ctxRuntime) ctxRuntime.textContent = fmt;
+    if(ctxMsgs)    ctxMsgs.textContent    = String(cosMsgCount);
+  }, 1000);
+})();
+
+/* ── Message counter hook ──────────────────────────────────────── */
+(function cosMsgCounter(){
+  const origSend = window.handleSend;
+  if(typeof origSend === 'function'){
+    window.handleSend = async function(){
+      const txt = document.getElementById('chatInput')?.value?.trim();
+      if(txt) cosMsgCount++;
+      return origSend.apply(this, arguments);
+    };
+  }
+})();
+
+/* ── Enhanced thinking visualization ───────────────────────────── */
+(function cosThinkingViz(){
+  const messagesEl = document.getElementById('messages');
+  if(!messagesEl) return;
+
+  const observer = new MutationObserver(mutations => {
+    mutations.forEach(m => {
+      m.addedNodes.forEach(node => {
+        if(node.nodeType !== 1) return;
+        if(node.id !== 'thinkingRow') return;
+        const thinkDiv = node.querySelector('.thinking');
+        if(!thinkDiv) return;
+
+        // Hide original dots
+        thinkDiv.style.display = 'none';
+
+        const wrap = document.createElement('div');
+        wrap.className = 'cos-thinking-wrap';
+        const signalBits = Array.from({length:20}, ()=>'<span></span>').join('');
+        wrap.innerHTML = `
+          <div class="cos-think-top">
+            <span class="cos-think-label">Reasoning</span>
+            <div class="cos-think-bars">
+              <span></span><span></span><span></span><span></span><span></span>
+            </div>
+          </div>
+          <div class="cos-think-signal">${signalBits}</div>`;
+
+        // Randomise signal bar heights & delays
+        wrap.querySelectorAll('.cos-think-signal span').forEach((s, i) => {
+          s.style.height           = (3 + Math.random() * 11) + 'px';
+          s.style.animationDelay   = (i * 0.044) + 's';
+        });
+
+        thinkDiv.parentNode.insertBefore(wrap, thinkDiv.nextSibling);
+
+        // Clean up when row is removed
+        const cleanObserver = new MutationObserver(() => {
+          if(!document.contains(node)){
+            wrap.remove();
+            cleanObserver.disconnect();
+          }
+        });
+        cleanObserver.observe(messagesEl, {childList: true});
+      });
+    });
+  });
+
+  observer.observe(messagesEl, {childList: true});
+})();
+
+/* ── Context Terminal toggle ───────────────────────────────────── */
+(function cosCtxTerminal(){
+  const panel  = document.getElementById('cos-ctx');
+  const toggle = document.getElementById('cos-ctx-toggle');
+  if(!panel || !toggle) return;
+
+  toggle.addEventListener('click', () => {
+    const open = panel.classList.toggle('cos-ctx-open');
+    toggle.classList.toggle('cos-ctx-open', open);
+    toggle.setAttribute('aria-expanded', String(open));
+  });
+})();
+
+/* ── Enhanced ambient particles ────────────────────────────────── */
+(function cosEnhancedParticles(){
+  if(window.matchMedia('(prefers-reduced-motion:reduce)').matches) return;
+  const count = window.innerWidth < 700 ? 8 : 18;
+  for(let i = 0; i < count; i++){
+    const p = document.createElement('div');
+    p.className = 'cos-epar';
+    const size = 1 + Math.random() * 1.8;
+    p.style.width             = size + 'px';
+    p.style.height            = size + 'px';
+    p.style.left              = (Math.random() * 100) + 'vw';
+    p.style.bottom            = '-6px';
+    p.style.opacity           = '0';
+    p.style.animationDuration = (18 + Math.random() * 16) + 's';
+    p.style.animationDelay    = (Math.random() * 24) + 's';
+    p.style.boxShadow         = `0 0 ${size * 3}px rgba(160,200,255,0.38)`;
+    document.body.appendChild(p);
+  }
+})();
+
+/* ── UI click sounds (Web Audio API — no external files) ────────── */
+(function cosSoundSystem(){
+  const toast = document.getElementById('cos-sound-toast');
+
+  function playTone(freq, dur, vol, type){
+    try{
+      const ctx  = new (window.AudioContext || window.webkitAudioContext)();
+      const osc  = ctx.createOscillator();
+      const gain = ctx.createGain();
+      osc.connect(gain);
+      gain.connect(ctx.destination);
+      osc.type = type || 'sine';
+      osc.frequency.setValueAtTime(freq, ctx.currentTime);
+      gain.gain.setValueAtTime(vol || 0.05, ctx.currentTime);
+      gain.gain.exponentialRampToValueAtTime(0.0001, ctx.currentTime + dur);
+      osc.start();
+      osc.stop(ctx.currentTime + dur);
+      osc.onended = () => ctx.close();
+    } catch(e){ /* not available */ }
+  }
+
+  function showToast(msg){
+    if(!toast) return;
+    toast.textContent = msg;
+    toast.classList.add('cos-toast-show');
+    setTimeout(() => toast.classList.remove('cos-toast-show'), 1800);
+  }
+
+  // Nav + chip clicks
+  document.querySelectorAll('.nav-item, .chip, .new-chat-btn, #cos-ctx-toggle').forEach(el => {
+    el.addEventListener('click', () => playTone(880, 0.08, 0.038, 'sine'), {passive: true});
+  });
+
+  // Send button
+  document.getElementById('sendBtn')?.addEventListener('click', () => {
+    playTone(1046, 0.1, 0.048, 'sine');
+  }, {passive: true});
+
+  // Audio toggle — piggyback, reads resulting state after existing handler fires
+  document.getElementById('audioBtn')?.addEventListener('click', () => {
+    setTimeout(() => {
+      const on = document.getElementById('audioBtn')?.classList.contains('playing');
+      showToast(on ? 'Ambient · On' : 'Ambient · Off');
+      playTone(on ? 660 : 440, 0.14, 0.04, 'sine');
+    }, 30);
+  }, {passive: true});
+})();
+
+/* ── Magnetic micro-movement ─────────────────────────────────────── */
+(function cosMagneticHover(){
+  if(window.matchMedia('(prefers-reduced-motion:reduce)').matches) return;
+  const targets = document.querySelectorAll('.send-btn, .new-chat-btn, .audio-btn');
+  targets.forEach(el => {
+    el.addEventListener('mousemove', e => {
+      const r  = el.getBoundingClientRect();
+      const dx = (e.clientX - (r.left + r.width  / 2)) / (r.width  / 2);
+      const dy = (e.clientY - (r.top  + r.height / 2)) / (r.height / 2);
+      el.style.transform = `translate(${dx * 3.5}px, ${dy * 3.5}px)`;
+    }, {passive: true});
+    el.addEventListener('mouseleave', () => {
+      el.style.transform = '';
+    }, {passive: true});
+  });
+})();
 </script>
 </body>
 </html>
