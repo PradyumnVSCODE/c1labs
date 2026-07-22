@@ -1,0 +1,637 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Intelligence Modules — ContinuumOne</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet"/>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+
+:root{
+  --bg:#000000;
+  --text:#ffffff;
+  --text-secondary:rgba(255,255,255,0.60);
+  --text-tertiary:rgba(255,255,255,0.35);
+  --border:rgba(255,255,255,0.09);
+  --border-hover:rgba(255,255,255,0.22);
+  --card-bg:rgba(255,255,255,0.03);
+  --card-bg-hover:rgba(255,255,255,0.055);
+}
+
+html{scroll-behavior:smooth;}
+
+body{
+  background:var(--bg);
+  color:var(--text);
+  font-family:'Space Grotesk',sans-serif;
+  -webkit-font-smoothing:antialiased;
+  overflow-x:hidden;
+  line-height:1.6;
+  min-height:100vh;
+}
+
+/* ── nav ── */
+nav{
+  position:fixed;top:0;left:0;right:0;z-index:100;
+  padding:28px 52px;
+  display:flex;align-items:center;justify-content:space-between;
+  border-bottom:1px solid transparent;
+  transition:border-color 0.4s,background 0.4s,padding 0.4s;
+}
+nav.scrolled{
+  background:rgba(0,0,0,0.82);
+  backdrop-filter:blur(20px);
+  -webkit-backdrop-filter:blur(20px);
+  border-bottom-color:var(--border);
+  padding-top:18px;padding-bottom:18px;
+}
+.nav-logo{
+  display:flex;align-items:center;gap:12px;
+  font-size:15px;font-weight:600;letter-spacing:0.18em;text-transform:uppercase;
+  color:var(--text);text-decoration:none;
+}
+.nav-logo img{width:32px;height:32px;object-fit:contain;display:block;filter:drop-shadow(0 0 8px rgba(255,255,255,0.25));}
+.nav-back{
+  font-size:13px;font-weight:400;letter-spacing:0.06em;
+  color:var(--text-secondary);text-decoration:none;
+  display:flex;align-items:center;gap:8px;
+  transition:color 0.25s;
+}
+.nav-back:hover{color:var(--text);}
+.nav-back svg{width:14px;height:14px;stroke:currentColor;fill:none;stroke-width:1.6;}
+
+/* ── background ── */
+.bg-orb{
+  position:fixed;top:40%;left:50%;
+  width:800px;height:800px;
+  transform:translate(-50%,-50%);
+  border-radius:50%;
+  background:radial-gradient(ellipse at center,rgba(255,255,255,0.042) 0%,rgba(255,255,255,0.014) 35%,transparent 70%);
+  animation:orbBreathe 8s ease-in-out infinite;
+  pointer-events:none;z-index:0;
+}
+@keyframes orbBreathe{
+  0%,100%{transform:translate(-50%,-50%) scale(1);opacity:0.7;}
+  50%{transform:translate(-50%,-50%) scale(1.1);opacity:1;}
+}
+.bg-grid{
+  position:fixed;inset:0;pointer-events:none;z-index:0;
+  background-image:
+    linear-gradient(rgba(255,255,255,0.022) 1px,transparent 1px),
+    linear-gradient(90deg,rgba(255,255,255,0.022) 1px,transparent 1px);
+  background-size:72px 72px;
+  mask-image:radial-gradient(ellipse 65% 60% at 50% 45%,black 0%,transparent 80%);
+  -webkit-mask-image:radial-gradient(ellipse 65% 60% at 50% 45%,black 0%,transparent 80%);
+}
+
+/* ── page wrapper ── */
+.page{
+  position:relative;z-index:1;
+  padding:160px 52px 120px;
+  max-width:1180px;
+  margin:0 auto;
+}
+
+/* ── header ── */
+.page-eyebrow{
+  font-size:10.5px;font-weight:500;letter-spacing:0.3em;text-transform:uppercase;
+  color:var(--text-tertiary);margin-bottom:22px;
+}
+.page-headline{
+  font-size:clamp(36px,5.5vw,72px);font-weight:600;letter-spacing:-0.03em;line-height:1.04;
+  margin-bottom:22px;
+}
+.page-sub{
+  font-size:clamp(15px,1.6vw,18px);font-weight:400;
+  color:var(--text-secondary);max-width:520px;line-height:1.68;
+  margin-bottom:80px;
+}
+
+/* ── modules grid ── */
+.modules-grid{
+  display:grid;
+  grid-template-columns:repeat(3,1fr);
+  gap:1px;
+  border:1px solid var(--border);
+  border-radius:6px;
+  overflow:hidden;
+  margin-bottom:100px;
+}
+
+.module-card{
+  padding:44px 38px 38px;
+  background:var(--card-bg);
+  display:flex;flex-direction:column;
+  gap:0;
+  position:relative;
+  cursor:pointer;
+  text-decoration:none;
+  color:inherit;
+  border-right:1px solid var(--border);
+  border-bottom:1px solid var(--border);
+  transition:background 0.3s;
+  overflow:hidden;
+}
+.module-card:nth-child(3n){border-right:none;}
+.module-card:nth-last-child(-n+3){border-bottom:none;}
+.module-card:hover{background:var(--card-bg-hover);}
+
+/* glow on hover */
+.module-card::before{
+  content:'';position:absolute;inset:0;
+  background:radial-gradient(ellipse 60% 50% at 30% 30%,rgba(255,255,255,0.04),transparent);
+  opacity:0;transition:opacity 0.35s ease;
+  pointer-events:none;
+}
+.module-card:hover::before{opacity:1;}
+
+.module-icon{
+  width:36px;height:36px;margin-bottom:28px;flex:none;
+  display:flex;align-items:center;justify-content:center;
+}
+.module-icon svg{width:100%;height:100%;stroke:rgba(255,255,255,0.55);fill:none;stroke-width:1.4;}
+
+.module-tag{
+  font-family:'Space Mono',monospace;
+  font-size:9px;letter-spacing:0.22em;text-transform:uppercase;
+  color:var(--text-tertiary);margin-bottom:12px;
+}
+.module-name{
+  font-size:22px;font-weight:600;letter-spacing:-0.02em;
+  margin-bottom:12px;line-height:1.2;
+}
+.module-desc{
+  font-size:13.5px;font-weight:400;color:var(--text-secondary);
+  line-height:1.65;flex:1;margin-bottom:28px;
+}
+.module-caps{
+  display:flex;flex-direction:column;gap:6px;margin-bottom:28px;
+}
+.module-cap{
+  font-size:12px;color:var(--text-tertiary);
+  display:flex;align-items:flex-start;gap:8px;
+}
+.module-cap::before{content:'→';color:var(--text-tertiary);flex-shrink:0;}
+
+.module-launch{
+  display:inline-flex;align-items:center;gap:8px;
+  font-size:12px;font-weight:500;letter-spacing:0.06em;
+  color:var(--text-secondary);
+  margin-top:auto;
+  transition:color 0.25s;
+}
+.module-launch svg{width:12px;height:12px;stroke:currentColor;fill:none;stroke-width:1.8;transition:transform 0.25s;}
+.module-card:hover .module-launch{color:var(--text);}
+.module-card:hover .module-launch svg{transform:translateX(3px);}
+
+/* ── coming soon tag ── */
+.module-soon{
+  position:absolute;top:16px;right:16px;
+  font-family:'Space Mono',monospace;
+  font-size:8px;letter-spacing:0.18em;text-transform:uppercase;
+  color:var(--text-tertiary);
+  border:1px solid var(--border);
+  padding:3px 8px;border-radius:2px;
+}
+
+/* ── bottom note ── */
+.modules-note{
+  text-align:center;
+  font-size:13px;color:var(--text-tertiary);
+  border-top:1px solid var(--border);
+  padding-top:40px;
+  line-height:1.7;
+}
+
+/* ── buttons ── */
+.btn-primary{
+  display:inline-block;background:#fff;color:#000;
+  font-family:'Space Grotesk',sans-serif;
+  font-size:14px;font-weight:600;letter-spacing:0.05em;
+  padding:14px 34px;border-radius:3px;text-decoration:none;
+  transition:opacity 0.25s,transform 0.25s;
+}
+.btn-primary:hover{opacity:0.88;transform:translateY(-1px);}
+.btn-secondary{
+  display:inline-block;background:transparent;
+  color:var(--text-secondary);
+  font-family:'Space Grotesk',sans-serif;
+  font-size:14px;font-weight:500;letter-spacing:0.05em;
+  padding:14px 34px;border-radius:3px;
+  border:1px solid var(--border);text-decoration:none;
+  transition:color 0.25s,border-color 0.25s,transform 0.25s;
+}
+.btn-secondary:hover{color:var(--text);border-color:var(--border-hover);transform:translateY(-1px);}
+
+/* ── reveal ── */
+.reveal{opacity:0;transform:translateY(24px);transition:opacity 0.7s cubic-bezier(0.22,1,0.36,1),transform 0.7s cubic-bezier(0.22,1,0.36,1);}
+.reveal.visible{opacity:1;transform:translateY(0);}
+.reveal-delay-1{transition-delay:0.08s;}
+.reveal-delay-2{transition-delay:0.16s;}
+.reveal-delay-3{transition-delay:0.24s;}
+
+/* ── footer ── */
+footer{
+  padding:54px 52px;border-top:1px solid var(--border);
+  position:relative;z-index:1;
+}
+.footer-inner{
+  max-width:1120px;margin:0 auto;
+  display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:22px;
+}
+.footer-logo{font-size:14px;font-weight:600;letter-spacing:0.16em;text-transform:uppercase;margin-bottom:6px;}
+.footer-tagline{font-size:13px;color:var(--text-tertiary);}
+.footer-copy{font-size:12px;color:var(--text-tertiary);letter-spacing:0.03em;}
+
+/* ── responsive ── */
+@media(max-width:1000px){
+  .modules-grid{grid-template-columns:repeat(2,1fr);}
+  .module-card:nth-child(3n){border-right:1px solid var(--border);}
+  .module-card:nth-child(2n){border-right:none;}
+  .module-card:nth-last-child(-n+3){border-bottom:1px solid var(--border);}
+  .module-card:nth-last-child(-n+2){border-bottom:none;}
+}
+@media(max-width:700px){
+  nav{padding:22px 22px;}
+  nav.scrolled{padding:16px 22px;}
+  .page{padding:120px 22px 80px;}
+  .modules-grid{grid-template-columns:1fr;}
+  .module-card{border-right:none!important;border-bottom:1px solid var(--border)!important;}
+  .module-card:last-child{border-bottom:none!important;}
+  footer{padding:40px 22px;}
+}
+@media(prefers-reduced-motion:reduce){
+  .bg-orb{animation:none;}
+  .reveal{opacity:1;transform:none;transition:none;}
+}
+</style>
+</head>
+<body>
+
+<div class="bg-orb"></div>
+<div class="bg-grid"></div>
+
+<!-- nav -->
+<nav id="nav">
+  <a class="nav-logo" href="index.html">
+    <img src="assets/logo.png" alt="ContinuumOne"/>
+    <span>ContinuumOne</span>
+  </a>
+  <a class="nav-back" href="index.html">
+    <svg viewBox="0 0 24 24"><path d="M19 12H5M12 5l-7 7 7 7"/></svg>
+    Back to Home
+  </a>
+</nav>
+
+<!-- page content -->
+<div class="page">
+
+  <p class="page-eyebrow reveal">Intelligence Modules</p>
+  <h1 class="page-headline reveal reveal-delay-1">
+    One OS.<br/>Every domain.
+  </h1>
+  <p class="page-sub reveal reveal-delay-2">
+    ContinuumOS adapts its reasoning core to your sector. Select a module to launch a specialised intelligence environment tuned for your domain.
+  </p>
+
+  <div class="modules-grid">
+
+  <!-- FinTech -->
+    <div class="module-card reveal" data-module="fintech">
+      <div class="module-icon">
+        <svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/>
+        </svg>
+      </div>
+      <div class="module-tag">Module 01</div>
+      <div class="module-name">FinTech Intelligence</div>
+      <div class="module-desc">Market analysis, risk modelling, and financial reasoning. Built for those who move capital with precision.</div>
+      <div class="module-caps">
+        <div class="module-cap">Portfolio & risk analysis</div>
+        <div class="module-cap">Market trend reasoning</div>
+        <div class="module-cap">Regulatory intelligence</div>
+      </div>
+      <div class="module-launch">Launch Module <svg viewBox="0 0 24 24"><path d="M5 12h14M12 5l7 7-7 7"/></svg></div>
+    </div>
+
+    <!-- AgroTech -->
+    <div class="module-card reveal reveal-delay-1" data-module="agrotech">
+      <div class="module-icon">
+        <svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M12 22V12M12 12C12 7 7 3 2 3c0 5 4 9 10 9zM12 12c0-5 5-9 10-9-1 5-5 9-10 9"/>
+        </svg>
+      </div>
+      <div class="module-tag">Module 02</div>
+      <div class="module-name">AgroTech Intelligence</div>
+      <div class="module-desc">Yield optimisation, climate adaptation, and supply chain reasoning for the future of food systems.</div>
+      <div class="module-caps">
+        <div class="module-cap">Crop yield modelling</div>
+        <div class="module-cap">Climate & soil analysis</div>
+        <div class="module-cap">Supply chain intelligence</div>
+      </div>
+      <div class="module-launch">Launch Module <svg viewBox="0 0 24 24"><path d="M5 12h14M12 5l7 7-7 7"/></svg></div>
+    </div>
+
+    <!-- Quantum Tech -->
+    <div class="module-card reveal reveal-delay-2" data-module="quantumtech">
+      <div class="module-icon">
+        <svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="12" cy="12" r="3"/>
+          <path d="M12 2C6.5 2 2 6.5 2 12s4.5 10 10 10 10-4.5 10-10"/>
+          <path d="M2 12h4M18 12h4M12 2v4M12 18v4"/>
+        </svg>
+      </div>
+      <div class="module-tag">Module 03</div>
+      <div class="module-name">Quantum Tech Intelligence</div>
+      <div class="module-desc">Research synthesis, theoretical frameworks, and complex systems reasoning at the edge of known science.</div>
+      <div class="module-caps">
+        <div class="module-cap">Research synthesis</div>
+        <div class="module-cap">Algorithm & circuit reasoning</div>
+        <div class="module-cap">Theoretical framework analysis</div>
+      </div>
+      <div class="module-launch">Launch Module <svg viewBox="0 0 24 24"><path d="M5 12h14M12 5l7 7-7 7"/></svg></div>
+    </div>
+
+    <!-- BioTech -->
+    <div class="module-card reveal" data-module="biotech">
+      <div class="module-icon">
+        <svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M9 3H5a2 2 0 0 0-2 2v4m6-6h10a2 2 0 0 1 2 2v4M9 3v18m0 0h10a2 2 0 0 0 2-2v-4M9 21H5a2 2 0 0 1-2-2v-4m0 0h18"/>
+        </svg>
+      </div>
+      <div class="module-tag">Module 04</div>
+      <div class="module-name">BioTech Intelligence</div>
+      <div class="module-desc">Genomics, drug discovery, and clinical reasoning for the next generation of life sciences.</div>
+      <div class="module-caps">
+        <div class="module-cap">Genomic data reasoning</div>
+        <div class="module-cap">Drug research synthesis</div>
+        <div class="module-cap">Clinical trial analysis</div>
+      </div>
+      <div class="module-launch">Launch Module <svg viewBox="0 0 24 24"><path d="M5 12h14M12 5l7 7-7 7"/></svg></div>
+    </div>
+
+    <!-- Defence & Aerospace -->
+    <div class="module-card reveal reveal-delay-1" data-module="defence">
+      <div class="module-icon">
+        <svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+        </svg>
+      </div>
+      <div class="module-tag">Module 05</div>
+      <div class="module-name">Defence & Aerospace</div>
+      <div class="module-desc">Strategic analysis, systems planning, and mission-critical reasoning for high-stakes operational environments.</div>
+      <div class="module-caps">
+        <div class="module-cap">Strategic situation analysis</div>
+        <div class="module-cap">Systems & logistics planning</div>
+        <div class="module-cap">Threat & risk modelling</div>
+      </div>
+      <div class="module-launch">Launch Module <svg viewBox="0 0 24 24"><path d="M5 12h14M12 5l7 7-7 7"/></svg></div>
+    </div>
+
+    <!-- Legal Intelligence -->
+    <div class="module-card reveal reveal-delay-2" data-module="legal">
+      <div class="module-icon">
+        <svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M12 22V2M4 6l8-4 8 4M4 6v4l-2 6h4L4 10M20 6v4l2 6h-4l2-6M4 18h16"/>
+        </svg>
+      </div>
+      <div class="module-tag">Module 06</div>
+      <div class="module-name">Legal Intelligence</div>
+      <div class="module-desc">Contract analysis, jurisdiction research, and legal reasoning. Precision thinking for complex regulatory landscapes.</div>
+      <div class="module-caps">
+        <div class="module-cap">Contract & clause analysis</div>
+        <div class="module-cap">Jurisdiction & case research</div>
+        <div class="module-cap">Compliance intelligence</div>
+      </div>
+      <div class="module-launch">Launch Module <svg viewBox="0 0 24 24"><path d="M5 12h14M12 5l7 7-7 7"/></svg></div>
+    </div>
+
+    <!-- Climate Tech -->
+    <div class="module-card reveal" data-module="climatetech">
+      <div class="module-icon">
+        <svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M12 2a10 10 0 1 0 10 10"/>
+          <path d="M12 6v6l4 2"/>
+          <path d="M18 2v4h4"/>
+        </svg>
+      </div>
+      <div class="module-tag">Module 07</div>
+      <div class="module-name">Climate Tech Intelligence</div>
+      <div class="module-desc">Carbon modelling, ESG intelligence, and environmental systems reasoning for a net-zero future.</div>
+      <div class="module-caps">
+        <div class="module-cap">Carbon & emissions modelling</div>
+        <div class="module-cap">ESG strategy intelligence</div>
+        <div class="module-cap">Climate risk analysis</div>
+      </div>
+      <div class="module-launch">Launch Module <svg viewBox="0 0 24 24"><path d="M5 12h14M12 5l7 7-7 7"/></svg></div>
+    </div>
+
+    <!-- SpaceTech -->
+    <div class="module-card reveal reveal-delay-1" data-module="spacetech">
+      <div class="module-icon">
+        <svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M12 2L8 8H4l4 4-2 6 6-3 6 3-2-6 4-4h-4z"/>
+        </svg>
+      </div>
+      <div class="module-tag">Module 08</div>
+      <div class="module-name">SpaceTech Intelligence</div>
+      <div class="module-desc">Orbital mechanics, mission planning, and deep-space systems reasoning for the next frontier of human expansion.</div>
+      <div class="module-caps">
+        <div class="module-cap">Mission architecture planning</div>
+        <div class="module-cap">Orbital & propulsion analysis</div>
+        <div class="module-cap">Satellite systems reasoning</div>
+      </div>
+      <div class="module-launch">Launch Module <svg viewBox="0 0 24 24"><path d="M5 12h14M12 5l7 7-7 7"/></svg></div>
+    </div>
+
+    <!-- General OS -->
+    <a class="module-card reveal reveal-delay-2" href="os.html">
+      <div class="module-icon">
+        <svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round">
+          <rect x="2" y="3" width="20" height="14" rx="2"/>
+          <path d="M8 21h8M12 17v4"/>
+        </svg>
+      </div>
+      <div class="module-tag">Core</div>
+      <div class="module-name">General Intelligence</div>
+      <div class="module-desc">The base ContinuumOS reasoning layer. No domain constraints. Open-ended intelligence for any task or problem.</div>
+      <div class="module-caps">
+        <div class="module-cap">Unrestricted reasoning</div>
+        <div class="module-cap">Research & analysis</div>
+        <div class="module-cap">Planning & execution</div>
+      </div>
+      <div class="module-launch">Launch OS <svg viewBox="0 0 24 24"><path d="M5 12h14M12 5l7 7-7 7"/></svg></div>
+    </a>
+
+  </div>
+
+  <div class="modules-note reveal">
+    All modules run on the same ContinuumOS reasoning core — Gemini 2.5 Flash.<br/>
+    Domain intelligence is applied through precision system prompting. No separate models. No extra cost.<br/><br/>
+    <a href="index.html" class="btn-secondary" style="margin-top:18px;display:inline-block;">← Return to Home</a>
+  </div>
+
+</div>
+
+<footer>
+  <div class="footer-inner">
+    <div>
+      <p class="footer-logo">Continuum One</p>
+      <p class="footer-tagline">Building the operating layer for the age of intelligence.</p>
+    </div>
+    <p class="footer-copy">© 2025 Continuum One</p>
+  </div>
+</footer>
+
+<!-- ═══════════ MODULE LOCKED POPUP ═══════════ -->
+<div id="mod-popup" aria-modal="true" role="dialog" aria-label="Module status">
+  <div id="mod-popup-box">
+    <div id="mod-popup-top">
+      <div id="mod-popup-icon">
+        <svg viewBox="0 0 24 24" fill="none" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+          <path d="M12 8v4M12 16h.01"/>
+        </svg>
+      </div>
+      <button id="mod-popup-close" aria-label="Close">
+        <svg viewBox="0 0 24 24" fill="none" stroke-width="1.6" stroke-linecap="round"><path d="M18 6L6 18M6 6l12 12"/></svg>
+      </button>
+    </div>
+    <div id="mod-popup-tag">Module Status</div>
+    <div id="mod-popup-title">Intelligence Core Restricted</div>
+    <div id="mod-popup-body">This module is currently undergoing deep calibration. The domain-specific reasoning layer is not yet cleared for deployment.<br/><br/>ContinuumOne is hardening the intelligence core for this sector before it goes live. You will be the first to know.</div>
+    <div id="mod-popup-bar-wrap"><div id="mod-popup-bar"></div></div>
+    <div id="mod-popup-status">Calibration in progress &nbsp;·&nbsp; ETA unconfirmed</div>
+    <a href="os.html" id="mod-popup-cta">Run General Intelligence instead →</a>
+  </div>
+</div>
+
+<style>
+#mod-popup{
+  position:fixed;inset:0;z-index:199999;
+  background:rgba(0,0,0,0.78);
+  backdrop-filter:blur(18px);
+  -webkit-backdrop-filter:blur(18px);
+  display:flex;align-items:center;justify-content:center;
+  opacity:0;pointer-events:none;
+  transition:opacity 0.35s ease;
+  padding:24px;
+}
+#mod-popup.open{opacity:1;pointer-events:auto;}
+#mod-popup-box{
+  width:min(440px,100%);
+  background:rgba(10,10,10,0.95);
+  border:1px solid rgba(255,255,255,0.1);
+  border-radius:14px;
+  padding:32px 30px 28px;
+  display:flex;flex-direction:column;gap:0;
+  box-shadow:0 0 0 1px rgba(255,255,255,0.04) inset,0 40px 100px rgba(0,0,0,0.8);
+  transform:translateY(12px) scale(0.97);
+  transition:transform 0.38s cubic-bezier(0.22,1,0.36,1);
+}
+#mod-popup.open #mod-popup-box{transform:translateY(0) scale(1);}
+#mod-popup-top{
+  display:flex;align-items:flex-start;justify-content:space-between;
+  margin-bottom:22px;
+}
+#mod-popup-icon{
+  width:40px;height:40px;border-radius:10px;
+  border:1px solid rgba(255,255,255,0.08);
+  background:rgba(255,255,255,0.03);
+  display:flex;align-items:center;justify-content:center;
+}
+#mod-popup-icon svg{width:20px;height:20px;stroke:rgba(255,255,255,0.6);}
+#mod-popup-close{
+  width:28px;height:28px;border-radius:6px;
+  border:1px solid rgba(255,255,255,0.08);
+  background:transparent;
+  display:flex;align-items:center;justify-content:center;
+  cursor:pointer;
+  transition:background 0.2s;
+}
+#mod-popup-close:hover{background:rgba(255,255,255,0.06);}
+#mod-popup-close svg{width:13px;height:13px;stroke:rgba(255,255,255,0.45);}
+#mod-popup-tag{
+  font-family:'Space Mono',monospace;
+  font-size:9px;letter-spacing:0.22em;text-transform:uppercase;
+  color:rgba(255,255,255,0.28);margin-bottom:10px;
+}
+#mod-popup-title{
+  font-size:22px;font-weight:600;letter-spacing:-0.02em;
+  color:#fff;margin-bottom:14px;line-height:1.2;
+}
+#mod-popup-body{
+  font-size:13.5px;color:rgba(255,255,255,0.52);
+  line-height:1.65;margin-bottom:26px;
+}
+#mod-popup-bar-wrap{
+  height:1px;background:rgba(255,255,255,0.07);
+  border-radius:1px;overflow:hidden;margin-bottom:10px;
+}
+#mod-popup-bar{
+  height:100%;width:37%;
+  background:linear-gradient(90deg,rgba(255,255,255,0.2),rgba(255,255,255,0.55));
+  box-shadow:0 0 10px rgba(255,255,255,0.4);
+  border-radius:1px;
+  animation:modBarPulse 2.8s ease-in-out infinite;
+}
+@keyframes modBarPulse{
+  0%,100%{width:32%;opacity:0.6;}
+  50%{width:62%;opacity:1;}
+}
+#mod-popup-status{
+  font-family:'Space Mono',monospace;
+  font-size:8.5px;letter-spacing:0.12em;text-transform:uppercase;
+  color:rgba(255,255,255,0.22);margin-bottom:22px;
+}
+#mod-popup-cta{
+  display:inline-block;
+  font-size:13px;font-weight:500;letter-spacing:0.03em;
+  color:rgba(255,255,255,0.7);
+  text-decoration:none;
+  border:1px solid rgba(255,255,255,0.1);
+  padding:11px 18px;border-radius:7px;
+  background:rgba(255,255,255,0.03);
+  transition:color 0.22s,border-color 0.22s,background 0.22s;
+  text-align:center;
+}
+#mod-popup-cta:hover{
+  color:#fff;border-color:rgba(255,255,255,0.2);
+  background:rgba(255,255,255,0.06);
+}
+</style>
+
+<script>
+const nav = document.getElementById('nav');
+window.addEventListener('scroll', () => {
+  nav.classList.toggle('scrolled', window.scrollY > 50);
+}, {passive:true});
+
+const reveals = document.querySelectorAll('.reveal');
+const observer = new IntersectionObserver(entries => {
+  entries.forEach(e => {
+    if(e.isIntersecting){ e.target.classList.add('visible'); observer.unobserve(e.target); }
+  });
+}, {threshold:0.1, rootMargin:'0px 0px -40px 0px'});
+reveals.forEach(el => observer.observe(el));
+
+// Module popup
+const popup = document.getElementById('mod-popup');
+const popupClose = document.getElementById('mod-popup-close');
+
+document.querySelectorAll('.module-card[data-module]').forEach(card => {
+  card.addEventListener('click', () => {
+    popup.classList.add('open');
+  });
+});
+
+function closePopup(){ popup.classList.remove('open'); }
+popupClose.addEventListener('click', closePopup);
+popup.addEventListener('click', e => { if(e.target === popup) closePopup(); });
+document.addEventListener('keydown', e => { if(e.key === 'Escape') closePopup(); });
+</script>
+</body>
+</html>
