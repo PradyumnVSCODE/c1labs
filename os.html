@@ -1265,9 +1265,11 @@
             <div class="empty-title">What would you like to accomplish?</div>
             <div class="empty-sub">ContinuumOS listens, reasons, and acts. Describe an outcome and the operating layer will take it from there.</div>
             <div class="chips">
-              <div class="chip" data-prompt="Summarize the current state of Prototype-2.">Summarize Prototype-2 status</div>
-              <div class="chip" data-prompt="Help me plan tomorrow's priorities.">Plan tomorrow's priorities</div>
-              <div class="chip" data-prompt="Walk me through a systems analysis.">Run a systems analysis</div>
+              <div class="chip" data-prompt="What is ContinuumOne?">What is ContinuumOne?</div>
+              <div class="chip" data-prompt="Who built ContinuumOS?">Who built ContinuumOS?</div>
+              <div class="chip" data-prompt="What is the long-term vision of ContinuumOne?">Long-term vision</div>
+              <div class="chip" data-prompt="What makes ContinuumOS different from other AI tools?">What makes it different?</div>
+              <div class="chip" data-prompt="What is the current phase of ContinuumOne?">Current phase</div>
             </div>
           </div>
 
@@ -1494,18 +1496,88 @@ async function handleSend(){
  // GOOGLE AI STUDIO API KEY
 const GEMINI_API_KEY = "";
 
-const GEMINI_CONFIG = {
-  model: "gemini-2.5-flash",
-  systemPrompt:
-    "You are the reasoning core of ContinuumOS, an AI operating layer built by ContinuumOne. " +
-    "Respond with precision, calm confidence, and minimal filler — like an operating system " +
-    "speaking to the person who runs it."
+const MODULE_PROMPTS = {
+  fintech:"You are the FinTech Intelligence Module of ContinuumOS by ContinuumOne. Specialise in financial markets, risk modelling, portfolio analysis, and regulatory frameworks. Respond with analytical rigour — like a senior quant analyst combined with a strategic CFO.",
+  agrotech:"You are the AgroTech Intelligence Module of ContinuumOS by ContinuumOne. Specialise in crop yield optimisation, climate adaptation, soil science, and food supply chains. Respond like a precision agriculture scientist.",
+  quantumtech:"You are the Quantum Tech Intelligence Module of ContinuumOS by ContinuumOne. Specialise in quantum computing, algorithms, circuit design, and frontier research synthesis. Respond with technical precision like a quantum researcher at a national lab.",
+  biotech:"You are the BioTech Intelligence Module of ContinuumOS by ContinuumOne. Specialise in genomics, drug discovery, clinical trials, and life sciences. Respond like a principal scientist at a top biotech firm.",
+  defence:"You are the Defence & Aerospace Intelligence Module of ContinuumOS by ContinuumOne. Specialise in strategic analysis, systems planning, mission architecture, and operational risk. Respond with mission-critical precision.",
+  legal:"You are the Legal Intelligence Module of ContinuumOS by ContinuumOne. Specialise in contract analysis, jurisdiction research, compliance, and legal strategy. Think like senior counsel. Always note you are an AI and not a substitute for qualified legal advice.",
+  climatetech:"You are the Climate Tech Intelligence Module of ContinuumOS by ContinuumOne. Specialise in carbon modelling, ESG strategy, climate risk, and net-zero transition planning. Think like a climate scientist and ESG strategist combined.",
+  spacetech:"You are the SpaceTech Intelligence Module of ContinuumOS by ContinuumOne. Specialise in orbital mechanics, mission planning, propulsion systems, and satellite architecture. Respond like a mission architect at a leading space agency."
 };
+const MODULE_LABELS = {
+  fintech:"FinTech Intelligence",agrotech:"AgroTech Intelligence",
+  quantumtech:"Quantum Tech Intelligence",biotech:"BioTech Intelligence",
+  defence:"Defence & Aerospace",legal:"Legal Intelligence",
+  climatetech:"Climate Tech Intelligence",spacetech:"SpaceTech Intelligence"
+};
+const _mod = (new URLSearchParams(window.location.search).get('module')||'').toLowerCase();
+const GEMINI_CONFIG = {
+  model:"gemini-2.5-flash",
+  systemPrompt: MODULE_PROMPTS[_mod] ||
+    "You are the reasoning core of ContinuumOS, an AI operating layer built by ContinuumOne. Respond with precision, calm confidence, and minimal filler — like an operating system speaking to the person who runs it."
+};
+if(_mod && MODULE_LABELS[_mod]){
+  const _tag = document.querySelector('.product-tag');
+  const _name = document.querySelector('.product-name');
+  if(_tag)  _tag.textContent  = MODULE_LABELS[_mod];
+  if(_name) _name.textContent = 'ContinuumOS — ' + MODULE_LABELS[_mod];
+}
+
+/* ── Preset Q&A — active when no API key is configured ─────────── */
+const PRESET_QA = [
+  {
+    keys: ["what is continuumone", "what is continuum one", "what is continuumos", "about continuum"],
+    answer: `ContinuumOne is an AI-native technology company building the operating layer for the age of intelligence.\n\nUnlike conventional AI tools that answer questions, ContinuumOne is designed to understand goals — translating what you mean into what you need, and executing toward outcomes.\n\nContinuumOS is its first product: a prototype AI operating system interface that serves as the foundation for a much larger long-term vision.`
+  },
+  {
+    keys: ["who built", "who made", "who owns", "who created", "founder", "pradyumn"],
+    answer: `ContinuumOS was built by Pradyumn Lavania.\n\nAt sixteen, Pradyumn started building the foundation of an AI-native operating layer — designed to help people think, create, analyze, and execute at a level previously reserved for large organizations.\n\nHe is the sole founder and builder of ContinuumOne, operating under the belief that computers should understand intent, not just commands.`
+  },
+  {
+    keys: ["long-term vision", "long term vision", "future", "where is this going", "end goal", "vision"],
+    answer: `The long-term vision of ContinuumOne is to build the world's first true AI operating system — a native intelligence layer that sits beneath every task, workflow, and decision.\n\nPhase by phase:\n\n→ Phase 1 (Complete): AI Workspace — conversation, research, writing, planning.\n→ Phase 2 (Now): Agent Systems — task execution, automation, multi-step reasoning.\n→ Phase 3: Enterprise Layer — org memory, knowledge systems, strategic intelligence.\n→ Phase 4 (Vision): AI Operating System — intent-driven computing, universal context, a professional JARVIS.\n\nThis is not a product. It is a direction.`
+  },
+  {
+    keys: ["different", "unique", "why continuum", "what makes", "special", "better"],
+    answer: `Most AI tools are interfaces layered on top of existing systems. ContinuumOS is designed to be the system itself.\n\nThree core differences:\n\n→ Intent over commands — it understands what you're trying to achieve, not just what you typed.\n→ Operating layer, not an app — built to eventually sit beneath your entire workflow, not alongside it.\n→ Built for outcomes — the goal is execution, not just information retrieval.\n\nThe design philosophy draws from Apple's human interface principles, OpenAI's model thinking, and the operational precision of systems like Anduril — applied to civilian intelligence tools.`
+  },
+  {
+    keys: ["current phase", "phase", "where are you now", "prototype", "status", "prototype-2"],
+    answer: `ContinuumOne is currently in Phase 2: Agent Systems.\n\nPhase 1 (AI Workspace) concluded on 17th June. It established the core interface, conversation layer, and foundational OS aesthetic.\n\nPhase 2 focuses on:\n→ Task execution and automation\n→ Multi-step reasoning chains\n→ Project and workflow management\n\nYou are currently running ContinuumOS Prototype-2 — the active development build of the Phase 2 intelligence interface.\n\nThe reasoning core will be fully live once the Gemini API key is configured.`
+  },
+  {
+    keys: ["prototype-2", "prototype 2", "what is prototype"],
+    answer: `ContinuumOS Prototype-2 is the second iteration of the ContinuumOS interface.\n\nIt introduces:\n→ A full glassmorphism OS console design\n→ Real-time system status monitoring\n→ Context terminal with session telemetry\n→ Enhanced AI thinking visualization\n→ Ambient intelligence effects\n→ Gemini 2.5 Flash reasoning core integration\n\nIt is a working prototype — not a demo, not a mockup. Every element is functional and designed to evolve into the full ContinuumOS operating layer.`
+  }
+];
+
+function getPresetAnswer(userMessage){
+  const q = userMessage.toLowerCase().trim();
+
+  for(const entry of PRESET_QA){
+    if(entry.keys.some(k => q.includes(k))){
+      return new Promise(resolve => {
+        setTimeout(() => resolve(entry.answer), 900 + Math.random() * 600);
+      });
+    }
+  }
+
+  // Generic fallback for anything not matched
+  return new Promise(resolve => {
+    setTimeout(() => resolve(
+      "The reasoning core is currently offline — no Gemini API key has been configured.\n\n" +
+      "To activate live intelligence, add your Google AI Studio API key to the GEMINI_API_KEY field in the script.\n\n" +
+      "In the meantime, you can ask me:\n→ What is ContinuumOne?\n→ Who built ContinuumOS?\n→ What is the long-term vision?\n→ What makes it different?\n→ What is the current phase?"
+    ), 700);
+  });
+}
 
 async function requestCompletion(userMessage){
 
   if(!GEMINI_API_KEY){
-    throw new Error("No Gemini API key configured. Add one to GEMINI_API_KEY in the script.");
+    return getPresetAnswer(userMessage);
   }
 
   const response = await fetch(
