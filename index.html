@@ -21,6 +21,115 @@
       --card-bg-hover: rgba(255,255,255,0.055);
     }
 
+    .why-section{
+  padding:140px 0;
+}
+
+.why-divider{
+  height:1px;
+  background:var(--border);
+  margin:70px 0;
+}
+
+.why-grid{
+  display:grid;
+  grid-template-columns:repeat(3,1fr);
+  gap:32px;
+}
+
+.why-card{
+  border:1px solid var(--border);
+  padding:40px;
+  transition:.35s;
+}
+
+.why-card:hover{
+  transform:translateY(-6px);
+  border-color:#3a3a3a;
+}
+
+.why-number{
+  font-size:3rem;
+  font-weight:700;
+  opacity:.15;
+  display:block;
+  margin-bottom:20px;
+}
+
+.why-card h3{
+  font-size:1.35rem;
+  margin-bottom:16px;
+}
+
+.why-card p{
+  color:var(--muted);
+  line-height:1.8;
+}
+
+.belief-box{
+  margin-top:90px;
+  padding:80px;
+  border:1px solid var(--border);
+  text-align:center;
+}
+
+.belief-text{
+  color:var(--muted);
+  margin-bottom:20px;
+}
+
+.belief-text-strong{
+  font-size:clamp(2rem,4vw,3.8rem);
+  font-weight:700;
+  line-height:1.1;
+}
+
+.comparison{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:40px;
+  margin-top:80px;
+}
+
+.comparison-col{
+  border:1px solid var(--border);
+  padding:40px;
+}
+
+.comparison-col h4{
+  margin-bottom:24px;
+}
+
+.comparison-col ul{
+  list-style:none;
+}
+
+.comparison-col li{
+  padding:14px 0;
+  border-bottom:1px solid var(--border);
+  color:var(--muted);
+}
+
+.comparison-col li:last-child{
+  border-bottom:none;
+}
+
+@media(max-width:1000px){
+
+  .why-grid{
+    grid-template-columns:1fr;
+  }
+
+  .comparison{
+    grid-template-columns:1fr;
+  }
+
+  .belief-box{
+    padding:50px 30px;
+  }
+
+}
+
     html { scroll-behavior: smooth; }
 
     body {
@@ -1176,6 +1285,101 @@
       The signals exist. ContinuumOne builds systems that read them.
     </p>
   </div>
+
+  <!-- WHY CONTINUUMONE -->
+
+<section class="why-section" id="why">
+
+  <div class="section-inner">
+
+    <p class="section-label reveal">
+      Why ContinuumOne
+    </p>
+
+    <h2 class="section-headline reveal reveal-delay-1">
+      Failure Is Not An Event.<br>
+      It's A Process.
+    </h2>
+
+    <p class="section-body reveal reveal-delay-2">
+      Most industrial failures do not happen instantly. Machines leave signals long before disruption occurs — subtle shifts in vibration, temperature, power consumption, mechanical stress, and operational behavior. The challenge is not collecting data. The challenge is understanding which signals matter before a system fails.
+    </p>
+
+    <div class="why-divider reveal reveal-delay-3"></div>
+
+    <div class="why-grid">
+
+      <div class="why-card reveal reveal-delay-1">
+        <span class="why-number">01</span>
+        <h3>Signals Before Alarms</h3>
+        <p>
+          Traditional monitoring systems react when thresholds are crossed. ContinuumOne focuses on identifying degradation patterns before conventional alarms are triggered.
+        </p>
+      </div>
+
+      <div class="why-card reveal reveal-delay-2">
+        <span class="why-number">02</span>
+        <h3>Beyond Individual Machines</h3>
+        <p>
+          A failed bearing can affect a shaft. A shaft can affect a motor. A motor can affect production. We focus on understanding how failures propagate through interconnected systems.
+        </p>
+      </div>
+
+      <div class="why-card reveal reveal-delay-3">
+        <span class="why-number">03</span>
+        <h3>Engineering First</h3>
+        <p>
+          Built around reliability engineering, telemetry analysis, dependency mapping, and failure prediction — not generic automation.
+        </p>
+      </div>
+
+    </div>
+
+    <div class="belief-box reveal reveal-delay-4">
+
+      <p class="belief-text">
+        The problem is not a lack of data.
+      </p>
+
+      <p class="belief-text-strong">
+        The problem is knowing which signal matters before the system fails.
+      </p>
+
+    </div>
+
+    <div class="comparison reveal reveal-delay-4">
+
+      <div class="comparison-col">
+
+        <h4>Traditional Monitoring</h4>
+
+        <ul>
+          <li>Detects failures</li>
+          <li>Asset-centric</li>
+          <li>Reactive alerts</li>
+          <li>Isolated machine data</li>
+        </ul>
+
+      </div>
+
+      <div class="comparison-col">
+
+        <h4>ContinuumOne</h4>
+
+        <ul>
+          <li>Models failure pathways</li>
+          <li>System-centric</li>
+          <li>Predictive intelligence</li>
+          <li>Dependency mapping</li>
+        </ul>
+
+      </div>
+
+    </div>
+
+  </div>
+
+</section>
 
   <!-- TECHNOLOGY -->
   <section class="pillars-section" id="technology">
