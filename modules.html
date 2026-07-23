@@ -1,637 +1,1447 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8"/>
-<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-<title>Intelligence Modules — ContinuumOne</title>
-<link rel="preconnect" href="https://fonts.googleapis.com"/>
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
-<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet"/>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Technology Architecture | ContinuumOne</title>
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+
 <style>
-*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
 
 :root{
-  --bg:#000000;
-  --text:#ffffff;
-  --text-secondary:rgba(255,255,255,0.60);
-  --text-tertiary:rgba(255,255,255,0.35);
-  --border:rgba(255,255,255,0.09);
-  --border-hover:rgba(255,255,255,0.22);
-  --card-bg:rgba(255,255,255,0.03);
-  --card-bg-hover:rgba(255,255,255,0.055);
+--bg:#050505;
+--surface:#0b0b0b;
+--surface-2:#101010;
+--border:#1d1d1d;
+--border-strong:#2f2f2f;
+--text:#f2f2f2;
+--muted:#8f8f8f;
+--silver:#c7c7c7;
+--silver-bright:#ffffff;
 }
 
-html{scroll-behavior:smooth;}
+*{
+margin:0;
+padding:0;
+box-sizing:border-box;
+}
+
+html{
+scroll-behavior:smooth;
+}
 
 body{
-  background:var(--bg);
-  color:var(--text);
-  font-family:'Space Grotesk',sans-serif;
-  -webkit-font-smoothing:antialiased;
-  overflow-x:hidden;
-  line-height:1.6;
-  min-height:100vh;
+font-family:'Inter',sans-serif;
+background:var(--bg);
+color:var(--text);
+overflow-x:hidden;
 }
 
-/* ── nav ── */
-nav{
-  position:fixed;top:0;left:0;right:0;z-index:100;
-  padding:28px 52px;
-  display:flex;align-items:center;justify-content:space-between;
-  border-bottom:1px solid transparent;
-  transition:border-color 0.4s,background 0.4s,padding 0.4s;
-}
-nav.scrolled{
-  background:rgba(0,0,0,0.82);
-  backdrop-filter:blur(20px);
-  -webkit-backdrop-filter:blur(20px);
-  border-bottom-color:var(--border);
-  padding-top:18px;padding-bottom:18px;
-}
-.nav-logo{
-  display:flex;align-items:center;gap:12px;
-  font-size:15px;font-weight:600;letter-spacing:0.18em;text-transform:uppercase;
-  color:var(--text);text-decoration:none;
-}
-.nav-logo img{width:32px;height:32px;object-fit:contain;display:block;filter:drop-shadow(0 0 8px rgba(255,255,255,0.25));}
-.nav-back{
-  font-size:13px;font-weight:400;letter-spacing:0.06em;
-  color:var(--text-secondary);text-decoration:none;
-  display:flex;align-items:center;gap:8px;
-  transition:color 0.25s;
-}
-.nav-back:hover{color:var(--text);}
-.nav-back svg{width:14px;height:14px;stroke:currentColor;fill:none;stroke-width:1.6;}
+body::before{
+content:'';
+position:fixed;
+inset:0;
+pointer-events:none;
+opacity:.04;
 
-/* ── background ── */
-.bg-orb{
-  position:fixed;top:40%;left:50%;
-  width:800px;height:800px;
-  transform:translate(-50%,-50%);
-  border-radius:50%;
-  background:radial-gradient(ellipse at center,rgba(255,255,255,0.042) 0%,rgba(255,255,255,0.014) 35%,transparent 70%);
-  animation:orbBreathe 8s ease-in-out infinite;
-  pointer-events:none;z-index:0;
-}
-@keyframes orbBreathe{
-  0%,100%{transform:translate(-50%,-50%) scale(1);opacity:0.7;}
-  50%{transform:translate(-50%,-50%) scale(1.1);opacity:1;}
-}
-.bg-grid{
-  position:fixed;inset:0;pointer-events:none;z-index:0;
-  background-image:
-    linear-gradient(rgba(255,255,255,0.022) 1px,transparent 1px),
-    linear-gradient(90deg,rgba(255,255,255,0.022) 1px,transparent 1px);
-  background-size:72px 72px;
-  mask-image:radial-gradient(ellipse 65% 60% at 50% 45%,black 0%,transparent 80%);
-  -webkit-mask-image:radial-gradient(ellipse 65% 60% at 50% 45%,black 0%,transparent 80%);
+background-image:
+linear-gradient(rgba(255,255,255,.12) 1px, transparent 1px),
+linear-gradient(90deg, rgba(255,255,255,.12) 1px, transparent 1px);
+
+background-size:60px 60px;
+z-index:-1;
 }
 
-/* ── page wrapper ── */
-.page{
-  position:relative;z-index:1;
-  padding:160px 52px 120px;
-  max-width:1180px;
-  margin:0 auto;
+a{
+text-decoration:none;
+color:inherit;
 }
 
-/* ── header ── */
-.page-eyebrow{
-  font-size:10.5px;font-weight:500;letter-spacing:0.3em;text-transform:uppercase;
-  color:var(--text-tertiary);margin-bottom:22px;
-}
-.page-headline{
-  font-size:clamp(36px,5.5vw,72px);font-weight:600;letter-spacing:-0.03em;line-height:1.04;
-  margin-bottom:22px;
-}
-.page-sub{
-  font-size:clamp(15px,1.6vw,18px);font-weight:400;
-  color:var(--text-secondary);max-width:520px;line-height:1.68;
-  margin-bottom:80px;
+.section-inner{
+width:min(1400px,92%);
+margin:auto;
 }
 
-/* ── modules grid ── */
-.modules-grid{
-  display:grid;
-  grid-template-columns:repeat(3,1fr);
-  gap:1px;
-  border:1px solid var(--border);
-  border-radius:6px;
-  overflow:hidden;
-  margin-bottom:100px;
+.nav{
+position:fixed;
+top:0;
+left:0;
+width:100%;
+height:78px;
+display:flex;
+justify-content:center;
+z-index:1000;
+transition:.3s;
 }
 
-.module-card{
-  padding:44px 38px 38px;
-  background:var(--card-bg);
-  display:flex;flex-direction:column;
-  gap:0;
-  position:relative;
-  cursor:pointer;
-  text-decoration:none;
-  color:inherit;
-  border-right:1px solid var(--border);
-  border-bottom:1px solid var(--border);
-  transition:background 0.3s;
-  overflow:hidden;
-}
-.module-card:nth-child(3n){border-right:none;}
-.module-card:nth-last-child(-n+3){border-bottom:none;}
-.module-card:hover{background:var(--card-bg-hover);}
-
-/* glow on hover */
-.module-card::before{
-  content:'';position:absolute;inset:0;
-  background:radial-gradient(ellipse 60% 50% at 30% 30%,rgba(255,255,255,0.04),transparent);
-  opacity:0;transition:opacity 0.35s ease;
-  pointer-events:none;
-}
-.module-card:hover::before{opacity:1;}
-
-.module-icon{
-  width:36px;height:36px;margin-bottom:28px;flex:none;
-  display:flex;align-items:center;justify-content:center;
-}
-.module-icon svg{width:100%;height:100%;stroke:rgba(255,255,255,0.55);fill:none;stroke-width:1.4;}
-
-.module-tag{
-  font-family:'Space Mono',monospace;
-  font-size:9px;letter-spacing:0.22em;text-transform:uppercase;
-  color:var(--text-tertiary);margin-bottom:12px;
-}
-.module-name{
-  font-size:22px;font-weight:600;letter-spacing:-0.02em;
-  margin-bottom:12px;line-height:1.2;
-}
-.module-desc{
-  font-size:13.5px;font-weight:400;color:var(--text-secondary);
-  line-height:1.65;flex:1;margin-bottom:28px;
-}
-.module-caps{
-  display:flex;flex-direction:column;gap:6px;margin-bottom:28px;
-}
-.module-cap{
-  font-size:12px;color:var(--text-tertiary);
-  display:flex;align-items:flex-start;gap:8px;
-}
-.module-cap::before{content:'→';color:var(--text-tertiary);flex-shrink:0;}
-
-.module-launch{
-  display:inline-flex;align-items:center;gap:8px;
-  font-size:12px;font-weight:500;letter-spacing:0.06em;
-  color:var(--text-secondary);
-  margin-top:auto;
-  transition:color 0.25s;
-}
-.module-launch svg{width:12px;height:12px;stroke:currentColor;fill:none;stroke-width:1.8;transition:transform 0.25s;}
-.module-card:hover .module-launch{color:var(--text);}
-.module-card:hover .module-launch svg{transform:translateX(3px);}
-
-/* ── coming soon tag ── */
-.module-soon{
-  position:absolute;top:16px;right:16px;
-  font-family:'Space Mono',monospace;
-  font-size:8px;letter-spacing:0.18em;text-transform:uppercase;
-  color:var(--text-tertiary);
-  border:1px solid var(--border);
-  padding:3px 8px;border-radius:2px;
+.nav.scrolled{
+background:rgba(5,5,5,.85);
+backdrop-filter:blur(20px);
+border-bottom:1px solid var(--border);
 }
 
-/* ── bottom note ── */
-.modules-note{
-  text-align:center;
-  font-size:13px;color:var(--text-tertiary);
-  border-top:1px solid var(--border);
-  padding-top:40px;
-  line-height:1.7;
+.nav-inner{
+width:min(1400px,92%);
+display:flex;
+align-items:center;
+justify-content:space-between;
 }
 
-/* ── buttons ── */
-.btn-primary{
-  display:inline-block;background:#fff;color:#000;
-  font-family:'Space Grotesk',sans-serif;
-  font-size:14px;font-weight:600;letter-spacing:0.05em;
-  padding:14px 34px;border-radius:3px;text-decoration:none;
-  transition:opacity 0.25s,transform 0.25s;
+.logo{
+font-size:.9rem;
+font-weight:600;
+letter-spacing:.35em;
+text-transform:uppercase;
 }
-.btn-primary:hover{opacity:0.88;transform:translateY(-1px);}
-.btn-secondary{
-  display:inline-block;background:transparent;
-  color:var(--text-secondary);
-  font-family:'Space Grotesk',sans-serif;
-  font-size:14px;font-weight:500;letter-spacing:0.05em;
-  padding:14px 34px;border-radius:3px;
-  border:1px solid var(--border);text-decoration:none;
-  transition:color 0.25s,border-color 0.25s,transform 0.25s;
-}
-.btn-secondary:hover{color:var(--text);border-color:var(--border-hover);transform:translateY(-1px);}
 
-/* ── reveal ── */
-.reveal{opacity:0;transform:translateY(24px);transition:opacity 0.7s cubic-bezier(0.22,1,0.36,1),transform 0.7s cubic-bezier(0.22,1,0.36,1);}
-.reveal.visible{opacity:1;transform:translateY(0);}
-.reveal-delay-1{transition-delay:0.08s;}
-.reveal-delay-2{transition-delay:0.16s;}
-.reveal-delay-3{transition-delay:0.24s;}
-
-/* ── footer ── */
-footer{
-  padding:54px 52px;border-top:1px solid var(--border);
-  position:relative;z-index:1;
+.nav-links{
+display:flex;
+gap:36px;
 }
-.footer-inner{
-  max-width:1120px;margin:0 auto;
-  display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:22px;
-}
-.footer-logo{font-size:14px;font-weight:600;letter-spacing:0.16em;text-transform:uppercase;margin-bottom:6px;}
-.footer-tagline{font-size:13px;color:var(--text-tertiary);}
-.footer-copy{font-size:12px;color:var(--text-tertiary);letter-spacing:0.03em;}
 
-/* ── responsive ── */
+.nav-links a{
+font-size:.82rem;
+letter-spacing:.18em;
+text-transform:uppercase;
+color:var(--muted);
+transition:.3s;
+}
+
+.nav-links a:hover{
+color:var(--silver-bright);
+}
+
+.hero{
+min-height:100vh;
+display:flex;
+align-items:center;
+position:relative;
+}
+
+.hero-grid{
+display:grid;
+grid-template-columns:1.1fr .9fr;
+gap:100px;
+align-items:center;
+}
+
+.hero-label{
+font-size:.78rem;
+letter-spacing:.22em;
+text-transform:uppercase;
+color:var(--muted);
+margin-bottom:24px;
+}
+
+.hero-title{
+font-size:clamp(4rem,9vw,8rem);
+font-weight:700;
+line-height:.92;
+letter-spacing:-.05em;
+}
+
+.hero-body{
+margin-top:32px;
+max-width:650px;
+color:var(--muted);
+font-size:1.05rem;
+line-height:1.8;
+}
+
+.hero-panel{
+border:1px solid var(--border);
+background:linear-gradient(
+180deg,
+rgba(255,255,255,.02),
+rgba(255,255,255,.01)
+);
+padding:28px;
+position:relative;
+overflow:hidden;
+}
+
+.hero-panel::before{
+content:'';
+position:absolute;
+top:0;
+left:0;
+width:100%;
+height:1px;
+background:linear-gradient(
+90deg,
+transparent,
+rgba(255,255,255,.35),
+transparent
+);
+}
+
+.panel-title{
+font-size:.75rem;
+letter-spacing:.18em;
+text-transform:uppercase;
+color:var(--muted);
+margin-bottom:22px;
+}
+
+.metric{
+display:flex;
+justify-content:space-between;
+padding:14px 0;
+border-bottom:1px solid var(--border);
+}
+
+.metric:last-child{
+border-bottom:none;
+}
+
+.metric-label{
+color:var(--muted);
+}
+
+.metric-value{
+font-weight:600;
+}
+
+.live-dot{
+width:8px;
+height:8px;
+border-radius:50%;
+background:white;
+display:inline-block;
+margin-right:8px;
+animation:pulse 2s infinite;
+}
+
+@keyframes pulse{
+0%,100%{opacity:.4;}
+50%{opacity:1;}
+}
+
+.section{
+padding:140px 0;
+}
+
+.section-label{
+font-size:.8rem;
+letter-spacing:.2em;
+text-transform:uppercase;
+color:var(--muted);
+margin-bottom:18px;
+}
+
+.section-headline{
+font-size:clamp(2.8rem,6vw,5rem);
+line-height:1;
+margin-bottom:30px;
+max-width:900px;
+}
+
+.section-body{
+color:var(--muted);
+font-size:1rem;
+line-height:1.8;
+max-width:720px;
+}
+
 @media(max-width:1000px){
-  .modules-grid{grid-template-columns:repeat(2,1fr);}
-  .module-card:nth-child(3n){border-right:1px solid var(--border);}
-  .module-card:nth-child(2n){border-right:none;}
-  .module-card:nth-last-child(-n+3){border-bottom:1px solid var(--border);}
-  .module-card:nth-last-child(-n+2){border-bottom:none;}
+
+.hero-grid{
+grid-template-columns:1fr;
 }
-@media(max-width:700px){
-  nav{padding:22px 22px;}
-  nav.scrolled{padding:16px 22px;}
-  .page{padding:120px 22px 80px;}
-  .modules-grid{grid-template-columns:1fr;}
-  .module-card{border-right:none!important;border-bottom:1px solid var(--border)!important;}
-  .module-card:last-child{border-bottom:none!important;}
-  footer{padding:40px 22px;}
+
+.nav-links{
+display:none;
 }
-@media(prefers-reduced-motion:reduce){
-  .bg-orb{animation:none;}
-  .reveal{opacity:1;transform:none;transition:none;}
+
+.hero-title{
+font-size:4rem;
 }
+
+}
+
 </style>
 </head>
+
 <body>
 
-<div class="bg-orb"></div>
-<div class="bg-grid"></div>
+<nav class="nav" id="nav">
+<div class="nav-inner">
 
-<!-- nav -->
-<nav id="nav">
-  <a class="nav-logo" href="index.html">
-    <img src="assets/logo.png" alt="ContinuumOne"/>
-    <span>ContinuumOne</span>
-  </a>
-  <a class="nav-back" href="index.html">
-    <svg viewBox="0 0 24 24"><path d="M19 12H5M12 5l-7 7 7 7"/></svg>
-    Back to Home
-  </a>
+<a href="index.html" class="logo">
+CONTINUUMONE
+</a>
+
+<div class="nav-links">
+<a href="#architecture">Architecture</a>
+<a href="#control">Control Room</a>
+<a href="#mapping">Dependency Map</a>
+<a href="#terminal">Terminal</a>
+</div>
+
+</div>
 </nav>
 
-<!-- page content -->
-<div class="page">
+<section class="hero">
 
-  <p class="page-eyebrow reveal">Intelligence Modules</p>
-  <h1 class="page-headline reveal reveal-delay-1">
-    One OS.<br/>Every domain.
-  </h1>
-  <p class="page-sub reveal reveal-delay-2">
-    ContinuumOS adapts its reasoning core to your sector. Select a module to launch a specialised intelligence environment tuned for your domain.
-  </p>
+<div class="section-inner">
 
-  <div class="modules-grid">
+<div class="hero-grid">
 
-  <!-- FinTech -->
-    <div class="module-card reveal" data-module="fintech">
-      <div class="module-icon">
-        <svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round">
-          <path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/>
-        </svg>
-      </div>
-      <div class="module-tag">Module 01</div>
-      <div class="module-name">FinTech Intelligence</div>
-      <div class="module-desc">Market analysis, risk modelling, and financial reasoning. Built for those who move capital with precision.</div>
-      <div class="module-caps">
-        <div class="module-cap">Portfolio & risk analysis</div>
-        <div class="module-cap">Market trend reasoning</div>
-        <div class="module-cap">Regulatory intelligence</div>
-      </div>
-      <div class="module-launch">Launch Module <svg viewBox="0 0 24 24"><path d="M5 12h14M12 5l7 7-7 7"/></svg></div>
-    </div>
+<div>
 
-    <!-- AgroTech -->
-    <div class="module-card reveal reveal-delay-1" data-module="agrotech">
-      <div class="module-icon">
-        <svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round">
-          <path d="M12 22V12M12 12C12 7 7 3 2 3c0 5 4 9 10 9zM12 12c0-5 5-9 10-9-1 5-5 9-10 9"/>
-        </svg>
-      </div>
-      <div class="module-tag">Module 02</div>
-      <div class="module-name">AgroTech Intelligence</div>
-      <div class="module-desc">Yield optimisation, climate adaptation, and supply chain reasoning for the future of food systems.</div>
-      <div class="module-caps">
-        <div class="module-cap">Crop yield modelling</div>
-        <div class="module-cap">Climate & soil analysis</div>
-        <div class="module-cap">Supply chain intelligence</div>
-      </div>
-      <div class="module-launch">Launch Module <svg viewBox="0 0 24 24"><path d="M5 12h14M12 5l7 7-7 7"/></svg></div>
-    </div>
+<p class="hero-label">
+TECHNOLOGY ARCHITECTURE
+</p>
 
-    <!-- Quantum Tech -->
-    <div class="module-card reveal reveal-delay-2" data-module="quantumtech">
-      <div class="module-icon">
-        <svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round">
-          <circle cx="12" cy="12" r="3"/>
-          <path d="M12 2C6.5 2 2 6.5 2 12s4.5 10 10 10 10-4.5 10-10"/>
-          <path d="M2 12h4M18 12h4M12 2v4M12 18v4"/>
-        </svg>
-      </div>
-      <div class="module-tag">Module 03</div>
-      <div class="module-name">Quantum Tech Intelligence</div>
-      <div class="module-desc">Research synthesis, theoretical frameworks, and complex systems reasoning at the edge of known science.</div>
-      <div class="module-caps">
-        <div class="module-cap">Research synthesis</div>
-        <div class="module-cap">Algorithm & circuit reasoning</div>
-        <div class="module-cap">Theoretical framework analysis</div>
-      </div>
-      <div class="module-launch">Launch Module <svg viewBox="0 0 24 24"><path d="M5 12h14M12 5l7 7-7 7"/></svg></div>
-    </div>
+<h1 class="hero-title">
+Engineering
+Visibility
+Into Failure.
+</h1>
 
-    <!-- BioTech -->
-    <div class="module-card reveal" data-module="biotech">
-      <div class="module-icon">
-        <svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round">
-          <path d="M9 3H5a2 2 0 0 0-2 2v4m6-6h10a2 2 0 0 1 2 2v4M9 3v18m0 0h10a2 2 0 0 0 2-2v-4M9 21H5a2 2 0 0 1-2-2v-4m0 0h18"/>
-        </svg>
-      </div>
-      <div class="module-tag">Module 04</div>
-      <div class="module-name">BioTech Intelligence</div>
-      <div class="module-desc">Genomics, drug discovery, and clinical reasoning for the next generation of life sciences.</div>
-      <div class="module-caps">
-        <div class="module-cap">Genomic data reasoning</div>
-        <div class="module-cap">Drug research synthesis</div>
-        <div class="module-cap">Clinical trial analysis</div>
-      </div>
-      <div class="module-launch">Launch Module <svg viewBox="0 0 24 24"><path d="M5 12h14M12 5l7 7-7 7"/></svg></div>
-    </div>
-
-    <!-- Defence & Aerospace -->
-    <div class="module-card reveal reveal-delay-1" data-module="defence">
-      <div class="module-icon">
-        <svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round">
-          <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
-        </svg>
-      </div>
-      <div class="module-tag">Module 05</div>
-      <div class="module-name">Defence & Aerospace</div>
-      <div class="module-desc">Strategic analysis, systems planning, and mission-critical reasoning for high-stakes operational environments.</div>
-      <div class="module-caps">
-        <div class="module-cap">Strategic situation analysis</div>
-        <div class="module-cap">Systems & logistics planning</div>
-        <div class="module-cap">Threat & risk modelling</div>
-      </div>
-      <div class="module-launch">Launch Module <svg viewBox="0 0 24 24"><path d="M5 12h14M12 5l7 7-7 7"/></svg></div>
-    </div>
-
-    <!-- Legal Intelligence -->
-    <div class="module-card reveal reveal-delay-2" data-module="legal">
-      <div class="module-icon">
-        <svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round">
-          <path d="M12 22V2M4 6l8-4 8 4M4 6v4l-2 6h4L4 10M20 6v4l2 6h-4l2-6M4 18h16"/>
-        </svg>
-      </div>
-      <div class="module-tag">Module 06</div>
-      <div class="module-name">Legal Intelligence</div>
-      <div class="module-desc">Contract analysis, jurisdiction research, and legal reasoning. Precision thinking for complex regulatory landscapes.</div>
-      <div class="module-caps">
-        <div class="module-cap">Contract & clause analysis</div>
-        <div class="module-cap">Jurisdiction & case research</div>
-        <div class="module-cap">Compliance intelligence</div>
-      </div>
-      <div class="module-launch">Launch Module <svg viewBox="0 0 24 24"><path d="M5 12h14M12 5l7 7-7 7"/></svg></div>
-    </div>
-
-    <!-- Climate Tech -->
-    <div class="module-card reveal" data-module="climatetech">
-      <div class="module-icon">
-        <svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round">
-          <path d="M12 2a10 10 0 1 0 10 10"/>
-          <path d="M12 6v6l4 2"/>
-          <path d="M18 2v4h4"/>
-        </svg>
-      </div>
-      <div class="module-tag">Module 07</div>
-      <div class="module-name">Climate Tech Intelligence</div>
-      <div class="module-desc">Carbon modelling, ESG intelligence, and environmental systems reasoning for a net-zero future.</div>
-      <div class="module-caps">
-        <div class="module-cap">Carbon & emissions modelling</div>
-        <div class="module-cap">ESG strategy intelligence</div>
-        <div class="module-cap">Climate risk analysis</div>
-      </div>
-      <div class="module-launch">Launch Module <svg viewBox="0 0 24 24"><path d="M5 12h14M12 5l7 7-7 7"/></svg></div>
-    </div>
-
-    <!-- SpaceTech -->
-    <div class="module-card reveal reveal-delay-1" data-module="spacetech">
-      <div class="module-icon">
-        <svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round">
-          <path d="M12 2L8 8H4l4 4-2 6 6-3 6 3-2-6 4-4h-4z"/>
-        </svg>
-      </div>
-      <div class="module-tag">Module 08</div>
-      <div class="module-name">SpaceTech Intelligence</div>
-      <div class="module-desc">Orbital mechanics, mission planning, and deep-space systems reasoning for the next frontier of human expansion.</div>
-      <div class="module-caps">
-        <div class="module-cap">Mission architecture planning</div>
-        <div class="module-cap">Orbital & propulsion analysis</div>
-        <div class="module-cap">Satellite systems reasoning</div>
-      </div>
-      <div class="module-launch">Launch Module <svg viewBox="0 0 24 24"><path d="M5 12h14M12 5l7 7-7 7"/></svg></div>
-    </div>
-
-    <!-- General OS -->
-    <a class="module-card reveal reveal-delay-2" href="os.html">
-      <div class="module-icon">
-        <svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round">
-          <rect x="2" y="3" width="20" height="14" rx="2"/>
-          <path d="M8 21h8M12 17v4"/>
-        </svg>
-      </div>
-      <div class="module-tag">Core</div>
-      <div class="module-name">General Intelligence</div>
-      <div class="module-desc">The base ContinuumOS reasoning layer. No domain constraints. Open-ended intelligence for any task or problem.</div>
-      <div class="module-caps">
-        <div class="module-cap">Unrestricted reasoning</div>
-        <div class="module-cap">Research & analysis</div>
-        <div class="module-cap">Planning & execution</div>
-      </div>
-      <div class="module-launch">Launch OS <svg viewBox="0 0 24 24"><path d="M5 12h14M12 5l7 7-7 7"/></svg></div>
-    </a>
-
-  </div>
-
-  <div class="modules-note reveal">
-    All modules run on the same ContinuumOS reasoning core — Gemini 2.5 Flash.<br/>
-    Domain intelligence is applied through precision system prompting. No separate models. No extra cost.<br/><br/>
-    <a href="index.html" class="btn-secondary" style="margin-top:18px;display:inline-block;">← Return to Home</a>
-  </div>
+<p class="hero-body">
+ContinuumOne develops predictive intelligence systems designed to identify degradation signals, model machine dependencies, and forecast operational risks before downtime occurs.
+</p>
 
 </div>
 
-<footer>
-  <div class="footer-inner">
-    <div>
-      <p class="footer-logo">Continuum One</p>
-      <p class="footer-tagline">Building the operating layer for the age of intelligence.</p>
-    </div>
-    <p class="footer-copy">© 2025 Continuum One</p>
-  </div>
-</footer>
+<div>
 
-<!-- ═══════════ MODULE LOCKED POPUP ═══════════ -->
-<div id="mod-popup" aria-modal="true" role="dialog" aria-label="Module status">
-  <div id="mod-popup-box">
-    <div id="mod-popup-top">
-      <div id="mod-popup-icon">
-        <svg viewBox="0 0 24 24" fill="none" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round">
-          <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
-          <path d="M12 8v4M12 16h.01"/>
-        </svg>
-      </div>
-      <button id="mod-popup-close" aria-label="Close">
-        <svg viewBox="0 0 24 24" fill="none" stroke-width="1.6" stroke-linecap="round"><path d="M18 6L6 18M6 6l12 12"/></svg>
-      </button>
-    </div>
-    <div id="mod-popup-tag">Module Status</div>
-    <div id="mod-popup-title">Intelligence Core Restricted</div>
-    <div id="mod-popup-body">This module is currently undergoing deep calibration. The domain-specific reasoning layer is not yet cleared for deployment.<br/><br/>ContinuumOne is hardening the intelligence core for this sector before it goes live. You will be the first to know.</div>
-    <div id="mod-popup-bar-wrap"><div id="mod-popup-bar"></div></div>
-    <div id="mod-popup-status">Calibration in progress &nbsp;·&nbsp; ETA unconfirmed</div>
-    <a href="os.html" id="mod-popup-cta">Run General Intelligence instead →</a>
-  </div>
+<div class="hero-panel">
+
+<p class="panel-title">
+<span class="live-dot"></span>
+FACILITY STATUS
+</p>
+
+<div class="metric">
+<span class="metric-label">Thermal Network</span>
+<span class="metric-value">ONLINE</span>
 </div>
+
+<div class="metric">
+<span class="metric-label">Telemetry Link</span>
+<span class="metric-value">ACTIVE</span>
+</div>
+
+<div class="metric">
+<span class="metric-label">Failure Engine</span>
+<span class="metric-value">READY</span>
+</div>
+
+<div class="metric">
+<span class="metric-label">System Health</span>
+<span class="metric-value">99.87%</span>
+</div>
+
+<div class="metric">
+<span class="metric-label">Dependency Graph</span>
+<span class="metric-value">GENERATED</span>
+</div>
+
+</div>
+
+</div>
+
+</div>
+
+</div>
+
+</section>
+<!-- ===================================================== -->
+<!-- TECHNOLOGY ARCHITECTURE -->
+<!-- ===================================================== -->
+
+<section class="section" id="architecture">
+
+<div class="section-inner">
+
+<p class="section-label">
+SYSTEM ARCHITECTURE
+</p>
+
+<h2 class="section-headline">
+From Raw Telemetry To
+Engineering Foresight.
+</h2>
+
+<p class="section-body">
+ContinuumOne transforms industrial telemetry into actionable intelligence through a multi-layer architecture designed around monitoring, analysis, dependency modeling, and failure forecasting.
+</p>
+
+<div class="architecture-grid">
+
+<div class="arch-card">
+<span class="arch-number">01</span>
+<h3>Data Acquisition</h3>
+<p>
+Collects vibration streams, thermal signatures, electrical telemetry, maintenance records, and operational logs from industrial assets.
+</p>
+</div>
+
+<div class="arch-card">
+<span class="arch-number">02</span>
+<h3>State Analysis</h3>
+<p>
+Detects degradation patterns, behavioral drift, abnormal machine states, and reliability anomalies.
+</p>
+</div>
+
+<div class="arch-card">
+<span class="arch-number">03</span>
+<h3>Dependency Mapping</h3>
+<p>
+Models relationships between subsystems to understand how localized faults propagate across larger environments.
+</p>
+</div>
+
+<div class="arch-card">
+<span class="arch-number">04</span>
+<h3>Failure Forecasting</h3>
+<p>
+Estimates future operational risks and identifies intervention opportunities before disruption occurs.
+</p>
+</div>
+
+</div>
+
+</div>
+
+</section>
 
 <style>
-#mod-popup{
-  position:fixed;inset:0;z-index:199999;
-  background:rgba(0,0,0,0.78);
-  backdrop-filter:blur(18px);
-  -webkit-backdrop-filter:blur(18px);
-  display:flex;align-items:center;justify-content:center;
-  opacity:0;pointer-events:none;
-  transition:opacity 0.35s ease;
-  padding:24px;
+
+.architecture-grid{
+display:grid;
+grid-template-columns:repeat(2,1fr);
+gap:28px;
+margin-top:90px;
 }
-#mod-popup.open{opacity:1;pointer-events:auto;}
-#mod-popup-box{
-  width:min(440px,100%);
-  background:rgba(10,10,10,0.95);
-  border:1px solid rgba(255,255,255,0.1);
-  border-radius:14px;
-  padding:32px 30px 28px;
-  display:flex;flex-direction:column;gap:0;
-  box-shadow:0 0 0 1px rgba(255,255,255,0.04) inset,0 40px 100px rgba(0,0,0,0.8);
-  transform:translateY(12px) scale(0.97);
-  transition:transform 0.38s cubic-bezier(0.22,1,0.36,1);
+
+.arch-card{
+border:1px solid var(--border);
+padding:42px;
+background:rgba(255,255,255,.015);
+transition:.35s ease;
 }
-#mod-popup.open #mod-popup-box{transform:translateY(0) scale(1);}
-#mod-popup-top{
-  display:flex;align-items:flex-start;justify-content:space-between;
-  margin-bottom:22px;
+
+.arch-card:hover{
+border-color:#444;
+transform:translateY(-6px);
 }
-#mod-popup-icon{
-  width:40px;height:40px;border-radius:10px;
-  border:1px solid rgba(255,255,255,0.08);
-  background:rgba(255,255,255,0.03);
-  display:flex;align-items:center;justify-content:center;
+
+.arch-number{
+font-size:4rem;
+font-weight:700;
+opacity:.12;
+display:block;
+margin-bottom:20px;
 }
-#mod-popup-icon svg{width:20px;height:20px;stroke:rgba(255,255,255,0.6);}
-#mod-popup-close{
-  width:28px;height:28px;border-radius:6px;
-  border:1px solid rgba(255,255,255,0.08);
-  background:transparent;
-  display:flex;align-items:center;justify-content:center;
-  cursor:pointer;
-  transition:background 0.2s;
+
+.arch-card h3{
+font-size:1.7rem;
+margin-bottom:18px;
 }
-#mod-popup-close:hover{background:rgba(255,255,255,0.06);}
-#mod-popup-close svg{width:13px;height:13px;stroke:rgba(255,255,255,0.45);}
-#mod-popup-tag{
-  font-family:'Space Mono',monospace;
-  font-size:9px;letter-spacing:0.22em;text-transform:uppercase;
-  color:rgba(255,255,255,0.28);margin-bottom:10px;
+
+.arch-card p{
+color:var(--muted);
+line-height:1.8;
 }
-#mod-popup-title{
-  font-size:22px;font-weight:600;letter-spacing:-0.02em;
-  color:#fff;margin-bottom:14px;line-height:1.2;
+
+@media(max-width:900px){
+
+.architecture-grid{
+grid-template-columns:1fr;
 }
-#mod-popup-body{
-  font-size:13.5px;color:rgba(255,255,255,0.52);
-  line-height:1.65;margin-bottom:26px;
+
 }
-#mod-popup-bar-wrap{
-  height:1px;background:rgba(255,255,255,0.07);
-  border-radius:1px;overflow:hidden;margin-bottom:10px;
+
+</style>
+
+<!-- ===================================================== -->
+<!-- CONTROL ROOM -->
+<!-- ===================================================== -->
+
+<section class="section" id="control">
+
+<div class="section-inner">
+
+<p class="section-label">
+FACILITY CONTROL ROOM
+</p>
+
+<h2 class="section-headline">
+Operational Awareness.
+In Real Time.
+</h2>
+
+<p class="section-body">
+A unified operational layer providing continuous visibility into the health, performance, and reliability state of critical systems.
+</p>
+
+<div class="telemetry-grid">
+
+<div class="telemetry-card">
+<div class="telemetry-header">
+THERMAL NETWORK
+</div>
+
+<div class="telemetry-value" id="tempValue">
+42.3°C
+</div>
+
+<div class="telemetry-status">
+STATUS: NOMINAL
+</div>
+</div>
+
+<div class="telemetry-card">
+<div class="telemetry-header">
+ROTATIONAL SPEED
+</div>
+
+<div class="telemetry-value" id="rpmValue">
+1842
+</div>
+
+<div class="telemetry-status">
+RPM REFERENCE
+</div>
+</div>
+
+<div class="telemetry-card">
+<div class="telemetry-header">
+SYSTEM LOAD
+</div>
+
+<div class="telemetry-value" id="loadValue">
+71%
+</div>
+
+<div class="telemetry-status">
+ACTIVE LOAD
+</div>
+</div>
+
+<div class="telemetry-card">
+<div class="telemetry-header">
+RELIABILITY SCORE
+</div>
+
+<div class="telemetry-value" id="healthValue">
+99.87%
+</div>
+
+<div class="telemetry-status">
+HEALTH INDEX
+</div>
+</div>
+
+</div>
+
+<div class="control-wall">
+
+<div class="wall-header">
+LIVE FACILITY OVERVIEW
+</div>
+
+<div class="machine-grid">
+
+<div class="machine-node">
+PRESS UNIT A
+<span>ONLINE</span>
+</div>
+
+<div class="machine-node">
+THERMAL ARRAY
+<span>ACTIVE</span>
+</div>
+
+<div class="machine-node">
+POWER BUS
+<span>NOMINAL</span>
+</div>
+
+<div class="machine-node">
+CONTROL SYSTEM
+<span>SYNCED</span>
+</div>
+
+<div class="machine-node">
+VIBRATION ENGINE
+<span>ACTIVE</span>
+</div>
+
+<div class="machine-node">
+RELIABILITY CORE
+<span>READY</span>
+</div>
+
+</div>
+
+</div>
+
+</div>
+
+</section>
+
+<style>
+
+.telemetry-grid{
+display:grid;
+grid-template-columns:repeat(4,1fr);
+gap:24px;
+margin-top:90px;
 }
-#mod-popup-bar{
-  height:100%;width:37%;
-  background:linear-gradient(90deg,rgba(255,255,255,0.2),rgba(255,255,255,0.55));
-  box-shadow:0 0 10px rgba(255,255,255,0.4);
-  border-radius:1px;
-  animation:modBarPulse 2.8s ease-in-out infinite;
+
+.telemetry-card{
+border:1px solid var(--border);
+padding:32px;
+background:rgba(255,255,255,.015);
 }
-@keyframes modBarPulse{
-  0%,100%{width:32%;opacity:0.6;}
-  50%{width:62%;opacity:1;}
+
+.telemetry-header{
+font-size:.75rem;
+letter-spacing:.18em;
+text-transform:uppercase;
+color:var(--muted);
+margin-bottom:22px;
 }
-#mod-popup-status{
-  font-family:'Space Mono',monospace;
-  font-size:8.5px;letter-spacing:0.12em;text-transform:uppercase;
-  color:rgba(255,255,255,0.22);margin-bottom:22px;
+
+.telemetry-value{
+font-size:3rem;
+font-weight:700;
 }
-#mod-popup-cta{
-  display:inline-block;
-  font-size:13px;font-weight:500;letter-spacing:0.03em;
-  color:rgba(255,255,255,0.7);
-  text-decoration:none;
-  border:1px solid rgba(255,255,255,0.1);
-  padding:11px 18px;border-radius:7px;
-  background:rgba(255,255,255,0.03);
-  transition:color 0.22s,border-color 0.22s,background 0.22s;
-  text-align:center;
+
+.telemetry-status{
+margin-top:16px;
+font-size:.8rem;
+letter-spacing:.15em;
+color:var(--muted);
 }
-#mod-popup-cta:hover{
-  color:#fff;border-color:rgba(255,255,255,0.2);
-  background:rgba(255,255,255,0.06);
+
+.control-wall{
+margin-top:70px;
+border:1px solid var(--border);
+padding:40px;
 }
+
+.wall-header{
+font-size:.8rem;
+letter-spacing:.2em;
+text-transform:uppercase;
+margin-bottom:40px;
+color:var(--muted);
+}
+
+.machine-grid{
+display:grid;
+grid-template-columns:repeat(3,1fr);
+gap:22px;
+}
+
+.machine-node{
+border:1px solid var(--border);
+padding:30px;
+font-weight:600;
+transition:.3s;
+cursor:pointer;
+}
+
+.machine-node:hover{
+border-color:#666;
+transform:translateY(-4px);
+}
+
+.machine-node span{
+display:block;
+margin-top:10px;
+font-size:.75rem;
+letter-spacing:.15em;
+color:var(--muted);
+}
+
+@media(max-width:1100px){
+
+.telemetry-grid{
+grid-template-columns:repeat(2,1fr);
+}
+
+}
+
+@media(max-width:700px){
+
+.telemetry-grid{
+grid-template-columns:1fr;
+}
+
+.machine-grid{
+grid-template-columns:1fr;
+}
+
+}
+
 </style>
 
 <script>
-const nav = document.getElementById('nav');
-window.addEventListener('scroll', () => {
-  nav.classList.toggle('scrolled', window.scrollY > 50);
-}, {passive:true});
 
-const reveals = document.querySelectorAll('.reveal');
-const observer = new IntersectionObserver(entries => {
-  entries.forEach(e => {
-    if(e.isIntersecting){ e.target.classList.add('visible'); observer.unobserve(e.target); }
-  });
-}, {threshold:0.1, rootMargin:'0px 0px -40px 0px'});
-reveals.forEach(el => observer.observe(el));
+setInterval(()=>{
 
-// Module popup
-const popup = document.getElementById('mod-popup');
-const popupClose = document.getElementById('mod-popup-close');
+const temp=(42+Math.random()*2).toFixed(1);
+document.getElementById("tempValue").innerText=temp+"°C";
 
-document.querySelectorAll('.module-card[data-module]').forEach(card => {
-  card.addEventListener('click', () => {
-    popup.classList.add('open');
-  });
+const rpm=Math.floor(1800+Math.random()*100);
+document.getElementById("rpmValue").innerText=rpm;
+
+const load=Math.floor(68+Math.random()*8);
+document.getElementById("loadValue").innerText=load+"%";
+
+const health=(99.6+Math.random()*0.3).toFixed(2);
+document.getElementById("healthValue").innerText=health+"%";
+
+},2500);
+
+</script>
+<!-- ===================================================== -->
+<!-- DEPENDENCY MAPPING -->
+<!-- ===================================================== -->
+
+<section class="section" id="mapping">
+
+<div class="section-inner">
+
+<p class="section-label">
+DEPENDENCY MAPPING
+</p>
+
+<h2 class="section-headline">
+Understanding How
+Failures Spread.
+</h2>
+
+<p class="section-body">
+Most failures are not isolated events. ContinuumOne models relationships between machines, infrastructure, and operational systems to identify potential cascading risks before they impact production.
+</p>
+
+<div class="dependency-container">
+
+<div class="dep-node node-center" data-info="Central Processing System">
+CONTROL CORE
+</div>
+
+<div class="dep-node node-top" data-info="Thermal Monitoring Network">
+THERMAL
+</div>
+
+<div class="dep-node node-left" data-info="Power Distribution Infrastructure">
+POWER BUS
+</div>
+
+<div class="dep-node node-right" data-info="Vibration Analytics Engine">
+VIBRATION
+</div>
+
+<div class="dep-node node-bottom" data-info="Operational Telemetry Layer">
+TELEMETRY
+</div>
+
+<div class="dep-info" id="depInfo">
+Select a subsystem to inspect dependencies.
+</div>
+
+</div>
+
+</div>
+
+</section>
+
+<style>
+
+.dependency-container{
+position:relative;
+height:700px;
+margin-top:100px;
+border:1px solid var(--border);
+overflow:hidden;
+background:
+radial-gradient(circle at center,
+rgba(255,255,255,.03),
+transparent 70%);
+}
+
+.dep-node{
+position:absolute;
+width:180px;
+height:180px;
+border:1px solid var(--border);
+display:flex;
+align-items:center;
+justify-content:center;
+cursor:pointer;
+font-weight:600;
+transition:.35s ease;
+background:rgba(255,255,255,.02);
+}
+
+.dep-node:hover{
+border-color:#777;
+transform:scale(1.05);
+}
+
+.node-center{
+left:50%;
+top:50%;
+transform:translate(-50%,-50%);
+}
+
+.node-top{
+left:50%;
+top:80px;
+transform:translateX(-50%);
+}
+
+.node-left{
+left:120px;
+top:50%;
+transform:translateY(-50%);
+}
+
+.node-right{
+right:120px;
+top:50%;
+transform:translateY(-50%);
+}
+
+.node-bottom{
+left:50%;
+bottom:80px;
+transform:translateX(-50%);
+}
+
+.dep-info{
+position:absolute;
+bottom:30px;
+left:30px;
+font-size:.95rem;
+color:var(--muted);
+max-width:500px;
+}
+
+.dependency-container::before{
+content:'';
+position:absolute;
+top:50%;
+left:50%;
+width:2px;
+height:420px;
+background:rgba(255,255,255,.15);
+transform:translate(-50%,-50%);
+}
+
+.dependency-container::after{
+content:'';
+position:absolute;
+top:50%;
+left:50%;
+width:600px;
+height:2px;
+background:rgba(255,255,255,.15);
+transform:translate(-50%,-50%);
+}
+
+</style>
+
+<script>
+
+document.querySelectorAll('.dep-node').forEach(node=>{
+
+node.addEventListener('click',()=>{
+
+document.getElementById('depInfo').innerHTML=
+`
+<strong>${node.innerText}</strong><br><br>
+${node.dataset.info}<br><br>
+Connected Systems: 4<br>
+Criticality: HIGH<br>
+Cascade Risk: MODERATE
+`;
+
 });
 
-function closePopup(){ popup.classList.remove('open'); }
-popupClose.addEventListener('click', closePopup);
-popup.addEventListener('click', e => { if(e.target === popup) closePopup(); });
-document.addEventListener('keydown', e => { if(e.key === 'Escape') closePopup(); });
+});
+
 </script>
+
+<!-- ===================================================== -->
+<!-- FAILURE PROPAGATION SIMULATOR -->
+<!-- ===================================================== -->
+
+<section class="section">
+
+<div class="section-inner">
+
+<p class="section-label">
+FAILURE PROPAGATION
+</p>
+
+<h2 class="section-headline">
+A Small Fault.
+A Large Consequence.
+</h2>
+
+<p class="section-body">
+This simulator demonstrates how localized machine failures can propagate through larger systems when dependencies are not properly monitored.
+</p>
+
+<div class="simulator-box">
+
+<div class="simulator-chain">
+
+<div class="sim-block" data-level="1">
+BEARING FAILURE
+</div>
+
+<div class="sim-arrow">
+↓
+</div>
+
+<div class="sim-block" data-level="2">
+DRIVE SHAFT
+</div>
+
+<div class="sim-arrow">
+↓
+</div>
+
+<div class="sim-block" data-level="3">
+MOTOR ASSEMBLY
+</div>
+
+<div class="sim-arrow">
+↓
+</div>
+
+<div class="sim-block" data-level="4">
+PRODUCTION CELL
+</div>
+
+<div class="sim-arrow">
+↓
+</div>
+
+<div class="sim-block" data-level="5">
+FACILITY OUTPUT
+</div>
+
+</div>
+
+<div class="sim-controls">
+
+<button id="simulateBtn" class="sim-btn">
+Run Simulation
+</button>
+
+<div class="sim-results" id="simResults">
+
+Awaiting simulation...
+
+</div>
+
+</div>
+
+</div>
+
+</div>
+
+</section>
+
+<style>
+
+.simulator-box{
+margin-top:90px;
+border:1px solid var(--border);
+padding:60px;
+}
+
+.simulator-chain{
+display:flex;
+flex-direction:column;
+align-items:center;
+gap:12px;
+}
+
+.sim-block{
+width:320px;
+padding:22px;
+text-align:center;
+border:1px solid var(--border);
+background:rgba(255,255,255,.02);
+transition:.4s;
+}
+
+.sim-arrow{
+font-size:1.5rem;
+color:var(--muted);
+}
+
+.sim-controls{
+margin-top:50px;
+text-align:center;
+}
+
+.sim-btn{
+background:none;
+border:1px solid var(--border-strong);
+color:white;
+padding:16px 28px;
+cursor:pointer;
+font-size:.9rem;
+letter-spacing:.15em;
+text-transform:uppercase;
+}
+
+.sim-btn:hover{
+border-color:white;
+}
+
+.sim-results{
+margin-top:35px;
+color:var(--muted);
+line-height:1.8;
+}
+
+</style>
+
+<script>
+
+document.getElementById('simulateBtn').addEventListener('click',()=>{
+
+const blocks=document.querySelectorAll('.sim-block');
+
+blocks.forEach(b=>{
+b.style.background='rgba(255,255,255,.02)';
+b.style.borderColor='var(--border)';
+});
+
+let i=0;
+
+const interval=setInterval(()=>{
+
+if(i<blocks.length){
+
+blocks[i].style.background='rgba(255,255,255,.08)';
+blocks[i].style.borderColor='#888';
+
+i++;
+
+}else{
+
+clearInterval(interval);
+
+document.getElementById('simResults').innerHTML=
+`
+Projected Downtime: 4.7 Hours<br>
+Estimated Production Loss: $38,400<br>
+Cascade Severity: HIGH<br>
+Recommended Action: Immediate Maintenance Intervention
+`;
+
+}
+
+},600);
+
+});
+
+</script>
+<!-- ===================================================== -->
+<!-- ENGINEERING TERMINAL -->
+<!-- ===================================================== -->
+
+<section class="section" id="terminal">
+
+<div class="section-inner">
+
+<p class="section-label">
+RESEARCH TERMINAL
+</p>
+
+<h2 class="section-headline">
+Query The System.
+Inspect The Signals.
+</h2>
+
+<p class="section-body">
+A conceptual interface demonstrating how engineering teams could investigate machine health, failure signatures, and operational anomalies.
+</p>
+
+<div class="terminal">
+
+<div class="terminal-header">
+<div class="terminal-dot"></div>
+<div class="terminal-dot"></div>
+<div class="terminal-dot"></div>
+
+<span class="terminal-title">
+CONTINUUMONE RESEARCH TERMINAL
+</span>
+</div>
+
+<div class="terminal-body">
+
+<div class="terminal-line">
+> SYSTEM STATUS
+</div>
+
+<div id="terminalOutput">
+
+FACILITY STATUS: NOMINAL<br>
+ACTIVE NODES: 1247<br>
+HEALTH INDEX: 99.87%<br>
+READY FOR QUERY...
+<br><br>
+
+</div>
+
+<div class="terminal-controls">
+
+<button class="terminal-btn" onclick="runQuery('failure')">
+Failure Analysis
+</button>
+
+<button class="terminal-btn" onclick="runQuery('thermal')">
+Thermal Network
+</button>
+
+<button class="terminal-btn" onclick="runQuery('vibration')">
+Vibration Engine
+</button>
+
+<button class="terminal-btn" onclick="runQuery('reliability')">
+Reliability Core
+</button>
+
+</div>
+
+</div>
+
+</div>
+
+</div>
+
+</section>
+
+<style>
+
+.terminal{
+margin-top:90px;
+border:1px solid var(--border);
+background:#060606;
+}
+
+.terminal-header{
+height:56px;
+display:flex;
+align-items:center;
+padding:0 20px;
+border-bottom:1px solid var(--border);
+gap:10px;
+}
+
+.terminal-dot{
+width:10px;
+height:10px;
+border-radius:50%;
+background:#777;
+}
+
+.terminal-title{
+margin-left:10px;
+font-size:.75rem;
+letter-spacing:.15em;
+color:var(--muted);
+}
+
+.terminal-body{
+padding:40px;
+font-family:monospace;
+min-height:450px;
+}
+
+.terminal-line{
+color:#d5d5d5;
+margin-bottom:24px;
+}
+
+.terminal-controls{
+display:flex;
+gap:14px;
+flex-wrap:wrap;
+margin-top:30px;
+}
+
+.terminal-btn{
+background:none;
+color:white;
+border:1px solid var(--border-strong);
+padding:12px 18px;
+cursor:pointer;
+transition:.3s;
+}
+
+.terminal-btn:hover{
+border-color:white;
+}
+
+#terminalOutput{
+line-height:1.8;
+color:#cfcfcf;
+}
+
+</style>
+
+<script>
+
+function runQuery(type){
+
+const output=document.getElementById('terminalOutput');
+
+if(type==='failure'){
+
+output.innerHTML=`
+QUERY: FAILURE ANALYSIS<br><br>
+
+Detected Signal Deviation:<br>
+Bearing Assembly 04<br><br>
+
+Confidence: 94.2%<br>
+Estimated Remaining Life: 132 Hours<br>
+Cascade Risk: Moderate<br><br>
+
+RECOMMENDED ACTION:<br>
+Inspect Rotational Components
+`;
+
+}
+
+if(type==='thermal'){
+
+output.innerHTML=`
+QUERY: THERMAL NETWORK<br><br>
+
+Average Temperature: 42.8°C<br>
+Peak Temperature: 46.1°C<br>
+Network Stability: Stable<br><br>
+
+No Critical Anomalies Detected
+`;
+
+}
+
+if(type==='vibration'){
+
+output.innerHTML=`
+QUERY: VIBRATION ENGINE<br><br>
+
+Signal Integrity: 99.1%<br>
+Vibration Index: 0.14 mm/s<br>
+Pattern Match Confidence: 92.7%<br><br>
+
+Mechanical State: Healthy
+`;
+
+}
+
+if(type==='reliability'){
+
+output.innerHTML=`
+QUERY: RELIABILITY CORE<br><br>
+
+System Health Index: 99.87%<br>
+Predicted Uptime: 99.94%<br>
+Failure Probability: Low<br><br>
+
+Operational Status: NOMINAL
+`;
+
+}
+
+}
+
+</script>
+
+<!-- ===================================================== -->
+<!-- FINAL STATEMENT -->
+<!-- ===================================================== -->
+
+<section class="section">
+
+<div class="section-inner">
+
+<div class="final-statement">
+
+<p class="final-small">
+CONTINUUMONE
+</p>
+
+<h2>
+Failures Leave Signals.<br>
+We Build Systems<br>
+That See Them First.
+</h2>
+
+</div>
+
+</div>
+
+</section>
+
+<style>
+
+.final-statement{
+text-align:center;
+padding:120px 0;
+border-top:1px solid var(--border);
+border-bottom:1px solid var(--border);
+}
+
+.final-small{
+font-size:.8rem;
+letter-spacing:.25em;
+text-transform:uppercase;
+color:var(--muted);
+margin-bottom:28px;
+}
+
+.final-statement h2{
+font-size:clamp(3rem,8vw,7rem);
+line-height:.95;
+font-weight:700;
+letter-spacing:-.04em;
+}
+
+</style>
+
+<!-- ===================================================== -->
+<!-- FOOTER -->
+<!-- ===================================================== -->
+
+<footer class="footer">
+
+<div class="section-inner">
+
+<div class="footer-grid">
+
+<div>
+
+<h3 class="footer-logo">
+CONTINUUMONE
+</h3>
+
+<p class="footer-desc">
+Predictive Intelligence For Industrial Systems.
+</p>
+
+</div>
+
+<div class="footer-links">
+
+<a href="index.html">Home</a>
+<a href="#architecture">Architecture</a>
+<a href="#control">Control Room</a>
+<a href="#mapping">Dependency Mapping</a>
+<a href="#terminal">Terminal</a>
+
+</div>
+
+</div>
+
+<div class="footer-copy">
+© 2026 ContinuumOne. Engineering Intelligence Before Failure Occurs.
+</div>
+
+</div>
+
+</footer>
+
+<style>
+
+.footer{
+padding:80px 0;
+}
+
+.footer-grid{
+display:flex;
+justify-content:space-between;
+align-items:flex-start;
+gap:40px;
+}
+
+.footer-logo{
+font-size:1rem;
+letter-spacing:.25em;
+margin-bottom:10px;
+}
+
+.footer-desc{
+color:var(--muted);
+}
+
+.footer-links{
+display:flex;
+gap:24px;
+flex-wrap:wrap;
+}
+
+.footer-links a{
+color:var(--muted);
+transition:.3s;
+}
+
+.footer-links a:hover{
+color:white;
+}
+
+.footer-copy{
+margin-top:50px;
+padding-top:30px;
+border-top:1px solid var(--border);
+color:var(--muted);
+font-size:.9rem;
+}
+
+@media(max-width:900px){
+
+.footer-grid{
+flex-direction:column;
+}
+
+}
+
+</style>
+
+<!-- ===================================================== -->
+<!-- NAV SCROLL -->
+<!-- ===================================================== -->
+
+<script>
+
+const nav=document.getElementById('nav');
+
+window.addEventListener('scroll',()=>{
+
+nav.classList.toggle(
+'scrolled',
+window.scrollY>40
+);
+
+});
+
+</script>
+
 </body>
 </html>
