@@ -1,0 +1,387 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>ContinuumOne | Virtual Intelligence Simulation</title>
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+
+</head>
+
+<body>
+
+    <div class="workspace-overlay" id="workspaceOverlay">
+
+<div class="workspace">
+
+<div class="workspace-left">
+
+<h1>
+Engineering Analysis Workspace
+</h1>
+
+<p>
+
+Select the level of engineering analysis before entering the predictive intelligence platform.
+
+</p>
+
+<div class="mode-card active">
+
+<h3>Rapid Assessment</h3>
+
+<p>
+
+Fleet-level engineering overview for fast operational decisions across multiple assets.
+
+</p>
+
+<div class="mode-time">
+
+Estimated Analysis • Under 15 Seconds
+
+</div>
+
+</div>
+
+<div class="mode-card">
+
+<h3>Comprehensive Engineering Assessment</h3>
+
+<p>
+
+High-fidelity predictive analysis with environmental conditions, maintenance history and failure modelling.
+
+</p>
+
+<div class="mode-time">
+
+Estimated Analysis • 2–5 Minutes
+
+</div>
+
+</div>
+
+<button class="init-btn" id="enterWorkspace">
+
+Initialize Workspace
+
+</button>
+
+</div>
+
+<div class="workspace-right">
+
+<div class="core"></div>
+
+</div>
+
+</div>
+
+<div class="boot-screen" id="bootScreen">
+
+<div class="boot-box">
+
+<h2>Initializing Engineering Workspace</h2>
+
+<div class="boot-log" id="bootLog">
+
+<div>Waiting...</div>
+
+</div>
+
+</div>
+
+</div>
+
+</div>
+
+<div class="app">
+
+<aside class="sidebar">
+
+<div class="logo">
+
+<img src="assets/logo.png">
+
+<div class="brand">
+
+<h2>ContinuumOne</h2>
+
+<p>Virtual Intelligence Simulation</p>
+
+</div>
+
+</div>
+
+<div class="nav">
+
+<button class="active">Simulation</button>
+
+<button>Asset Library</button>
+
+<button>Engineering Report</button>
+
+<button>Failure Timeline</button>
+
+<button>Prediction Center</button>
+
+<button>Analytics</button>
+
+</div>
+
+<div class="system">
+
+<h4>System Status</h4>
+
+<div class="status">
+<span><span class="dot"></span>Simulation Core</span>
+<strong>Online</strong>
+</div>
+
+<div class="status">
+<span>Prediction Engine</span>
+<strong>Ready</strong>
+</div>
+
+<div class="status">
+<span>Physics Model</span>
+<strong>Loaded</strong>
+</div>
+
+</div>
+
+</aside>
+
+<div class="main">
+
+<div class="topbar">
+
+<div class="top-left">
+
+<h1>Virtual Intelligence Simulation</h1>
+
+<p>Preventive & Predictive Engineering Intelligence</p>
+
+</div>
+
+<div class="top-right">
+
+<div class="health">
+
+<small>System Health</small>
+
+<strong>100%</strong>
+
+</div>
+
+<button class="run">
+Run Simulation
+</button>
+
+</div>
+
+</div>
+
+<div class="content">
+
+<div class="panel">
+
+<div class="section-title">
+Engineering Asset Library
+</div>
+
+<div class="asset-search">
+    <input
+        id="assetSearch"
+        type="text"
+        placeholder="Search engineering assets..."
+    >
+</div>
+
+<div class="category-tabs">
+
+<button class="cat active">All</button>
+<button class="cat">Aerospace</button>
+<button class="cat">Automotive</button>
+<button class="cat">Semiconductor</button>
+<button class="cat">Industrial</button>
+<button class="cat">Energy</button>
+<button class="cat">Medical</button>
+
+</div>
+
+<div id="assetGrid" class="asset-grid">
+
+</div>
+
+</div>
+
+<div class="panel">
+
+<div class="section-title">
+Engineering Dossier
+</div>
+
+<div id="assetDossier">
+
+<div class="dossier-placeholder">
+
+<svg viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="1.2">
+<path d="M12 2l8 5v10l-8 5-8-5V7z"/>
+</svg>
+
+<h2>No Asset Selected</h2>
+
+<p>
+
+Select an engineering asset to initialize the predictive intelligence engine.
+
+</p>
+
+</div>
+
+</div>
+
+</div>
+
+<div class="panel right-panel">
+
+<div class="section-title">
+
+Simulation Status
+
+</div>
+
+<div class="metric">
+
+<small>Prediction Confidence</small>
+
+<strong>--%</strong>
+
+<div class="progress">
+<span style="width:0%"></span>
+</div>
+
+</div>
+
+<div class="metric">
+
+<small>Remaining Useful Life</small>
+
+<strong>---</strong>
+
+</div>
+
+<div class="metric">
+
+<small>Failure Probability</small>
+
+<strong>---</strong>
+
+</div>
+
+<div class="metric">
+
+<small>Estimated Downtime</small>
+
+<strong>---</strong>
+
+</div>
+
+</div>
+
+</div>
+
+</div>
+
+</div>
+
+<div class="footer-note">
+
+ContinuumOne Engineering Intelligence Prototype
+
+</div>
+
+<script src="knowledgebase.js">
+
+const overlay=document.getElementById("workspaceOverlay");
+
+document.querySelectorAll(".mode-card").forEach(card=>{
+
+card.onclick=()=>{
+
+document.querySelectorAll(".mode-card").forEach(c=>c.classList.remove("active"));
+
+card.classList.add("active");
+
+};
+
+});
+
+const boot=document.getElementById("bootScreen");
+
+const bootLog=document.getElementById("bootLog");
+
+const sequence=[
+
+"Loading Engineering Knowledge Base...",
+
+"Loading Material Database...",
+
+"Initializing Sensor Models...",
+
+"Loading Reliability Algorithms...",
+
+"Building Failure Graph...",
+
+"Calibrating Prediction Engine...",
+
+"Connecting Intelligence Core...",
+
+"Workspace Ready."
+
+];
+
+document.getElementById("enterWorkspace").onclick=()=>{
+
+overlay.classList.add("hide");
+
+boot.classList.add("show");
+
+bootLog.innerHTML="";
+
+let i=0;
+
+const timer=setInterval(()=>{
+
+bootLog.innerHTML+=`✓ ${sequence[i]}<br>`;
+
+i++;
+
+if(i===sequence.length){
+
+clearInterval(timer);
+
+setTimeout(()=>{
+
+boot.classList.remove("show");
+
+overlay.remove();
+
+},900);
+
+}
+
+},500);
+
+};
+
+</script>
+</body>
+</html>
