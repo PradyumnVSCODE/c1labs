@@ -1,4 +1,392 @@
-<!-- ==========================================================================
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ContinuumOne Engineering Intelligence Platform</title>
+  
+  <!-- ==========================================================================
+       PART 1: CSS Design System & Layout Engine
+       ========================================================================== -->
+  <style>
+    :root {
+      --bg-primary: #030508;
+      --bg-secondary: #080d14;
+      --bg-tertiary: #0f1724;
+      --border-subtle: #1c2638;
+      --border-strong: #2d3f5e;
+      --border-accent: #00e676;
+      
+      --text-main: #c3d1e0;
+      --text-muted: #627894;
+      --text-bright: #ffffff;
+      
+      --status-green: #00e676;
+      --status-amber: #ffb300;
+      --status-red: #ff1744;
+      
+      --font-mono: "SF Mono", "Fira Code", "Cascadia Code", "Roboto Mono", monospace;
+      --font-sans: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      background-color: var(--bg-primary);
+      color: var(--text-main);
+      font-family: var(--font-sans);
+      font-size: 13px;
+      line-height: 1.5;
+      height: 100vh;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+    }
+
+    /* TOP HEADER */
+    .c1-header {
+      height: 48px;
+      background: var(--bg-secondary);
+      border-bottom: 1px solid var(--border-subtle);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 16px;
+      font-family: var(--font-mono);
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      font-weight: 700;
+      letter-spacing: 1px;
+      color: var(--text-bright);
+    }
+
+    .brand-logo {
+      width: 12px;
+      height: 12px;
+      background: var(--border-accent);
+      box-shadow: 0 0 8px var(--border-accent);
+    }
+
+    .header-meta {
+      display: flex;
+      gap: 16px;
+      color: var(--text-muted);
+      font-size: 11px;
+    }
+
+    /* MAIN CONTAINER */
+    .c1-app-container {
+      display: flex;
+      flex: 1;
+      overflow: hidden;
+    }
+
+    /* SIDEBAR (ASSET CATALOG) */
+    .sidebar {
+      width: 320px;
+      background: var(--bg-secondary);
+      border-right: 1px solid var(--border-subtle);
+      display: flex;
+      flex-direction: column;
+    }
+
+    .sidebar-header {
+      padding: 12px;
+      border-bottom: 1px solid var(--border-subtle);
+    }
+
+    .search-box {
+      width: 100%;
+      background: var(--bg-tertiary);
+      border: 1px solid var(--border-subtle);
+      color: var(--text-bright);
+      padding: 6px 10px;
+      font-family: var(--font-mono);
+      font-size: 11px;
+      outline: none;
+    }
+
+    .search-box:focus {
+      border-color: var(--border-accent);
+    }
+
+    .filter-group {
+      display: flex;
+      gap: 4px;
+      margin-top: 8px;
+      overflow-x: auto;
+      padding-bottom: 4px;
+    }
+
+    .filter-chip {
+      background: var(--bg-tertiary);
+      border: 1px solid var(--border-subtle);
+      color: var(--text-muted);
+      font-size: 10px;
+      font-family: var(--font-mono);
+      padding: 2px 6px;
+      cursor: pointer;
+      white-space: nowrap;
+    }
+
+    .filter-chip.active {
+      border-color: var(--border-accent);
+      color: var(--border-accent);
+    }
+
+    .asset-list {
+      flex: 1;
+      overflow-y: auto;
+    }
+
+    .asset-card {
+      padding: 12px;
+      border-bottom: 1px solid var(--border-subtle);
+      cursor: pointer;
+      transition: background 0.15s;
+    }
+
+    .asset-card:hover {
+      background: var(--bg-tertiary);
+    }
+
+    .asset-card.selected {
+      background: var(--bg-tertiary);
+      border-left: 3px solid var(--border-accent);
+    }
+
+    .asset-card-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      margin-bottom: 4px;
+    }
+
+    .asset-card-title {
+      font-weight: 600;
+      color: var(--text-bright);
+      font-size: 12px;
+    }
+
+    .asset-card-meta {
+      font-family: var(--font-mono);
+      font-size: 10px;
+      color: var(--text-muted);
+      display: flex;
+      justify-content: space-between;
+    }
+
+    /* RISK BADGES */
+    .risk-badge {
+      font-family: var(--font-mono);
+      font-size: 9px;
+      padding: 1px 4px;
+      border-radius: 2px;
+      font-weight: 700;
+      text-transform: uppercase;
+    }
+
+    .risk-low { background: rgba(0,230,118,0.1); color: var(--status-green); border: 1px solid var(--status-green); }
+    .risk-medium { background: rgba(255,179,0,0.1); color: var(--status-amber); border: 1px solid var(--status-amber); }
+    .risk-extreme { background: rgba(255,23,68,0.1); color: var(--status-red); border: 1px solid var(--status-red); }
+
+    /* CONTENT WORKSPACE */
+    .workspace {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      background: var(--bg-primary);
+    }
+
+    .nav-tabs {
+      display: flex;
+      background: var(--bg-secondary);
+      border-bottom: 1px solid var(--border-subtle);
+    }
+
+    .nav-tab {
+      padding: 10px 16px;
+      font-family: var(--font-mono);
+      font-size: 11px;
+      color: var(--text-muted);
+      cursor: pointer;
+      border-right: 1px solid var(--border-subtle);
+      border-bottom: 2px solid transparent;
+    }
+
+    .nav-tab.active {
+      color: var(--text-bright);
+      background: var(--bg-primary);
+      border-bottom-color: var(--border-accent);
+    }
+
+    .main-panel-grid {
+      flex: 1;
+      padding: 16px;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 16px;
+      overflow-y: auto;
+    }
+
+    .panel {
+      background: var(--bg-secondary);
+      border: 1px solid var(--border-subtle);
+      padding: 16px;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .panel.full-width {
+      grid-column: span 2;
+    }
+
+    .panel-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 12px;
+      border-bottom: 1px solid var(--border-subtle);
+      padding-bottom: 8px;
+    }
+
+    .panel-title {
+      font-family: var(--font-mono);
+      font-size: 11px;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    /* CONTROLS & FORM ELEMENTS */
+    .control-group {
+      margin-bottom: 14px;
+    }
+
+    .control-label {
+      display: flex;
+      justify-content: space-between;
+      font-family: var(--font-mono);
+      font-size: 11px;
+      color: var(--text-muted);
+      margin-bottom: 4px;
+    }
+
+    .control-value {
+      color: var(--border-accent);
+    }
+
+    input[type=range] {
+      width: 100%;
+      accent-color: var(--border-accent);
+    }
+
+    .c1-btn {
+      background: var(--bg-tertiary);
+      border: 1px solid var(--border-strong);
+      color: var(--text-bright);
+      padding: 6px 12px;
+      font-family: var(--font-mono);
+      font-size: 11px;
+      cursor: pointer;
+      transition: all 0.15s;
+    }
+
+    .c1-btn:hover {
+      border-color: var(--border-accent);
+      color: var(--border-accent);
+    }
+
+    .c1-btn-primary {
+      background: var(--border-accent);
+      color: #000;
+      font-weight: 700;
+      border: none;
+    }
+
+    .c1-btn-primary:hover {
+      background: #00c853;
+      color: #000;
+    }
+
+    /* TELEMETRY CANVAS */
+    .telemetry-canvas-container {
+      width: 100%;
+      height: 180px;
+      background: #030508;
+      border: 1px solid var(--border-subtle);
+      position: relative;
+    }
+
+    canvas {
+      width: 100%;
+      height: 100%;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- HEADER -->
+  <header class="c1-header">
+    <div class="brand">
+      <div class="brand-logo"></div>
+      <span>CONTINUUMONE // INTEL PLATFORM</span>
+    </div>
+    <div class="header-meta">
+      <span>SYS STATUS: NOMINAL</span>
+      <span id="utc-clock">00:00:00 UTC</span>
+    </div>
+  </header>
+
+  <!-- MAIN LAYOUT -->
+  <div class="c1-app-container">
+    
+    <!-- SIDEBAR -->
+    <aside class="sidebar">
+      <div class="sidebar-header">
+        <input type="text" id="asset-search" class="search-box" placeholder="Search assets or manufacturers...">
+        <div class="filter-group" id="category-filters">
+          <button class="filter-chip active" data-cat="ALL">ALL</button>
+          <button class="filter-chip" data-cat="Aerospace">AERO</button>
+          <button class="filter-chip" data-cat="Automotive">AUTO</button>
+          <button class="filter-chip" data-cat="Semiconductor">SEMI</button>
+          <button class="filter-chip" data-cat="Industrial">IND</button>
+          <button class="filter-chip" data-cat="Energy">NRG</button>
+          <button class="filter-chip" data-cat="Space">SPACE</button>
+        </div>
+      </div>
+      <div class="asset-list" id="asset-list-container">
+        <!-- Rendered Dynamically -->
+      </div>
+      <div style="padding: 8px 12px; border-top: 1px solid var(--border-subtle); font-family: var(--font-mono); font-size: 10px; color: var(--text-muted);">
+        TOTAL CATALOG ASSETS: <span id="asset-count" style="color: var(--text-bright);">0</span>
+      </div>
+    </aside>
+
+    <!-- WORKSPACE -->
+    <main class="workspace">
+      <nav class="nav-tabs">
+        <div class="nav-tab active" data-target="tab-dossier">ASSET DOSSIER</div>
+        <div class="nav-tab" data-target="tab-simulation">SIMULATION CONTROL</div>
+        <div class="nav-tab" data-target="tab-analytics">FAILURE ANALYTICS</div>
+        <div class="nav-tab" data-target="tab-report">INTELLIGENCE REPORT</div>
+      </nav>
+
+      <div class="main-panel-grid" id="main-content-area">
+        <!-- Active Tab Content Injected Here -->
+      </div>
+    </main>
+  </div>
+
+  <!-- ==========================================================================
        PART 2: ContinuumOne Engineering Asset Database
        ========================================================================== -->
   <script>
