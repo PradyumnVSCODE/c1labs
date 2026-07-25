@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" data-theme="silver">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -25,11 +25,24 @@
   --c-amber-dim:     #6b4c14;
   --c-red:           #ef4b52;
   --c-red-dim:       #6b1e21;
+  --c-accent:        var(--c-silver-bright);
+  --c-accent-dim:    var(--c-border-bright);
   --font-display:    'Segoe UI', 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
   --font-mono:       'Consolas', 'SFMono-Regular', 'Roboto Mono', monospace;
   --radius:          2px;
   --header-h:        56px;
+  --gap:             14px;
+  --pad:             16px;
 }
+/* ---- Theming: accent variants (kept within brand palette; no rainbow) ---- */
+html[data-theme="green"]{ --c-accent: var(--c-green); --c-accent-dim: var(--c-green-dim); }
+html[data-theme="amber"]{ --c-accent: var(--c-amber); --c-accent-dim: var(--c-amber-dim); }
+html[data-theme="silver"]{ --c-accent: var(--c-silver-bright); --c-accent-dim: var(--c-border-bright); }
+/* ---- Density ---- */
+body.density-compact{ --gap:9px; --pad:11px; font-size:13px; }
+body.density-compact .view-title{ font-size:19px; }
+body.density-compact #view{ padding:20px 26px 44px; }
+
 *{ box-sizing:border-box; margin:0; padding:0; }
 html,body{ height:100%; }
 body{
@@ -54,9 +67,13 @@ body::before{
   pointer-events:none;
   z-index:0;
 }
+@media (prefers-reduced-motion: reduce){
+  *{ animation-duration:0.001ms !important; animation-iteration-count:1 !important; transition-duration:0.001ms !important; }
+}
 a{ color:inherit; text-decoration:none; }
 button{ font-family:inherit; cursor:pointer; }
 input,select{ font-family:inherit; }
+:focus-visible{ outline:1px solid var(--c-accent); outline-offset:2px; }
 ::selection{ background:var(--c-silver-dim); color:var(--c-bg); }
 ::-webkit-scrollbar{ width:10px; height:10px; }
 ::-webkit-scrollbar-track{ background:var(--c-bg-inset); }
@@ -98,10 +115,17 @@ input,select{ font-family:inherit; }
   color:var(--c-silver-bright);
   position:relative;
   background:conic-gradient(from 45deg, var(--c-bg-panel), var(--c-border-bright), var(--c-bg-panel));
+  overflow:hidden;
 }
 .brand-mark::after{
   content:""; position:absolute; inset:3px; border:1px solid var(--c-border);
 }
+.brand-mark::before{
+  content:""; position:absolute; left:0; top:-100%; width:100%; height:40%;
+  background:linear-gradient(180deg, transparent, rgba(238,240,243,0.35), transparent);
+  animation:scan 3.2s linear infinite;
+}
+@keyframes scan{ 0%{ top:-40%; } 100%{ top:120%; } }
 .brand-text{ display:flex; flex-direction:column; line-height:1.15; }
 .brand-text .name{ font-size:13px; font-weight:600; letter-spacing:1px; color:var(--c-silver-bright); }
 .brand-text .sub{ font-size:9px; letter-spacing:1.5px; color:var(--c-silver-dim); text-transform:uppercase; }
@@ -114,20 +138,28 @@ input,select{ font-family:inherit; }
   transition:all .15s ease;
 }
 .nav-btn:hover{ color:var(--c-silver-bright); border-color:var(--c-border); }
-.nav-btn.active{ color:var(--c-white); border-color:var(--c-border-bright); background:var(--c-bg-panel); }
+.nav-btn.active{ color:var(--c-bg); border-color:var(--c-accent); background:var(--c-accent); }
 
 .status-cluster{ margin-left:auto; display:flex; align-items:center; gap:18px; }
 .status-item{ display:flex; align-items:center; gap:6px; font-family:var(--font-mono); font-size:10px; letter-spacing:1px; color:var(--c-silver-dim); text-transform:uppercase; }
 .status-dot{ width:6px; height:6px; border-radius:50%; background:var(--c-green); box-shadow:0 0 6px var(--c-green); }
 #clock{ font-family:var(--font-mono); font-size:11px; color:var(--c-silver); letter-spacing:1px; }
+.icon-btn{
+  width:30px; height:30px; display:flex; align-items:center; justify-content:center;
+  background:transparent; border:1px solid var(--c-border); color:var(--c-silver-dim);
+  transition:all .15s ease;
+}
+.icon-btn:hover{ color:var(--c-silver-bright); border-color:var(--c-border-bright); }
+.icon-btn svg{ width:15px; height:15px; }
 
 /* ---- Main content ---- */
-#view{ flex:1; padding:28px 32px 60px; max-width:1440px; width:100%; margin:0 auto; }
+#view{ flex:1; padding:28px 32px 60px; max-width:1500px; width:100%; margin:0 auto; }
 .view-header{ display:flex; align-items:flex-end; justify-content:space-between; margin-bottom:22px; flex-wrap:wrap; gap:12px; }
 .view-title{ font-size:22px; font-weight:600; color:var(--c-white); letter-spacing:0.3px; }
 .view-title .accent{ color:var(--c-silver-dim); font-weight:400; }
 .breadcrumb{ font-family:var(--font-mono); font-size:10px; letter-spacing:1.5px; text-transform:uppercase; color:var(--c-silver-dim); margin-bottom:6px; }
 .breadcrumb a:hover{ color:var(--c-silver-bright); }
+.header-actions{ display:flex; gap:8px; align-items:center; }
 
 /* =====================================================
    COMPONENTS
@@ -141,9 +173,10 @@ input,select{ font-family:inherit; }
 .panel-header{
   display:flex; align-items:center; justify-content:space-between;
   padding:12px 16px; border-bottom:1px solid var(--c-border);
+  gap:10px; flex-wrap:wrap;
 }
 .panel-header h3{ font-size:11px; letter-spacing:1.8px; text-transform:uppercase; color:var(--c-silver-dim); font-weight:600; font-family:var(--font-mono); }
-.panel-body{ padding:16px; }
+.panel-body{ padding:var(--pad); }
 
 .btn{
   display:inline-flex; align-items:center; gap:8px;
@@ -153,8 +186,8 @@ input,select{ font-family:inherit; }
   transition:all .15s ease;
 }
 .btn:hover{ background:var(--c-border-bright); color:var(--c-bg); }
-.btn-primary{ border-color:var(--c-silver-bright); color:var(--c-bg); background:var(--c-silver-bright); }
-.btn-primary:hover{ background:var(--c-white); }
+.btn-primary{ border-color:var(--c-accent); color:var(--c-bg); background:var(--c-accent); }
+.btn-primary:hover{ filter:brightness(1.12); }
 .btn-ghost{ background:transparent; border-color:var(--c-border); color:var(--c-silver-dim); }
 .btn-ghost:hover{ background:var(--c-bg-raised); color:var(--c-silver-bright); border-color:var(--c-border-bright); }
 .btn:disabled{ opacity:0.35; cursor:not-allowed; pointer-events:none; }
@@ -173,6 +206,16 @@ input,select{ font-family:inherit; }
 .badge.risk-high, .badge.risk-critical{ color:var(--c-red); border-color:var(--c-red-dim); }
 .badge.risk-high .badge-dot, .badge.risk-critical .badge-dot{ background:var(--c-red); box-shadow:0 0 5px var(--c-red); }
 
+/* ---- Tabs ---- */
+.tabbar{ display:flex; gap:2px; border-bottom:1px solid var(--c-border); margin-bottom:16px; }
+.tab-btn{
+  background:transparent; border:none; border-bottom:2px solid transparent;
+  color:var(--c-silver-dim); padding:10px 16px; font-size:11px; letter-spacing:1.3px;
+  text-transform:uppercase; font-family:var(--font-mono);
+}
+.tab-btn:hover{ color:var(--c-silver-bright); }
+.tab-btn.active{ color:var(--c-accent); border-bottom-color:var(--c-accent); }
+
 /* ---- Asset Library ---- */
 .toolbar{ display:flex; gap:10px; margin-bottom:20px; flex-wrap:wrap; align-items:center; }
 .search-input{
@@ -180,13 +223,13 @@ input,select{ font-family:inherit; }
   background:var(--c-bg-inset); border:1px solid var(--c-border);
   color:var(--c-silver-bright); padding:10px 14px; font-size:13px;
 }
-.search-input:focus{ outline:none; border-color:var(--c-border-bright); }
+.search-input:focus{ outline:none; border-color:var(--c-accent); }
 .search-input::placeholder{ color:var(--c-silver-dim); }
 .select{
   background:var(--c-bg-inset); border:1px solid var(--c-border); color:var(--c-silver);
   padding:10px 12px; font-size:12px; font-family:var(--font-mono); letter-spacing:0.5px;
 }
-.select:focus{ outline:none; border-color:var(--c-border-bright); }
+.select:focus{ outline:none; border-color:var(--c-accent); }
 
 .category-rail{ display:flex; gap:8px; margin-bottom:20px; flex-wrap:wrap; }
 .category-chip{
@@ -196,17 +239,17 @@ input,select{ font-family:inherit; }
 }
 .category-chip .count{ color:var(--c-silver-dim); }
 .category-chip:hover{ border-color:var(--c-border-bright); color:var(--c-silver-bright); }
-.category-chip.active{ border-color:var(--c-silver-bright); color:var(--c-white); background:var(--c-bg-panel); }
+.category-chip.active{ border-color:var(--c-accent); color:var(--c-white); background:var(--c-bg-panel); }
 
-.asset-grid{ display:grid; grid-template-columns:repeat(auto-fill, minmax(300px,1fr)); gap:14px; }
+.asset-grid{ display:grid; grid-template-columns:repeat(auto-fill, minmax(300px,1fr)); gap:var(--gap); }
 .asset-card{
   background:var(--c-bg-panel); border:1px solid var(--c-border); padding:16px;
   cursor:pointer; transition:all .15s ease; position:relative; overflow:hidden;
 }
-.asset-card:hover{ border-color:var(--c-border-bright); transform:translateY(-1px); box-shadow:0 6px 20px rgba(0,0,0,0.4); }
+.asset-card:hover{ border-color:var(--c-accent-dim); transform:translateY(-1px); box-shadow:0 6px 20px rgba(0,0,0,0.4); }
 .asset-card::before{
   content:""; position:absolute; top:0; left:0; width:2px; height:100%;
-  background:var(--c-silver-dim); opacity:0; transition:opacity .15s;
+  background:var(--c-accent); opacity:0; transition:opacity .15s;
 }
 .asset-card:hover::before{ opacity:1; }
 .asset-card-top{ display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:10px; }
@@ -217,12 +260,18 @@ input,select{ font-family:inherit; }
 .asset-card .health-mini{ display:flex; align-items:center; gap:6px; }
 .health-bar{ width:50px; height:4px; background:var(--c-bg-inset); position:relative; overflow:hidden; }
 .health-bar-fill{ height:100%; background:var(--c-green); }
+.pin-btn{
+  position:absolute; top:10px; right:10px; width:22px; height:22px;
+  border:1px solid var(--c-border); background:var(--c-bg-raised); color:var(--c-silver-dim);
+  display:flex; align-items:center; justify-content:center; font-size:12px; z-index:2;
+}
+.pin-btn.pinned{ color:var(--c-accent); border-color:var(--c-accent); }
 
 .empty-state{ text-align:center; padding:70px 20px; color:var(--c-silver-dim); }
 .empty-state .eyebrow{ margin-bottom:10px; }
 
 /* ---- Dossier ---- */
-.dossier-grid{ display:grid; grid-template-columns:2fr 1fr; gap:18px; align-items:start; }
+.dossier-grid{ display:grid; grid-template-columns:2fr 1fr; gap:var(--gap); align-items:start; }
 @media (max-width:900px){ .dossier-grid{ grid-template-columns:1fr; } }
 .spec-table{ width:100%; border-collapse:collapse; }
 .spec-table tr{ border-bottom:1px solid var(--c-border); }
@@ -233,10 +282,20 @@ input,select{ font-family:inherit; }
 
 .failure-mode-item{ padding:12px 0; border-bottom:1px solid var(--c-border); }
 .failure-mode-item:last-child{ border-bottom:none; }
-.failure-mode-item .fm-head{ display:flex; justify-content:space-between; align-items:center; margin-bottom:5px; }
+.failure-mode-item .fm-head{ display:flex; justify-content:space-between; align-items:center; margin-bottom:5px; gap:10px; }
 .failure-mode-item .fm-name{ color:var(--c-silver-bright); font-weight:600; font-size:12.5px; }
-.failure-mode-item .fm-weight{ font-family:var(--font-mono); font-size:10px; color:var(--c-silver-dim); }
-.failure-mode-item p{ font-size:12px; color:var(--c-silver-dim); line-height:1.5; }
+.failure-mode-item .fm-weight{ font-family:var(--font-mono); font-size:10px; color:var(--c-silver-dim); white-space:nowrap; }
+.failure-mode-item p{ font-size:12px; color:var(--c-silver-dim); line-height:1.5; margin-bottom:6px; }
+.sensitivity-row{ display:flex; gap:3px; margin-top:6px; }
+.sensitivity-seg{ flex:1; height:4px; background:var(--c-bg-inset); position:relative; }
+.sensitivity-seg .fill{ position:absolute; left:0; top:0; bottom:0; background:var(--c-silver-dim); }
+.sensitivity-legend{ display:flex; justify-content:space-between; font-family:var(--font-mono); font-size:8px; color:var(--c-silver-dim); margin-top:3px; letter-spacing:0.5px; }
+
+.telemetry-row{ display:flex; justify-content:space-between; align-items:center; padding:10px 0; border-bottom:1px solid var(--c-border); gap:10px; }
+.telemetry-row:last-child{ border-bottom:none; }
+.telemetry-row .t-name{ font-size:12px; color:var(--c-silver-bright); }
+.telemetry-row .t-mode{ font-size:9.5px; color:var(--c-silver-dim); font-family:var(--font-mono); text-transform:uppercase; }
+.telemetry-row .t-unit{ font-family:var(--font-mono); font-size:10px; color:var(--c-silver-dim); white-space:nowrap; }
 
 .stat-block{ text-align:center; padding:18px 10px; border:1px solid var(--c-border); background:var(--c-bg-inset); }
 .stat-block .num{ font-family:var(--font-mono); font-size:26px; color:var(--c-silver-bright); font-weight:700; }
@@ -244,7 +303,7 @@ input,select{ font-family:inherit; }
 .stat-row{ display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-bottom:14px; }
 
 /* ---- Config ---- */
-.config-grid{ display:grid; grid-template-columns:1.3fr 1fr; gap:18px; align-items:start; }
+.config-grid{ display:grid; grid-template-columns:1.3fr 1fr; gap:var(--gap); align-items:start; }
 @media (max-width:900px){ .config-grid{ grid-template-columns:1fr; } }
 .mode-toggle{ display:flex; gap:10px; margin-bottom:18px; }
 .mode-card{
@@ -252,9 +311,16 @@ input,select{ font-family:inherit; }
   cursor:pointer; transition:all .15s;
 }
 .mode-card:hover{ border-color:var(--c-border-bright); }
-.mode-card.active{ border-color:var(--c-silver-bright); background:var(--c-bg-panel); }
+.mode-card.active{ border-color:var(--c-accent); background:var(--c-bg-panel); }
 .mode-card .mc-title{ color:var(--c-silver-bright); font-weight:600; font-size:13px; margin-bottom:4px; }
 .mode-card .mc-desc{ font-size:11.5px; color:var(--c-silver-dim); }
+
+.preset-row{ display:flex; gap:8px; flex-wrap:wrap; margin-bottom:18px; }
+.preset-chip{
+  border:1px solid var(--c-border); background:var(--c-bg-raised); color:var(--c-silver-dim);
+  padding:6px 12px; font-size:10px; letter-spacing:1px; text-transform:uppercase; font-family:var(--font-mono);
+}
+.preset-chip:hover{ border-color:var(--c-border-bright); color:var(--c-silver-bright); }
 
 .slider-group{ margin-bottom:20px; }
 .slider-label{ display:flex; justify-content:space-between; margin-bottom:8px; }
@@ -264,11 +330,11 @@ input[type=range]{
   -webkit-appearance:none; width:100%; height:2px; background:var(--c-border-bright); outline:none;
 }
 input[type=range]::-webkit-slider-thumb{
-  -webkit-appearance:none; width:14px; height:14px; background:var(--c-silver-bright);
+  -webkit-appearance:none; width:14px; height:14px; background:var(--c-accent);
   border:2px solid var(--c-bg); cursor:pointer; border-radius:0;
 }
 input[type=range]::-moz-range-thumb{
-  width:14px; height:14px; background:var(--c-silver-bright); border:2px solid var(--c-bg); cursor:pointer; border-radius:0;
+  width:14px; height:14px; background:var(--c-accent); border:2px solid var(--c-bg); cursor:pointer; border-radius:0;
 }
 
 .multi-asset-list{ display:flex; flex-direction:column; gap:6px; max-height:340px; overflow-y:auto; }
@@ -277,20 +343,20 @@ input[type=range]::-moz-range-thumb{
   font-size:12px; cursor:pointer;
 }
 .multi-asset-row:hover{ border-color:var(--c-border-bright); }
-.multi-asset-row.checked{ border-color:var(--c-silver-bright); background:var(--c-bg-raised); }
-.multi-asset-row input{ accent-color:var(--c-silver-bright); }
+.multi-asset-row.checked{ border-color:var(--c-accent); background:var(--c-bg-raised); }
+.multi-asset-row input{ accent-color:var(--c-accent); }
 
 /* ---- Dashboard / Gauges ---- */
-.dashboard-grid{ display:grid; grid-template-columns:repeat(4, 1fr); gap:14px; margin-bottom:20px; }
+.dashboard-grid{ display:grid; grid-template-columns:repeat(4, 1fr); gap:var(--gap); margin-bottom:20px; }
 @media (max-width:1100px){ .dashboard-grid{ grid-template-columns:repeat(2,1fr); } }
 .gauge-card{ text-align:center; padding:20px 14px; }
 .gauge-card svg{ display:block; margin:0 auto; }
 .gauge-value{ font-family:var(--font-mono); font-size:28px; font-weight:700; }
 .gauge-label{ font-size:10px; letter-spacing:1.5px; text-transform:uppercase; color:var(--c-silver-dim); margin-top:6px; }
 
-.result-lower{ display:grid; grid-template-columns:1.3fr 1fr; gap:14px; }
+.result-lower{ display:grid; grid-template-columns:1.3fr 1fr; gap:var(--gap); margin-bottom:var(--gap); }
 @media (max-width:900px){ .result-lower{ grid-template-columns:1fr; } }
-.mode-rank{ display:flex; justify-content:space-between; align-items:center; padding:10px 0; border-bottom:1px solid var(--c-border); }
+.mode-rank{ display:flex; justify-content:space-between; align-items:center; padding:10px 0; border-bottom:1px solid var(--c-border); gap:10px; }
 .mode-rank:last-child{ border-bottom:none; }
 .mode-rank .rank-name{ font-size:12.5px; color:var(--c-silver-bright); }
 .mode-rank .rank-bar-wrap{ display:flex; align-items:center; gap:10px; width:55%; }
@@ -299,13 +365,18 @@ input[type=range]::-moz-range-thumb{
 .rank-pct{ font-family:var(--font-mono); font-size:11px; width:38px; text-align:right; color:var(--c-silver-dim); }
 
 .readout-list{ display:flex; flex-direction:column; gap:0; }
-.readout-row{ display:flex; justify-content:space-between; padding:9px 0; border-bottom:1px solid var(--c-border); font-size:12px; }
+.readout-row{ display:flex; justify-content:space-between; padding:9px 0; border-bottom:1px solid var(--c-border); font-size:12px; gap:10px; }
 .readout-row:last-child{ border-bottom:none; }
 .readout-row .k{ color:var(--c-silver-dim); font-family:var(--font-mono); font-size:10.5px; letter-spacing:0.8px; text-transform:uppercase; }
-.readout-row .v{ color:var(--c-silver-bright); font-weight:600; }
+.readout-row .v{ color:var(--c-silver-bright); font-weight:600; text-align:right; }
+
+.chart-wrap{ padding:6px 4px; }
+.chart-legend{ display:flex; gap:16px; margin-top:8px; flex-wrap:wrap; }
+.chart-legend-item{ display:flex; align-items:center; gap:6px; font-family:var(--font-mono); font-size:9.5px; color:var(--c-silver-dim); text-transform:uppercase; letter-spacing:0.6px; }
+.chart-legend-item .sw{ width:9px; height:9px; }
 
 /* ---- Report ---- */
-.report-toggle{ display:flex; gap:10px; margin-bottom:18px; }
+.report-toggle{ display:flex; gap:10px; margin-bottom:18px; flex-wrap:wrap; }
 .report-doc{
   background:#f5f6f8; color:#14161c; padding:44px 52px; max-width:820px; margin:0 auto;
   font-family:'Georgia', serif; line-height:1.6; border:1px solid var(--c-border-bright);
@@ -319,19 +390,26 @@ input[type=range]::-moz-range-thumb{
 .report-doc th{ background:#e8e8ea; font-family:var(--font-mono); font-size:10px; text-transform:uppercase; letter-spacing:1px; }
 .report-doc .risk-flag{ font-weight:700; }
 .report-actions{ display:flex; justify-content:center; gap:10px; margin-top:20px; }
+@media print{
+  #topbar, #statusbar, .report-toggle, .report-actions{ display:none !important; }
+  body{ background:#fff; }
+  .report-doc{ border:none; }
+}
 
 /* ---- Analytics ---- */
-.analytics-grid{ display:grid; grid-template-columns:1fr 1fr; gap:14px; margin-bottom:14px; }
+.analytics-grid{ display:grid; grid-template-columns:1fr 1fr; gap:var(--gap); margin-bottom:var(--gap); }
 @media (max-width:900px){ .analytics-grid{ grid-template-columns:1fr; } }
 .heatmap{ display:grid; grid-template-columns:repeat(auto-fill,minmax(90px,1fr)); gap:6px; }
-.heatmap-cell{ aspect-ratio:1; border:1px solid var(--c-border); display:flex; flex-direction:column; align-items:center; justify-content:center; gap:4px; padding:6px; text-align:center; }
+.heatmap-cell{ aspect-ratio:1; border:1px solid var(--c-border); display:flex; flex-direction:column; align-items:center; justify-content:center; gap:4px; padding:6px; text-align:center; cursor:pointer; }
+.heatmap-cell:hover{ border-color:var(--c-accent); }
 .heatmap-cell .hc-name{ font-size:9.5px; color:var(--c-silver-bright); line-height:1.2; }
 .heatmap-cell .hc-val{ font-family:var(--font-mono); font-size:14px; font-weight:700; }
 
 .rank-list-row{ display:flex; align-items:center; gap:12px; padding:10px 0; border-bottom:1px solid var(--c-border); }
 .rank-list-row:last-child{ border-bottom:none; }
 .rank-list-row .rl-idx{ font-family:var(--font-mono); color:var(--c-silver-dim); font-size:11px; width:20px; }
-.rank-list-row .rl-name{ flex:1; font-size:12.5px; color:var(--c-silver-bright); }
+.rank-list-row .rl-name{ flex:1; font-size:12.5px; color:var(--c-silver-bright); cursor:pointer; }
+.rank-list-row .rl-name:hover{ color:var(--c-accent); }
 .rank-list-row .rl-bar{ width:100px; height:5px; background:var(--c-bg-inset); position:relative; }
 .rank-list-row .rl-fill{ height:100%; }
 
@@ -339,13 +417,40 @@ input[type=range]::-moz-range-thumb{
 #statusbar{
   border-top:1px solid var(--c-border); padding:8px 20px; display:flex; gap:24px;
   font-family:var(--font-mono); font-size:10px; color:var(--c-silver-dim); letter-spacing:0.8px;
+  flex-wrap:wrap;
 }
+
+/* ---- Settings modal ---- */
+.modal-overlay{
+  position:fixed; inset:0; background:rgba(6,7,9,0.72); backdrop-filter:blur(2px);
+  display:flex; align-items:center; justify-content:center; z-index:200;
+}
+.modal{
+  width:420px; max-width:92vw; background:var(--c-bg-panel); border:1px solid var(--c-border-bright);
+  box-shadow:0 20px 60px rgba(0,0,0,0.6);
+}
+.modal-header{ display:flex; justify-content:space-between; align-items:center; padding:14px 18px; border-bottom:1px solid var(--c-border); }
+.modal-header h3{ font-size:12px; letter-spacing:1.5px; text-transform:uppercase; color:var(--c-silver-bright); font-family:var(--font-mono); }
+.modal-close{ background:transparent; border:none; color:var(--c-silver-dim); font-size:16px; line-height:1; }
+.modal-close:hover{ color:var(--c-silver-bright); }
+.modal-body{ padding:18px; display:flex; flex-direction:column; gap:18px; }
+.setting-row{ display:flex; flex-direction:column; gap:8px; }
+.setting-row .setting-label{ font-size:11px; letter-spacing:1.2px; text-transform:uppercase; color:var(--c-silver-dim); font-family:var(--font-mono); }
+.option-row{ display:flex; gap:8px; flex-wrap:wrap; }
+.option-btn{
+  border:1px solid var(--c-border); background:var(--c-bg-raised); color:var(--c-silver-dim);
+  padding:8px 14px; font-size:11px; font-family:var(--font-mono); letter-spacing:1px; text-transform:uppercase;
+  display:flex; align-items:center; gap:8px;
+}
+.option-btn:hover{ border-color:var(--c-border-bright); color:var(--c-silver-bright); }
+.option-btn.active{ border-color:var(--c-accent); color:var(--c-white); background:var(--c-bg-panel); }
+.swatch{ width:10px; height:10px; display:inline-block; }
 
 /* ---- Utility ---- */
 .flex-between{ display:flex; justify-content:space-between; align-items:center; }
 .mb-10{ margin-bottom:10px; } .mb-14{ margin-bottom:14px; } .mb-18{ margin-bottom:18px; } .mb-20{ margin-bottom:20px; }
 .text-dim{ color:var(--c-silver-dim); }
-.section-gap{ margin-bottom:18px; }
+.section-gap{ margin-bottom:var(--gap); }
 </style>
 </head>
 <body>
@@ -353,7 +458,7 @@ input[type=range]::-moz-range-thumb{
 
   <!-- ============= TOP BAR ============= -->
   <header id="topbar">
-    <div class="brand" onclick="Continuum.navigate('library')">
+    <div class="brand" id="brand-home">
       <div class="brand-mark">C1</div>
       <div class="brand-text">
         <span class="name">CONTINUUMONE</span>
@@ -361,24 +466,28 @@ input[type=range]::-moz-range-thumb{
       </div>
     </div>
     <nav id="topnav">
-      <button class="nav-btn" data-route="library" onclick="Continuum.navigate('library')">Asset Library</button>
-      <button class="nav-btn" data-route="dashboard" onclick="Continuum.navigate('dashboard')">Prediction Dashboard</button>
-      <button class="nav-btn" data-route="analytics" onclick="Continuum.navigate('analytics')">Analytics</button>
-      <button class="nav-btn" data-route="report" onclick="Continuum.navigate('report')">Report</button>
+      <button class="nav-btn" data-route="library">Asset Library</button>
+      <button class="nav-btn" data-route="dashboard">Prediction Dashboard</button>
+      <button class="nav-btn" data-route="analytics">Analytics</button>
+      <button class="nav-btn" data-route="report">Report</button>
     </nav>
     <div class="status-cluster">
       <div class="status-item"><span class="status-dot"></span>SYSTEM NOMINAL</div>
       <div class="status-item" id="asset-count-status">— ASSETS INDEXED</div>
       <div class="mono" id="clock">--:--:--</div>
+      <button class="icon-btn" id="settings-btn" title="Platform Settings" aria-label="Platform Settings">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .34 1.87l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.7 1.7 0 0 0-1.87-.34 1.7 1.7 0 0 0-1 1.55V21a2 2 0 0 1-4 0v-.09A1.7 1.7 0 0 0 9 19.4a1.7 1.7 0 0 0-1.87.34l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06A1.7 1.7 0 0 0 4.6 15a1.7 1.7 0 0 0-1.55-1H3a2 2 0 0 1 0-4h.09A1.7 1.7 0 0 0 4.6 9a1.7 1.7 0 0 0-.34-1.87l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06A1.7 1.7 0 0 0 9 4.6a1.7 1.7 0 0 0 1-1.55V3a2 2 0 0 1 4 0v.09a1.7 1.7 0 0 0 1 1.55 1.7 1.7 0 0 0 1.87-.34l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06A1.7 1.7 0 0 0 19.4 9a1.7 1.7 0 0 0 1.55 1H21a2 2 0 0 1 0 4h-.09a1.7 1.7 0 0 0-1.51 1z"/></svg>
+      </button>
     </div>
   </header>
 
   <main id="view"><!-- rendered by router --></main>
 
   <footer id="statusbar">
-    <span>CONTINUUMONE ENGINE v1.0</span>
+    <span>CONTINUUMONE ENGINE v1.1</span>
     <span id="sb-mode">MODE: STANDBY</span>
     <span id="sb-asset">ASSET: NONE SELECTED</span>
+    <span id="sb-pins">PINNED: 0</span>
     <span style="margin-left:auto">SESSION LOCAL // NO TELEMETRY UPLINK</span>
   </footer>
 
@@ -392,6 +501,33 @@ input[type=range]::-moz-range-thumb{
    ============================================================ */
 var Continuum = (function(){
 
+  /* ---------------- CONSTANTS ---------------- */
+  var STORAGE_KEY = "continuumone.settings.v1";
+  var PRESET_KEY  = "continuumone.presets.v1";
+
+  /* Failure-mode -> monitored telemetry channel (digital-twin hook). */
+  var TELEMETRY_MAP = {
+    thermal_fatigue:      { label:"Exhaust Gas Temp Margin",        unit:"°C margin" },
+    bearing_degradation:  { label:"Bearing Vibration (RMS)",        unit:"mm/s" },
+    blade_erosion:        { label:"Aero Efficiency Delta",          unit:"% Δ" },
+    electromigration:     { label:"Interconnect Junction Temp",     unit:"°C" },
+    thermal_runaway:      { label:"Die Temperature",                unit:"°C" },
+    gate_oxide_wearout:   { label:"Gate Leakage Trend",             unit:"mA" },
+    fatigue_cracking:     { label:"Strain-Gauge Cycle Count",       unit:"cycles" },
+    seal_degradation:     { label:"Case Pressure Differential",     unit:"kPa" },
+    corrosion:            { label:"Wall Thickness Loss",            unit:"mm" },
+    cell_degradation:     { label:"State of Health (SoH)",          unit:"%" },
+    gearbox_wear:         { label:"Oil Debris Particle Count",      unit:"particles/mL" },
+    insulation_breakdown: { label:"Partial Discharge Activity",     unit:"pC" },
+    cavitation:           { label:"NPSH Margin",                    unit:"%" },
+    brake_fade:           { label:"Friction Surface Temperature",   unit:"°C" },
+    inverter_stress:      { label:"IGBT ΔT Cycling",                unit:"°C" }
+  };
+  var SENSITIVITY_AXES = [
+    {key:"temp", label:"THERMAL"}, {key:"load", label:"LOAD"}, {key:"vibration", label:"VIBRATION"},
+    {key:"maintenance", label:"MAINT"}, {key:"environment", label:"ENVIRON"}, {key:"utilization", label:"UTIL"}
+  ];
+
   /* ---------------- STATE ---------------- */
   var state = {
     route: "library",
@@ -400,29 +536,60 @@ var Continuum = (function(){
     categoryFilter: "all",
     sortBy: "name",
     selectedAssetId: null,
-    simMode: "detailed",             // detailed | multi
-    multiSelection: [],              // array of asset ids
+    dossierTab: "overview",
+    simMode: "detailed",
+    multiSelection: [],
+    pinned: [],
     conditions: {
       operatingHours: 8000,
-      temperature: 50,               // 0-100 severity scale
+      temperature: 50,
       load: 60,
       vibration: 30,
-      maintenanceQuality: 75,        // higher = better maintained
-      environment: 40,               // severity of environment
+      maintenanceQuality: 75,
+      environment: 40,
       utilization: 65
     },
-    lastResults: null,               // computed prediction result(s)
-    reportMode: "executive"
+    lastResults: null,
+    reportMode: "executive",
+    settings: { theme:"silver", density:"comfortable" }
   };
+
+  /* ---------------- PERSISTENCE ---------------- */
+  function loadSettings(){
+    try{
+      var raw = localStorage.getItem(STORAGE_KEY);
+      if(raw){ var s = JSON.parse(raw); state.settings.theme = s.theme || "silver"; state.settings.density = s.density || "comfortable"; }
+    }catch(e){ /* storage unavailable — proceed with defaults */ }
+    applySettings();
+  }
+  function saveSettings(){
+    try{ localStorage.setItem(STORAGE_KEY, JSON.stringify(state.settings)); }catch(e){}
+  }
+  function applySettings(){
+    document.documentElement.setAttribute('data-theme', state.settings.theme);
+    document.body.classList.toggle('density-compact', state.settings.density==='compact');
+  }
+  function loadPresets(){
+    try{ var raw = localStorage.getItem(PRESET_KEY); return raw ? JSON.parse(raw) : {}; }catch(e){ return {}; }
+  }
+  function savePresetToStorage(name, cond){
+    var presets = loadPresets();
+    presets[name] = cond;
+    try{ localStorage.setItem(PRESET_KEY, JSON.stringify(presets)); }catch(e){}
+  }
 
   /* ---------------- UTIL ---------------- */
   function el(html){
     var t = document.createElement('template');
     t.innerHTML = html.trim();
+    /* Multi-root HTML strings must not silently lose siblings: return the
+       full fragment when more than one top-level element is present. */
+    if(t.content.children.length > 1) return t.content;
     return t.content.firstChild;
   }
   function clamp(v, lo, hi){ return Math.max(lo, Math.min(hi, v)); }
   function fmt(n, d){ return Number(n).toFixed(d===undefined?0:d); }
+  function esc(s){ return String(s).replace(/[&<>"']/g, function(c){ return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]; }); }
   function riskClass(level){
     if(level==="Low") return "risk-low";
     if(level==="Moderate") return "risk-moderate";
@@ -439,16 +606,19 @@ var Continuum = (function(){
     if(h>=45) return "var(--c-amber)";
     return "var(--c-red)";
   }
+  /* Deterministic seeded PRNG so repeat views of an asset show a stable, non-random trend. */
+  function seededRandom(seedStr){
+    var h = 0;
+    for(var i=0;i<seedStr.length;i++){ h = (Math.imul(31,h) + seedStr.charCodeAt(i))|0; }
+    return function(){ h = (Math.imul(h, 1597334677))|0; h ^= h >>> 13; return ((h>>>0) % 10000)/10000; };
+  }
 
   /* ---------------- PREDICTION ENGINE ---------------- */
-  /* Deterministic engineering-plausible model:
-     health index derives from asset baseline degraded by weighted
-     operating-condition stress across each failure mode's sensitivity. */
   function computePrediction(asset, cond){
     var modes = klgGetFailureModesForAsset(asset);
     var c = {
       temp: cond.temperature/100, load: cond.load/100, vibration: cond.vibration/100,
-      maintenance: (100-cond.maintenanceQuality)/100, // invert: poor maintenance = stress
+      maintenance: (100-cond.maintenanceQuality)/100,
       environment: cond.environment/100, utilization: cond.utilization/100
     };
     var lifeFraction = clamp(cond.operatingHours / asset.designLife, 0, 1.4);
@@ -471,8 +641,8 @@ var Continuum = (function(){
     scoredModes.forEach(function(x){ x.contribution = x.score/totalScore; });
     scoredModes.sort(function(a,b){ return b.score-a.score; });
 
-    var aggregateStress = scoredModes.reduce(function(s,x){return s + x.stress*x.mode.weight;},0) /
-                           modes.reduce(function(s,m){return s+m.weight;},0);
+    var totalWeight = modes.reduce(function(s,m){return s+m.weight;},0) || 1;
+    var aggregateStress = scoredModes.reduce(function(s,x){return s + x.stress*x.mode.weight;},0) / totalWeight;
 
     var healthIndex = clamp(asset.baselineHealth - (aggregateStress*55) - (lifeFraction*20), 2, 99);
     var failureProbability = clamp( (aggregateStress*0.55 + lifeFraction*0.45) * 100, 1, 98 );
@@ -497,6 +667,7 @@ var Continuum = (function(){
       riskLevel: riskLevel,
       remainingUsefulLife: rul,
       lifeFraction: lifeFraction,
+      aggregateStress: aggregateStress,
       rankedModes: scoredModes,
       primaryMode: scoredModes[0] ? scoredModes[0].mode : null,
       secondaryMode: scoredModes[1] ? scoredModes[1].mode : null,
@@ -504,14 +675,37 @@ var Continuum = (function(){
     };
   }
 
+  /* Project health/failure trajectory across the operating-hours axis at fixed severity inputs. */
+  function computeTrajectory(asset, cond, steps){
+    steps = steps || 24;
+    var maxHours = Math.max(asset.designLife*1.15, cond.operatingHours*1.15, 1000);
+    var pts = [];
+    for(var i=0;i<=steps;i++){
+      var hrs = Math.round((maxHours/steps)*i);
+      var c2 = Object.assign({}, cond, {operatingHours:hrs});
+      var r = computePrediction(asset, c2);
+      pts.push({ hours:hrs, health:r.healthIndex, failure:r.failureProbability });
+    }
+    return pts;
+  }
+
+  /* Average stress-sensitivity profile across an asset's tracked failure modes (0-1 per axis). */
+  function computeSensitivityProfile(asset){
+    var modes = klgGetFailureModesForAsset(asset);
+    var totalW = modes.reduce(function(s,m){return s+m.weight;},0) || 1;
+    var profile = {};
+    SENSITIVITY_AXES.forEach(function(ax){
+      profile[ax.key] = modes.reduce(function(s,m){ return s + m.sensitivity[ax.key]*m.weight; },0) / totalW;
+    });
+    return profile;
+  }
+
   /* ---------------- ROUTER ---------------- */
   function navigate(route, params){
     state.route = route;
     state.params = params || {};
     document.querySelectorAll('.nav-btn').forEach(function(b){
-      b.classList.toggle('active', b.getAttribute('data-route')===route ||
-        (route==='dossier'||route==='config') && b.getAttribute('data-route')==='library');
-      if(route==='dashboard' && b.getAttribute('data-route')==='dashboard') b.classList.add('active');
+      b.classList.toggle('active', b.getAttribute('data-route')===route);
     });
     render();
     window.scrollTo(0,0);
@@ -536,6 +730,7 @@ var Continuum = (function(){
     document.getElementById('sb-mode').textContent = "MODE: " + (state.simMode==="multi"?"MULTI-ASSET ANALYSIS":"DETAILED ANALYSIS").toUpperCase();
     var a = state.selectedAssetId ? klgGetAssetById(state.selectedAssetId) : null;
     document.getElementById('sb-asset').textContent = "ASSET: " + (a ? (a.manufacturer+" "+a.name).toUpperCase() : "NONE SELECTED");
+    document.getElementById('sb-pins').textContent = "PINNED: " + state.pinned.length;
   }
 
   /* ================= VIEW: LIBRARY ================= */
@@ -543,11 +738,21 @@ var Continuum = (function(){
     var wrap = el('<div></div>');
 
     wrap.appendChild(el(
-      '<div class="view-header">'+
-        '<div><div class="breadcrumb">ENGINEERING INTELLIGENCE CENTER</div>'+
-        '<div class="view-title">Asset Library <span class="accent">/ Fleet Index</span></div></div>'+
-      '</div>'
+      '<div class="breadcrumb">ENGINEERING INTELLIGENCE CENTER</div>'
     ));
+    var header = el(
+      '<div class="view-header"><div class="view-title">Asset Library <span class="accent">/ Fleet Index</span></div>'+
+      '<div class="header-actions">'+
+        (state.pinned.length>1 ? '<button class="btn btn-primary btn-sm" id="compare-pinned">Compare '+state.pinned.length+' Pinned &rarr;</button>' : '')+
+      '</div></div>'
+    );
+    wrap.appendChild(header);
+    var cmpBtn = header.querySelector('#compare-pinned');
+    if(cmpBtn) cmpBtn.addEventListener('click', function(){
+      state.multiSelection = state.pinned.slice();
+      state.simMode = "multi";
+      navigate('config', {});
+    });
 
     var toolbar = el('<div class="toolbar"></div>');
     var searchInput = el('<input class="search-input" type="text" placeholder="Search by asset, manufacturer, designation, category...">');
@@ -584,12 +789,11 @@ var Continuum = (function(){
     function refreshChips(){
       rail.querySelectorAll('.category-chip').forEach(function(c){
         var cid = c.getAttribute('data-cat');
-        c.classList.toggle('active', (cid===undefined && state.categoryFilter==="all") || cid===state.categoryFilter);
+        c.classList.toggle('active', (cid===null && state.categoryFilter==="all") || cid===state.categoryFilter);
       });
-      allChip.classList.toggle('active', state.categoryFilter==="all");
     }
 
-    var grid = el('<div class="asset-grid" id="asset-grid"></div>');
+    var grid = el('<div class="asset-grid"></div>');
     wrap.appendChild(grid);
 
     function renderLibraryResults(){
@@ -601,17 +805,18 @@ var Continuum = (function(){
         if(state.sortBy==="criticality") return a.criticality.localeCompare(b.criticality);
         return a.name.localeCompare(b.name);
       });
-      var g = grid;
-      g.innerHTML = "";
+      grid.innerHTML = "";
       if(results.length===0){
-        g.appendChild(el('<div class="empty-state" style="grid-column:1/-1"><div class="eyebrow">No Matching Assets</div><div>Adjust search terms or category filter.</div></div>'));
+        grid.appendChild(el('<div class="empty-state" style="grid-column:1/-1"><div class="eyebrow">No Matching Assets</div><div>Adjust search terms or category filter.</div></div>'));
         return;
       }
       results.forEach(function(a){
         var cat = CONTINUUM_CATEGORIES[a.category];
         var hc = healthColor(a.baselineHealth);
+        var pinned = state.pinned.indexOf(a.id)!==-1;
         var card = el(
           '<div class="asset-card">'+
+            '<button class="pin-btn'+(pinned?' pinned':'')+'" title="Pin for comparison" aria-label="Pin for comparison">'+(pinned?'&#9679;':'&#9675;')+'</button>'+
             '<div class="asset-card-top">'+
               '<span class="cat-tag">'+cat.label+'</span>'+
               '<span class="badge"><span class="badge-dot" style="background:'+hc+'"></span>'+a.criticality+'</span>'+
@@ -624,11 +829,18 @@ var Continuum = (function(){
             '</div>'+
           '</div>'
         );
+        card.querySelector('.pin-btn').addEventListener('click', function(e){
+          e.stopPropagation();
+          var idx = state.pinned.indexOf(a.id);
+          if(idx===-1) state.pinned.push(a.id); else state.pinned.splice(idx,1);
+          navigate('library');
+        });
         card.addEventListener('click', function(){
           state.selectedAssetId = a.id;
+          state.dossierTab = "overview";
           navigate('dossier', {id:a.id});
         });
-        g.appendChild(card);
+        grid.appendChild(card);
       });
     }
     renderLibraryResults();
@@ -649,67 +861,205 @@ var Continuum = (function(){
     var modes = klgGetFailureModesForAsset(asset);
     var hc = healthColor(asset.baselineHealth);
 
-    wrap.appendChild(el(
-      '<div class="breadcrumb"><a href="#" id="bc-lib">Asset Library</a> / '+cat.label+' / '+asset.name+'</div>'+
+    var crumb = el('<div class="breadcrumb"><a href="#" id="bc-lib">Asset Library</a> / '+cat.label+' / '+asset.name+'</div>');
+    crumb.querySelector('#bc-lib').addEventListener('click', function(e){ e.preventDefault(); navigate('library'); });
+    wrap.appendChild(crumb);
+
+    var header = el(
       '<div class="view-header"><div class="view-title">'+asset.name+' <span class="accent">/ Engineering Dossier</span></div>'+
       '<button class="btn btn-primary" id="to-config">Configure Simulation &rarr;</button></div>'
-    ));
-    wrap.querySelector('#bc-lib').addEventListener('click', function(e){e.preventDefault(); navigate('library');});
-    wrap.querySelector('#to-config').addEventListener('click', function(){ navigate('config', {id:asset.id}); });
+    );
+    header.querySelector('#to-config').addEventListener('click', function(){ state.simMode="detailed"; navigate('config', {id:asset.id}); });
+    wrap.appendChild(header);
 
-    var grid = el('<div class="dossier-grid"></div>');
-
-    var left = el('<div></div>');
-    left.appendChild(el(
-      '<div class="panel section-gap"><div class="panel-header"><h3>Asset Overview</h3><span class="badge"><span class="badge-dot" style="background:'+hc+'"></span>'+asset.criticality+'</span></div>'+
-      '<div class="panel-body"><p style="font-size:13px;color:var(--c-silver);line-height:1.6;margin-bottom:16px;">'+asset.description+'</p>'+
-      '<table class="spec-table">'+
-        '<tr><td>Manufacturer</td><td>'+asset.manufacturer+'</td></tr>'+
-        '<tr><td>Designation</td><td>'+asset.designation+'</td></tr>'+
-        '<tr><td>Category</td><td>'+cat.label+'</td></tr>'+
-        '<tr><td>Design Life</td><td>'+asset.designLife.toLocaleString()+' '+asset.designLifeUnit+'</td></tr>'+
-        '<tr><td>Rated Output</td><td>'+asset.ratedOutput+'</td></tr>'+
-        '<tr><td>Criticality</td><td>'+asset.criticality+'</td></tr>'+
-      '</table></div></div>'
-    ));
-
-    left.appendChild(el(
-      '<div class="panel"><div class="panel-header"><h3>Failure Mode Profile</h3></div><div class="panel-body" id="fm-list"></div></div>'
-    ));
-    var fmList = left.querySelector('#fm-list');
-    modes.forEach(function(m){
-      fmList.appendChild(el(
-        '<div class="failure-mode-item"><div class="fm-head"><span class="fm-name">'+m.label+'</span><span class="fm-weight">BASE WEIGHT '+(m.weight*100).toFixed(0)+'%</span></div>'+
-        '<p>'+m.description+'</p></div>'
-      ));
+    var tabs = ["overview","telemetry","failure","maintenance"];
+    var tabLabels = {overview:"Overview", telemetry:"Digital Twin Telemetry", failure:"Failure Modes", maintenance:"Maintenance"};
+    var tabbar = el('<div class="tabbar"></div>');
+    tabs.forEach(function(t){
+      var b = el('<button class="tab-btn'+(state.dossierTab===t?" active":"")+'">'+tabLabels[t]+'</button>');
+      b.addEventListener('click', function(){ state.dossierTab = t; navigate('dossier', {id:asset.id}); });
+      tabbar.appendChild(b);
     });
+    wrap.appendChild(tabbar);
 
-    grid.appendChild(left);
+    var body = el('<div></div>');
+    wrap.appendChild(body);
 
-    var right = el('<div></div>');
-    right.appendChild(el(
-      '<div class="stat-row">'+
-        '<div class="stat-block"><div class="num" style="color:'+hc+'">'+asset.baselineHealth+'</div><div class="lbl">Baseline Health Index</div></div>'+
-        '<div class="stat-block"><div class="num">'+modes.length+'</div><div class="lbl">Tracked Failure Modes</div></div>'+
-      '</div>'
-    ));
-    right.appendChild(el(
-      '<div class="panel section-gap"><div class="panel-header"><h3>Reliability Profile</h3></div><div class="panel-body">'+
-      '<div class="readout-list">'+
-        '<div class="readout-row"><span class="k">Design Life</span><span class="v">'+asset.designLife.toLocaleString()+' '+asset.designLifeUnit+'</span></div>'+
-        '<div class="readout-row"><span class="k">Criticality Class</span><span class="v">'+asset.criticality+'</span></div>'+
-        '<div class="readout-row"><span class="k">Category</span><span class="v">'+cat.label+'</span></div>'+
-        '<div class="readout-row"><span class="k">Failure Modes Tracked</span><span class="v">'+modes.length+'</span></div>'+
-      '</div></div></div>'
-    ));
-    right.appendChild(el(
-      '<div class="panel"><div class="panel-header"><h3>Maintenance Profile</h3></div><div class="panel-body">'+
-      '<p style="font-size:12.5px;color:var(--c-silver);line-height:1.6;">'+asset.maintenanceProfile+'</p></div></div>'
-    ));
-    grid.appendChild(right);
+    if(state.dossierTab==="overview"){
+      var grid = el('<div class="dossier-grid"></div>');
+      var left = el('<div></div>');
+      left.appendChild(el(
+        '<div class="panel section-gap"><div class="panel-header"><h3>Asset Overview</h3><span class="badge"><span class="badge-dot" style="background:'+hc+'"></span>'+asset.criticality+'</span></div>'+
+        '<div class="panel-body"><p style="font-size:13px;color:var(--c-silver);line-height:1.6;margin-bottom:16px;">'+asset.description+'</p>'+
+        '<table class="spec-table">'+
+          '<tr><td>Manufacturer</td><td>'+asset.manufacturer+'</td></tr>'+
+          '<tr><td>Designation</td><td>'+asset.designation+'</td></tr>'+
+          '<tr><td>Category</td><td>'+cat.label+'</td></tr>'+
+          '<tr><td>Design Life</td><td>'+asset.designLife.toLocaleString()+' '+asset.designLifeUnit+'</td></tr>'+
+          '<tr><td>Rated Output</td><td>'+asset.ratedOutput+'</td></tr>'+
+          '<tr><td>Criticality</td><td>'+asset.criticality+'</td></tr>'+
+        '</table></div></div>'
+      ));
+      var trajPanel = el('<div class="panel"><div class="panel-header"><h3>Nominal Life Trajectory</h3><span class="text-dim mono" style="font-size:9.5px;">MODERATE DUTY PROFILE</span></div><div class="panel-body chart-wrap" id="traj-host"></div></div>');
+      left.appendChild(trajPanel);
+      var nominal = Object.assign({}, state.conditions, {temperature:50, load:50, vibration:50, maintenanceQuality:75, environment:50, utilization:50});
+      var traj = computeTrajectory(asset, nominal, 20);
+      trajPanel.querySelector('#traj-host').appendChild(trajectorySvg(traj, asset));
+      grid.appendChild(left);
 
-    wrap.appendChild(grid);
+      var right = el('<div></div>');
+      right.appendChild(el(
+        '<div class="stat-row">'+
+          '<div class="stat-block"><div class="num" style="color:'+hc+'">'+asset.baselineHealth+'</div><div class="lbl">Baseline Health Index</div></div>'+
+          '<div class="stat-block"><div class="num">'+modes.length+'</div><div class="lbl">Tracked Failure Modes</div></div>'+
+        '</div>'
+      ));
+      var radarPanel = el('<div class="panel section-gap"><div class="panel-header"><h3>Stress Sensitivity Profile</h3></div><div class="panel-body" id="radar-host" style="display:flex;justify-content:center;"></div></div>');
+      right.appendChild(radarPanel);
+      radarPanel.querySelector('#radar-host').appendChild(radarSvg(computeSensitivityProfile(asset)));
+      right.appendChild(el(
+        '<div class="panel"><div class="panel-header"><h3>Reliability Profile</h3></div><div class="panel-body">'+
+        '<div class="readout-list">'+
+          '<div class="readout-row"><span class="k">Design Life</span><span class="v">'+asset.designLife.toLocaleString()+' '+asset.designLifeUnit+'</span></div>'+
+          '<div class="readout-row"><span class="k">Criticality Class</span><span class="v">'+asset.criticality+'</span></div>'+
+          '<div class="readout-row"><span class="k">Category</span><span class="v">'+cat.label+'</span></div>'+
+          '<div class="readout-row"><span class="k">Failure Modes Tracked</span><span class="v">'+modes.length+'</span></div>'+
+        '</div></div></div>'
+      ));
+      grid.appendChild(right);
+      body.appendChild(grid);
+
+    } else if(state.dossierTab==="telemetry"){
+      var tPanel = el('<div class="panel"><div class="panel-header"><h3>Monitored Telemetry Channels</h3><span class="text-dim mono" style="font-size:9.5px;">SENSOR INTELLIGENCE HOOK</span></div><div class="panel-body" id="tele-body"></div></div>');
+      body.appendChild(tPanel);
+      var tb = tPanel.querySelector('#tele-body');
+      tb.appendChild(el('<p style="font-size:12px;color:var(--c-silver-dim);margin-bottom:10px;line-height:1.6;">Channels below are derived from this asset\'s tracked failure modes. In a connected deployment these map to live sensor feeds; here they anchor the predictive model\'s reasoning to physical measurands an engineer would actually monitor.</p>'));
+      modes.forEach(function(m){
+        var t = TELEMETRY_MAP[m.id] || {label:"Condition Indicator", unit:""};
+        tb.appendChild(el(
+          '<div class="telemetry-row"><div><div class="t-name">'+t.label+'</div><div class="t-mode">Linked to '+m.label+'</div></div><span class="t-unit">'+t.unit+'</span></div>'
+        ));
+      });
+
+    } else if(state.dossierTab==="failure"){
+      var fPanel = el('<div class="panel"><div class="panel-header"><h3>Failure Mode Profile</h3></div><div class="panel-body" id="fm-list"></div></div>');
+      body.appendChild(fPanel);
+      var fmList = fPanel.querySelector('#fm-list');
+      modes.forEach(function(m){
+        var item = el(
+          '<div class="failure-mode-item"><div class="fm-head"><span class="fm-name">'+m.label+'</span><span class="fm-weight">BASE WEIGHT '+(m.weight*100).toFixed(0)+'%</span></div>'+
+          '<p>'+m.description+'</p>'+
+          '<div class="sensitivity-row"></div>'+
+          '<div class="sensitivity-legend"></div></div>'
+        );
+        var srow = item.querySelector('.sensitivity-row');
+        var slegend = item.querySelector('.sensitivity-legend');
+        SENSITIVITY_AXES.forEach(function(ax){
+          var v = m.sensitivity[ax.key];
+          var seg = el('<div class="sensitivity-seg" title="'+ax.label+': '+(v*100).toFixed(0)+'%"><div class="fill" style="width:'+(v*100)+'%;background:'+ (v>0.66?'var(--c-red)':v>0.33?'var(--c-amber)':'var(--c-green)') +'"></div></div>');
+          srow.appendChild(seg);
+          slegend.appendChild(el('<span>'+ax.label.slice(0,4)+'</span>'));
+        });
+        fmList.appendChild(item);
+      });
+
+    } else if(state.dossierTab==="maintenance"){
+      var mPanel = el('<div class="panel"><div class="panel-header"><h3>Maintenance Profile</h3></div><div class="panel-body">'+
+        '<p style="font-size:13px;color:var(--c-silver);line-height:1.7;margin-bottom:16px;">'+asset.maintenanceProfile+'</p>'+
+        '<table class="spec-table">'+
+          '<tr><td>Design Life</td><td>'+asset.designLife.toLocaleString()+' '+asset.designLifeUnit+'</td></tr>'+
+          '<tr><td>Criticality</td><td>'+asset.criticality+'</td></tr>'+
+        '</table></div></div>');
+      body.appendChild(mPanel);
+    }
+
     return wrap;
+  }
+
+  /* ================= CHART HELPERS ================= */
+  function trajectorySvg(pts, asset){
+    var W=520,H=190,padL=34,padR=10,padT=14,padB=26;
+    var innerW = W-padL-padR, innerH = H-padT-padB;
+    var maxHours = pts[pts.length-1].hours || 1;
+    function x(h){ return padL + (h/maxHours)*innerW; }
+    function y(v){ return padT + (1-v/100)*innerH; }
+    var healthPath = pts.map(function(p,i){ return (i===0?'M':'L')+fmt(x(p.hours),1)+' '+fmt(y(p.health),1); }).join(' ');
+    var failPath = pts.map(function(p,i){ return (i===0?'M':'L')+fmt(x(p.hours),1)+' '+fmt(y(p.failure),1); }).join(' ');
+    var bands =
+      '<rect x="'+padL+'" y="'+y(100)+'" width="'+innerW+'" height="'+(y(75)-y(100))+'" fill="var(--c-green)" opacity="0.06"/>'+
+      '<rect x="'+padL+'" y="'+y(75)+'" width="'+innerW+'" height="'+(y(45)-y(75))+'" fill="var(--c-amber)" opacity="0.06"/>'+
+      '<rect x="'+padL+'" y="'+y(45)+'" width="'+innerW+'" height="'+(y(0)-y(45))+'" fill="var(--c-red)" opacity="0.06"/>';
+    var gridLines = [0,25,50,75,100].map(function(v){
+      return '<line x1="'+padL+'" y1="'+y(v)+'" x2="'+(W-padR)+'" y2="'+y(v)+'" stroke="var(--c-border)" stroke-width="1"/>'+
+             '<text x="'+(padL-6)+'" y="'+(y(v)+3)+'" font-family="var(--font-mono)" font-size="8" fill="var(--c-silver-dim)" text-anchor="end">'+v+'</text>';
+    }).join('');
+    var xLabel = '<text x="'+(padL)+'" y="'+(H-6)+'" font-family="var(--font-mono)" font-size="8" fill="var(--c-silver-dim)">0</text>'+
+      '<text x="'+(W-padR)+'" y="'+(H-6)+'" font-family="var(--font-mono)" font-size="8" fill="var(--c-silver-dim)" text-anchor="end">'+maxHours.toLocaleString()+' '+esc(asset.designLifeUnit).toUpperCase()+'</text>';
+    var svg = el(
+      '<div><svg viewBox="0 0 '+W+' '+H+'" width="100%" style="max-width:'+W+'px;display:block;">'+
+        bands + gridLines +
+        '<path d="'+healthPath+'" fill="none" stroke="var(--c-accent)" stroke-width="2"/>'+
+        '<path d="'+failPath+'" fill="none" stroke="var(--c-red)" stroke-width="1.5" stroke-dasharray="3,3"/>'+
+        xLabel +
+      '</svg>'+
+      '<div class="chart-legend">'+
+        '<div class="chart-legend-item"><span class="sw" style="background:var(--c-accent)"></span>Health Index</div>'+
+        '<div class="chart-legend-item"><span class="sw" style="background:var(--c-red)"></span>Failure Probability</div>'+
+      '</div></div>'
+    );
+    return svg;
+  }
+
+  function radarSvg(profile){
+    var size=220, c=size/2, r=size/2-30;
+    var axes = SENSITIVITY_AXES;
+    var n = axes.length;
+    function pt(i, val){
+      var ang = (Math.PI*2*i/n) - Math.PI/2;
+      var rad = r*clamp(val,0,1);
+      return { x:c+rad*Math.cos(ang), y:c+rad*Math.sin(ang) };
+    }
+    function ringPt(i, rad){
+      var ang = (Math.PI*2*i/n) - Math.PI/2;
+      return { x:c+rad*Math.cos(ang), y:c+rad*Math.sin(ang) };
+    }
+    var rings = [0.25,0.5,0.75,1].map(function(f){
+      var poly = [];
+      for(var i=0;i<n;i++){ var p = ringPt(i, r*f); poly.push(p.x+','+p.y); }
+      return '<polygon points="'+poly.join(' ')+'" fill="none" stroke="var(--c-border)" stroke-width="1"/>';
+    }).join('');
+    var spokes = axes.map(function(ax,i){
+      var p = ringPt(i, r);
+      return '<line x1="'+c+'" y1="'+c+'" x2="'+p.x+'" y2="'+p.y+'" stroke="var(--c-border)" stroke-width="1"/>';
+    }).join('');
+    var dataPoly = axes.map(function(ax,i){ var p = pt(i, profile[ax.key]); return p.x+','+p.y; }).join(' ');
+    var labels = axes.map(function(ax,i){
+      var p = ringPt(i, r+16);
+      return '<text x="'+p.x+'" y="'+p.y+'" font-family="var(--font-mono)" font-size="8.5" fill="var(--c-silver-dim)" text-anchor="middle" dominant-baseline="middle">'+ax.label+'</text>';
+    }).join('');
+    return el(
+      '<svg viewBox="0 0 '+size+' '+size+'" width="220" height="220">'+
+        rings + spokes +
+        '<polygon points="'+dataPoly+'" fill="var(--c-accent)" opacity="0.22" stroke="var(--c-accent)" stroke-width="1.5"/>'+
+        labels +
+      '</svg>'
+    );
+  }
+
+  function gaugeSvg(value, max, color, size){
+    size = size || 130;
+    var r = size/2 - 10;
+    var c = size/2;
+    var circumference = Math.PI * r;
+    var pct = clamp(value/max, 0, 1);
+    var offset = circumference * (1-pct);
+    return (
+      '<svg width="'+size+'" height="'+(size/2+16)+'" viewBox="0 0 '+size+' '+(size/2+16)+'">'+
+        '<path d="M 10 '+c+' A '+r+' '+r+' 0 0 1 '+(size-10)+' '+c+'" fill="none" stroke="var(--c-border)" stroke-width="9" stroke-linecap="round"/>'+
+        '<path d="M 10 '+c+' A '+r+' '+r+' 0 0 1 '+(size-10)+' '+c+'" fill="none" stroke="'+color+'" stroke-width="9" stroke-linecap="round" '+
+          'stroke-dasharray="'+circumference+'" stroke-dashoffset="'+offset+'" style="transition:stroke-dashoffset .5s ease"/>'+
+      '</svg>'
+    );
   }
 
   /* ================= VIEW: CONFIG ================= */
@@ -722,10 +1072,8 @@ var Continuum = (function(){
       return wrap;
     }
 
-    wrap.appendChild(el(
-      '<div class="breadcrumb">Simulation Configuration Center</div>'+
-      '<div class="view-header"><div class="view-title">Simulation Configuration <span class="accent">/ '+(asset?asset.name:'Multi-Asset')+'</span></div></div>'
-    ));
+    wrap.appendChild(el('<div class="breadcrumb">Simulation Configuration Center</div>'));
+    wrap.appendChild(el('<div class="view-header"><div class="view-title">Simulation Configuration <span class="accent">/ '+(asset?asset.name:'Multi-Asset')+'</span></div></div>'));
 
     var modeToggle = el(
       '<div class="mode-toggle">'+
@@ -738,12 +1086,47 @@ var Continuum = (function(){
     modeToggle.querySelector('#mode-multi').addEventListener('click', function(){ state.simMode="multi"; navigate('config', state.params); });
 
     var grid = el('<div class="config-grid"></div>');
-    var left = el('<div class="panel"><div class="panel-header"><h3>Operating Conditions</h3></div><div class="panel-body" id="slider-host"></div></div>');
+    var left = el('<div class="panel"><div class="panel-header"><h3>Operating Conditions</h3></div><div class="panel-body"></div></div>');
+    var leftBody = left.querySelector('.panel-body');
     grid.appendChild(left);
 
-    var sliderHost = left.querySelector('#slider-host');
+    /* Presets */
+    var builtInPresets = {
+      "Standard Duty":    {temperature:40, load:45, vibration:25, maintenanceQuality:85, environment:30, utilization:50},
+      "Harsh Environment":{temperature:75, load:70, vibration:60, maintenanceQuality:55, environment:85, utilization:75},
+      "Extended TBO":      {temperature:55, load:60, vibration:40, maintenanceQuality:60, environment:45, utilization:80}
+    };
+    var stored = loadPresets();
+    var presetRow = el('<div class="preset-row"></div>');
+    Object.keys(builtInPresets).forEach(function(name){
+      var chip = el('<button class="preset-chip">'+name+'</button>');
+      chip.addEventListener('click', function(){
+        Object.assign(state.conditions, builtInPresets[name]);
+        navigate('config', state.params);
+      });
+      presetRow.appendChild(chip);
+    });
+    Object.keys(stored).forEach(function(name){
+      var chip = el('<button class="preset-chip" title="Saved preset">&#9733; '+esc(name)+'</button>');
+      chip.addEventListener('click', function(){
+        Object.assign(state.conditions, stored[name]);
+        navigate('config', state.params);
+      });
+      presetRow.appendChild(chip);
+    });
+    var saveChip = el('<button class="preset-chip" id="save-preset-chip">+ Save Current as Preset</button>');
+    saveChip.addEventListener('click', function(){
+      var name = prompt("Name this operating profile:");
+      if(name && name.trim()){
+        savePresetToStorage(name.trim(), Object.assign({}, state.conditions, {operatingHours: state.conditions.operatingHours}));
+        navigate('config', state.params);
+      }
+    });
+    presetRow.appendChild(saveChip);
+    leftBody.appendChild(presetRow);
+
     var sliderDefs = [
-      {key:"operatingHours", label:"Operating Hours", min:0, max: asset ? asset.designLife : 100000, step:100, suffix:""},
+      {key:"operatingHours", label:"Operating Hours", min:0, max: asset ? Math.round(asset.designLife*1.2) : 100000, step:100, suffix:""},
       {key:"temperature", label:"Thermal Severity", min:0, max:100, step:1, suffix:"%"},
       {key:"load", label:"Load Factor", min:0, max:100, step:1, suffix:"%"},
       {key:"vibration", label:"Vibration Severity", min:0, max:100, step:1, suffix:"%"},
@@ -754,17 +1137,17 @@ var Continuum = (function(){
     sliderDefs.forEach(function(def){
       var group = el(
         '<div class="slider-group">'+
-          '<div class="slider-label"><span class="name">'+def.label+'</span><span class="val" id="val-'+def.key+'">'+state.conditions[def.key]+def.suffix+'</span></div>'+
-          '<input type="range" min="'+def.min+'" max="'+def.max+'" step="'+def.step+'" value="'+state.conditions[def.key]+'" id="slider-'+def.key+'">'+
+          '<div class="slider-label"><span class="name">'+def.label+'</span><span class="val">'+state.conditions[def.key]+def.suffix+'</span></div>'+
+          '<input type="range" min="'+def.min+'" max="'+def.max+'" step="'+def.step+'" value="'+state.conditions[def.key]+'">'+
         '</div>'
       );
       var input = group.querySelector('input');
-      var valSpan = group.querySelector('span[id^="val-"]');
+      var valSpan = group.querySelector('.val');
       input.addEventListener('input', function(e){
         state.conditions[def.key] = Number(e.target.value);
         valSpan.textContent = e.target.value + def.suffix;
       });
-      sliderHost.appendChild(group);
+      leftBody.appendChild(group);
     });
 
     var right = el('<div></div>');
@@ -781,10 +1164,10 @@ var Continuum = (function(){
         navigate('dashboard');
       });
     } else {
-      var listWrap = el('<div class="panel"><div class="panel-header"><h3>Select Assets</h3></div><div class="panel-body"><div class="multi-asset-list" id="multi-list"></div>'+
+      var listWrap = el('<div class="panel"><div class="panel-header"><h3>Select Assets</h3></div><div class="panel-body"><div class="multi-asset-list"></div>'+
         '<button class="btn btn-primary" style="width:100%;justify-content:center;margin-top:14px" id="run-sim-multi">Run Comparative Simulation</button></div></div>');
       right.appendChild(listWrap);
-      var mlist = listWrap.querySelector('#multi-list');
+      var mlist = listWrap.querySelector('.multi-asset-list');
       CONTINUUM_ASSETS.forEach(function(a){
         var checked = state.multiSelection.indexOf(a.id)!==-1;
         var row = el('<label class="multi-asset-row'+(checked?" checked":"")+'"><input type="checkbox" '+(checked?"checked":"")+'> '+a.manufacturer+' '+a.name+'</label>');
@@ -806,37 +1189,20 @@ var Continuum = (function(){
     return wrap;
   }
 
-  /* ================= GAUGE SVG ================= */
-  function gaugeSvg(value, max, color, size){
-    size = size || 130;
-    var r = size/2 - 10;
-    var c = size/2;
-    var circumference = Math.PI * r; // half circle
-    var pct = clamp(value/max, 0, 1);
-    var offset = circumference * (1-pct);
-    return (
-      '<svg width="'+size+'" height="'+(size/2+16)+'" viewBox="0 0 '+size+' '+(size/2+16)+'">'+
-        '<path d="M 10 '+c+' A '+r+' '+r+' 0 0 1 '+(size-10)+' '+c+'" fill="none" stroke="var(--c-border)" stroke-width="9" stroke-linecap="round"/>'+
-        '<path d="M 10 '+c+' A '+r+' '+r+' 0 0 1 '+(size-10)+' '+c+'" fill="none" stroke="'+color+'" stroke-width="9" stroke-linecap="round" '+
-          'stroke-dasharray="'+circumference+'" stroke-dashoffset="'+offset+'" style="transition:stroke-dashoffset .5s ease"/>'+
-      '</svg>'
-    );
-  }
-
   /* ================= VIEW: DASHBOARD ================= */
   function renderDashboard(){
     var wrap = el('<div></div>');
     var lr = state.lastResults;
-    wrap.appendChild(el(
-      '<div class="breadcrumb">Predictive Intelligence Engine</div>'+
-      '<div class="view-header"><div class="view-title">Prediction Dashboard <span class="accent">/ Simulation Output</span></div>'+
-      '<button class="btn btn-ghost" id="reconfig">&larr; Reconfigure</button></div>'
-    ));
-    wrap.querySelector('#reconfig').addEventListener('click', function(){ navigate('config', {id:state.selectedAssetId}); });
+    wrap.appendChild(el('<div class="breadcrumb">Predictive Intelligence Engine</div>'));
+    var header = el('<div class="view-header"><div class="view-title">Prediction Dashboard <span class="accent">/ Simulation Output</span></div>'+
+      '<button class="btn btn-ghost" id="reconfig">&larr; Reconfigure</button></div>');
+    header.querySelector('#reconfig').addEventListener('click', function(){ navigate('config', {id:state.selectedAssetId}); });
+    wrap.appendChild(header);
 
     if(!lr || !lr.results.length){
-      wrap.appendChild(el('<div class="empty-state"><div class="eyebrow">No Simulation Results</div><div>Configure and run a simulation from the Asset Library to populate this dashboard.</div><br><button class="btn btn-primary" id="goto-lib">Go to Asset Library</button></div>'));
-      wrap.querySelector('#goto-lib').addEventListener('click', function(){ navigate('library'); });
+      var es = el('<div class="empty-state"><div class="eyebrow">No Simulation Results</div><div>Configure and run a simulation from the Asset Library to populate this dashboard.</div><br><button class="btn btn-primary" id="goto-lib">Go to Asset Library</button></div>');
+      es.querySelector('#goto-lib').addEventListener('click', function(){ navigate('library'); });
+      wrap.appendChild(es);
       return wrap;
     }
 
@@ -847,14 +1213,19 @@ var Continuum = (function(){
 
       var dg = el('<div class="dashboard-grid"></div>');
       dg.appendChild(el('<div class="panel gauge-card">'+gaugeSvg(res.healthIndex,100,hc)+'<div class="gauge-value" style="color:'+hc+'">'+fmt(res.healthIndex,0)+'</div><div class="gauge-label">Health Index</div></div>'));
-      dg.appendChild(el('<div class="panel gauge-card">'+gaugeSvg(res.failureProbability,100,colorForRisk(res.riskLevel))+'<div class="gauge-value" style="color:'+rc+'">'+fmt(res.failureProbability,0)+'%</div><div class="gauge-label">Failure Probability</div></div>'));
+      dg.appendChild(el('<div class="panel gauge-card">'+gaugeSvg(res.failureProbability,100,rc)+'<div class="gauge-value" style="color:'+rc+'">'+fmt(res.failureProbability,0)+'%</div><div class="gauge-label">Failure Probability</div></div>'));
       dg.appendChild(el('<div class="panel gauge-card">'+gaugeSvg(res.reliabilityScore,100,"var(--c-silver)")+'<div class="gauge-value">'+fmt(res.reliabilityScore,0)+'</div><div class="gauge-label">Reliability Score</div></div>'));
       dg.appendChild(el('<div class="panel" style="display:flex;flex-direction:column;align-items:center;justify-content:center;padding:20px;"><span class="badge risk-'+res.riskLevel.toLowerCase()+'" style="font-size:13px;padding:8px 16px;"><span class="badge-dot"></span>'+res.riskLevel+' Risk</span><div class="gauge-label" style="margin-top:10px;">Risk Classification</div></div>'));
       wrap.appendChild(dg);
 
+      var trajPanel2 = el('<div class="panel section-gap"><div class="panel-header"><h3>Projected Trajectory At Current Operating Profile</h3></div><div class="panel-body chart-wrap" id="dash-traj"></div></div>');
+      wrap.appendChild(trajPanel2);
+      var traj2 = computeTrajectory(res.asset, res.conditions, 24);
+      trajPanel2.querySelector('#dash-traj').appendChild(trajectorySvg(traj2, res.asset));
+
       var lower = el('<div class="result-lower"></div>');
-      var modesPanel = el('<div class="panel"><div class="panel-header"><h3>Failure Mode Ranking</h3></div><div class="panel-body" id="mode-rank-body"></div></div>');
-      var mrb = modesPanel.querySelector('#mode-rank-body');
+      var modesPanel = el('<div class="panel"><div class="panel-header"><h3>Failure Mode Ranking</h3></div><div class="panel-body"></div></div>');
+      var mrb = modesPanel.querySelector('.panel-body');
       res.rankedModes.forEach(function(rm){
         var pct = (rm.contribution*100);
         mrb.appendChild(el(
@@ -878,13 +1249,12 @@ var Continuum = (function(){
       lower.appendChild(readoutPanel);
       wrap.appendChild(lower);
 
-      var actions = el('<div style="display:flex;gap:10px;margin-top:18px;"><button class="btn btn-primary" id="to-report">Generate Engineering Report &rarr;</button><button class="btn btn-ghost" id="to-analytics">View Analytics &rarr;</button></div>');
+      var actions = el('<div style="display:flex;gap:10px;flex-wrap:wrap;"><button class="btn btn-primary" id="to-report">Generate Engineering Report &rarr;</button><button class="btn btn-ghost" id="to-analytics">View Analytics &rarr;</button></div>');
       actions.querySelector('#to-report').addEventListener('click', function(){ navigate('report'); });
       actions.querySelector('#to-analytics').addEventListener('click', function(){ navigate('analytics'); });
       wrap.appendChild(actions);
 
     } else {
-      // multi-asset comparative summary
       var sorted = lr.results.slice().sort(function(a,b){ return b.failureProbability-a.failureProbability; });
       var grid = el('<div class="asset-grid"></div>');
       sorted.forEach(function(r){
@@ -903,7 +1273,7 @@ var Continuum = (function(){
         ));
       });
       wrap.appendChild(grid);
-      var actions2 = el('<div style="display:flex;gap:10px;margin-top:18px;"><button class="btn btn-primary" id="to-report2">Generate Comparative Report &rarr;</button><button class="btn btn-ghost" id="to-analytics2">View Analytics &rarr;</button></div>');
+      var actions2 = el('<div style="display:flex;gap:10px;flex-wrap:wrap;margin-top:18px;"><button class="btn btn-primary" id="to-report2">Generate Comparative Report &rarr;</button><button class="btn btn-ghost" id="to-analytics2">View Analytics &rarr;</button></div>');
       actions2.querySelector('#to-report2').addEventListener('click', function(){ navigate('report'); });
       actions2.querySelector('#to-analytics2').addEventListener('click', function(){ navigate('analytics'); });
       wrap.appendChild(actions2);
@@ -916,10 +1286,8 @@ var Continuum = (function(){
   function renderReport(){
     var wrap = el('<div></div>');
     var lr = state.lastResults;
-    wrap.appendChild(el(
-      '<div class="breadcrumb">Engineering Report Generator</div>'+
-      '<div class="view-header"><div class="view-title">Engineering Report</div></div>'
-    ));
+    wrap.appendChild(el('<div class="breadcrumb">Engineering Report Generator</div>'));
+    wrap.appendChild(el('<div class="view-header"><div class="view-title">Engineering Report</div></div>'));
 
     if(!lr || !lr.results.length){
       wrap.appendChild(el('<div class="empty-state"><div class="eyebrow">No Simulation Data</div><div>Run a simulation first to generate a report.</div></div>'));
@@ -930,18 +1298,39 @@ var Continuum = (function(){
       '<div class="report-toggle">'+
         '<button class="btn'+(state.reportMode==="executive"?" btn-primary":" btn-ghost")+'" id="rm-exec">Executive Report</button>'+
         '<button class="btn'+(state.reportMode==="technical"?" btn-primary":" btn-ghost")+'" id="rm-tech">Technical Report</button>'+
-        '<button class="btn btn-ghost" id="rm-print" style="margin-left:auto">Print / Export</button>'+
+        '<button class="btn btn-ghost" id="rm-download" style="margin-left:auto">Download .html</button>'+
+        '<button class="btn btn-ghost" id="rm-print">Print</button>'+
       '</div>'
     );
     wrap.appendChild(toggle);
     toggle.querySelector('#rm-exec').addEventListener('click', function(){ state.reportMode="executive"; navigate('report'); });
     toggle.querySelector('#rm-tech').addEventListener('click', function(){ state.reportMode="technical"; navigate('report'); });
     toggle.querySelector('#rm-print').addEventListener('click', function(){ window.print(); });
+    toggle.querySelector('#rm-download').addEventListener('click', function(){ downloadReport(lr, state.reportMode); });
 
-    var doc = el('<div class="report-doc" id="report-doc"></div>');
-    doc.innerHTML = buildReportHtml(lr, state.reportMode);
+    var reportHtml = buildReportHtml(lr, state.reportMode);
+    var doc = el('<div class="report-doc"></div>');
+    doc.innerHTML = reportHtml;
     wrap.appendChild(doc);
     return wrap;
+  }
+
+  function downloadReport(lr, mode){
+    var full = '<!DOCTYPE html><html><head><meta charset="UTF-8"><title>ContinuumOne Engineering Report</title>'+
+      '<style>body{font-family:Georgia,serif;max-width:820px;margin:40px auto;color:#14161c;line-height:1.6;}'+
+      'h1{border-bottom:3px solid #14161c;padding-bottom:12px;}h2{text-transform:uppercase;letter-spacing:1.5px;font-size:14px;border-bottom:1px solid #ccc;padding-bottom:6px;margin-top:26px;font-family:sans-serif;}'+
+      'table{width:100%;border-collapse:collapse;margin:10px 0;}td,th{padding:7px 8px;border:1px solid #ccc;font-size:12.5px;text-align:left;}'+
+      'th{background:#e8e8ea;font-family:monospace;font-size:10px;text-transform:uppercase;}.report-sub{font-family:monospace;font-size:11px;color:#555;text-transform:uppercase;}</style>'+
+      '</head><body>'+buildReportHtml(lr, mode)+'</body></html>';
+    var blob = new Blob([full], {type:"text/html"});
+    var url = URL.createObjectURL(blob);
+    var a = document.createElement('a');
+    a.href = url;
+    a.download = "continuumone-report-"+Date.now()+".html";
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
   }
 
   function buildReportHtml(lr, mode){
@@ -1030,43 +1419,42 @@ var Continuum = (function(){
   /* ================= VIEW: ANALYTICS ================= */
   function renderAnalytics(){
     var wrap = el('<div></div>');
-    wrap.appendChild(el(
-      '<div class="breadcrumb">Reliability Analytics Center</div>'+
-      '<div class="view-header"><div class="view-title">Reliability Analytics <span class="accent">/ Fleet-Wide Intelligence</span></div></div>'
-    ));
+    wrap.appendChild(el('<div class="breadcrumb">Reliability Analytics Center</div>'));
+    wrap.appendChild(el('<div class="view-header"><div class="view-title">Reliability Analytics <span class="accent">/ Fleet-Wide Intelligence</span></div></div>'));
 
-    // Baseline snapshot across full fleet (uses baselineHealth, not sim-dependent)
     var byCategory = {};
     Object.keys(CONTINUUM_CATEGORIES).forEach(function(c){ byCategory[c] = klgGetAssetsByCategory(c); });
 
     var top = el('<div class="analytics-grid"></div>');
 
-    var heatPanel = el('<div class="panel"><div class="panel-header"><h3>Fleet Health Heatmap</h3></div><div class="panel-body"><div class="heatmap" id="heatmap"></div></div></div>');
-    var hm = heatPanel.querySelector('#heatmap');
+    var heatPanel = el('<div class="panel"><div class="panel-header"><h3>Fleet Health Heatmap</h3></div><div class="panel-body"><div class="heatmap"></div></div></div>');
+    var hm = heatPanel.querySelector('.heatmap');
     CONTINUUM_ASSETS.forEach(function(a){
       var hc = healthColor(a.baselineHealth);
       var cell = el('<div class="heatmap-cell" style="border-color:'+hc+'55"><div class="hc-val" style="color:'+hc+'">'+a.baselineHealth+'</div><div class="hc-name">'+a.name+'</div></div>');
+      cell.addEventListener('click', function(){ state.selectedAssetId=a.id; state.dossierTab="overview"; navigate('dossier',{id:a.id}); });
       hm.appendChild(cell);
     });
     top.appendChild(heatPanel);
 
-    var rankPanel = el('<div class="panel"><div class="panel-header"><h3>Reliability Ranking</h3></div><div class="panel-body" id="rank-list"></div></div>');
-    var rl = rankPanel.querySelector('#rank-list');
+    var rankPanel = el('<div class="panel"><div class="panel-header"><h3>Reliability Ranking</h3></div><div class="panel-body"></div></div>');
+    var rl = rankPanel.querySelector('.panel-body');
     CONTINUUM_ASSETS.slice().sort(function(a,b){return b.baselineHealth-a.baselineHealth;}).forEach(function(a,i){
       var hc = healthColor(a.baselineHealth);
-      rl.appendChild(el(
+      var row = el(
         '<div class="rank-list-row"><span class="rl-idx">'+(i+1).toString().padStart(2,'0')+'</span>'+
         '<span class="rl-name">'+a.manufacturer+' '+a.name+'</span>'+
         '<div class="rl-bar"><div class="rl-fill" style="width:'+a.baselineHealth+'%;background:'+hc+'"></div></div></div>'
-      ));
+      );
+      row.querySelector('.rl-name').addEventListener('click', function(){ state.selectedAssetId=a.id; state.dossierTab="overview"; navigate('dossier',{id:a.id}); });
+      rl.appendChild(row);
     });
     top.appendChild(rankPanel);
     wrap.appendChild(top);
 
-    // Category degradation indicator averages
-    var catPanel = el('<div class="panel section-gap"><div class="panel-header"><h3>Category Health Trends</h3></div><div class="panel-body" id="cat-trends"></div></div>');
+    var catPanel = el('<div class="panel section-gap"><div class="panel-header"><h3>Category Health Trends</h3></div><div class="panel-body"></div></div>');
     wrap.appendChild(catPanel);
-    var ct = catPanel.querySelector('#cat-trends');
+    var ct = catPanel.querySelector('.panel-body');
     Object.keys(byCategory).forEach(function(cid){
       var arr = byCategory[cid];
       var avg = arr.reduce(function(s,a){return s+a.baselineHealth;},0)/arr.length;
@@ -1078,11 +1466,10 @@ var Continuum = (function(){
       ));
     });
 
-    // Latest simulation trend (if any)
     if(state.lastResults && state.lastResults.results.length){
-      var simPanel = el('<div class="panel"><div class="panel-header"><h3>Last Simulation — Risk Distribution</h3></div><div class="panel-body" id="sim-trend"></div></div>');
+      var simPanel = el('<div class="panel"><div class="panel-header"><h3>Last Simulation — Risk Distribution</h3></div><div class="panel-body"></div></div>');
       wrap.appendChild(simPanel);
-      var st = simPanel.querySelector('#sim-trend');
+      var st = simPanel.querySelector('.panel-body');
       state.lastResults.results.forEach(function(r){
         var rc = colorForRisk(r.riskLevel);
         st.appendChild(el(
@@ -1096,6 +1483,54 @@ var Continuum = (function(){
     return wrap;
   }
 
+  /* ================= SETTINGS MODAL ================= */
+  function openSettings(){
+    var overlay = el(
+      '<div class="modal-overlay"><div class="modal">'+
+        '<div class="modal-header"><h3>Platform Settings</h3><button class="modal-close" aria-label="Close">&times;</button></div>'+
+        '<div class="modal-body">'+
+          '<div class="setting-row"><span class="setting-label">Accent Theme</span><div class="option-row" id="theme-opts"></div></div>'+
+          '<div class="setting-row"><span class="setting-label">Display Density</span><div class="option-row" id="density-opts"></div></div>'+
+          '<div class="setting-row"><span class="setting-label">Session</span><div class="option-row"><button class="option-btn" id="reset-pins">Clear Pinned Assets</button></div></div>'+
+        '</div>'+
+      '</div></div>'
+    );
+    document.body.appendChild(overlay);
+    overlay.addEventListener('click', function(e){ if(e.target===overlay) close(); });
+    overlay.querySelector('.modal-close').addEventListener('click', close);
+    function close(){ if(overlay.parentNode) overlay.parentNode.removeChild(overlay); }
+
+    var themes = [{id:"silver",label:"Silver",color:"var(--c-silver-bright)"},{id:"green",label:"Signal Green",color:"var(--c-green)"},{id:"amber",label:"Command Amber",color:"var(--c-amber)"}];
+    var themeHost = overlay.querySelector('#theme-opts');
+    themes.forEach(function(t){
+      var b = el('<button class="option-btn'+(state.settings.theme===t.id?" active":"")+'"><span class="swatch" style="background:'+t.color+'"></span>'+t.label+'</button>');
+      b.addEventListener('click', function(){
+        state.settings.theme = t.id; saveSettings(); applySettings();
+        themeHost.querySelectorAll('.option-btn').forEach(function(x){x.classList.remove('active');});
+        b.classList.add('active');
+      });
+      themeHost.appendChild(b);
+    });
+
+    var densities = [{id:"comfortable",label:"Comfortable"},{id:"compact",label:"Compact"}];
+    var densityHost = overlay.querySelector('#density-opts');
+    densities.forEach(function(d){
+      var b = el('<button class="option-btn'+(state.settings.density===d.id?" active":"")+'">'+d.label+'</button>');
+      b.addEventListener('click', function(){
+        state.settings.density = d.id; saveSettings(); applySettings();
+        densityHost.querySelectorAll('.option-btn').forEach(function(x){x.classList.remove('active');});
+        b.classList.add('active');
+      });
+      densityHost.appendChild(b);
+    });
+
+    overlay.querySelector('#reset-pins').addEventListener('click', function(){
+      state.pinned = [];
+      updateStatusBar();
+      close();
+    });
+  }
+
   /* ---------------- CLOCK ---------------- */
   function tickClock(){
     var d = new Date();
@@ -1104,8 +1539,14 @@ var Continuum = (function(){
 
   /* ---------------- INIT ---------------- */
   function init(){
+    loadSettings();
     tickClock();
     setInterval(tickClock, 1000);
+    document.getElementById('brand-home').addEventListener('click', function(){ navigate('library'); });
+    document.querySelectorAll('.nav-btn').forEach(function(b){
+      b.addEventListener('click', function(){ navigate(b.getAttribute('data-route')); });
+    });
+    document.getElementById('settings-btn').addEventListener('click', openSettings);
     navigate('library');
   }
 
