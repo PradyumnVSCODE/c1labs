@@ -366,6 +366,74 @@
             border: 1px solid var(--border-main);
             border-radius: 4px;
         }
+
+        /* =========================================
+           SECONDARY CANVAS & GRID (PART 6)
+           ========================================= */
+        /* Make the canvas container hold two panels side-by-side on wide screens */
+        #canvas-container {
+            grid-template-columns: repeat(12, 1fr) !important;
+        }
+
+        .canvas-panel.half {
+            grid-column: span 6;
+        }
+
+        @media (max-width: 1200px) {
+            .canvas-panel.half {
+                grid-column: span 12;
+            }
+        }
+
+        
+
+/* =========================================
+           DIAGNOSTIC TERMINAL (PART 7)
+           ========================================= */
+        .terminal-panel {
+            grid-column: span 12;
+            background-color: #080808;
+            border: 1px solid var(--border-main);
+            border-radius: 8px;
+            padding: 16px;
+            font-family: monospace;
+            height: 160px;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .terminal-header {
+            font-size: 0.75rem;
+            color: var(--text-secondary);
+            margin-bottom: 8px;
+            display: flex;
+            justify-content: space-between;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            border-bottom: 1px solid #1a1a1a;
+            padding-bottom: 6px;
+        }
+
+        .terminal-body {
+            flex: 1;
+            overflow-y: auto;
+            font-size: 0.8rem;
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+            scroll-behavior: smooth;
+        }
+
+        /* Custom scrollbar for terminal */
+        .terminal-body::-webkit-scrollbar { width: 4px; }
+        .terminal-body::-webkit-scrollbar-track { background: #080808; }
+        .terminal-body::-webkit-scrollbar-thumb { background: #222; }
+
+        .log-entry { display: flex; gap: 12px; align-items: baseline; }
+        .log-time { color: var(--text-secondary); font-size: 0.75rem; }
+        .log-info { color: var(--acc-blue); }
+        .log-warn { color: var(--acc-orange); }
+        .log-crit { color: var(--acc-red); font-weight: bold; }
         
     </style>
 </head>
@@ -396,8 +464,10 @@
             <img src="image_d7eb59.png" alt="ContinuumOne Logo">
             <h1>ContinuumOne</h1>
         </a>
-        <div class="header-actions">
-            <!-- Future Report Generators will go here -->
+       <div class="header-actions" style="display: flex; gap: 10px; align-items: center;">
+            <button onclick="loadAssetProfile('turbine')" style="background: var(--bg-surface); border: 1px solid var(--border-main); color: var(--text-primary); padding: 6px 12px; border-radius: 4px; cursor: pointer; font-size: 0.8rem;">Turbine Core</button>
+            <button onclick="loadAssetProfile('reactor')" style="background: var(--bg-surface); border: 1px solid var(--border-main); color: var(--text-primary); padding: 6px 12px; border-radius: 4px; cursor: pointer; font-size: 0.8rem;">Magnetic Reactor</button>
+            <button onclick="loadAssetProfile('press')" style="background: var(--bg-surface); border: 1px solid var(--border-main); color: var(--text-primary); padding: 6px 12px; border-radius: 4px; cursor: pointer; font-size: 0.8rem;">Hydraulic Press</button>
         </div>
     </header>
 
@@ -465,8 +535,8 @@
           <!-- CANVAS CONTAINER (PART 5) -->
             <div id="canvas-container" style="grid-column: span 12; display: grid; gap: 24px; grid-template-columns: repeat(12, 1fr);">
                 
-                <!-- PRIMARY WAVEFORM -->
-                <div class="canvas-panel">
+           <!-- PRIMARY WAVEFORM -->
+                <div class="canvas-panel half">
                     <div class="canvas-header">
                         <span class="canvas-title">Primary Telemetry Waveform</span>
                         <span style="color: var(--text-secondary); font-size: 0.85rem;" id="waveform-status">Real-time Core Monitoring</span>
@@ -475,7 +545,17 @@
                         <canvas id="primary-waveform"></canvas>
                     </div>
                 </div>
-                
+
+                <!-- SECONDARY SPECTRUM ANALYSIS (PART 6) -->
+                <div class="canvas-panel half">
+                    <div class="canvas-header">
+                        <span class="canvas-title">Frequency Domain (FFT / Harmonic Spectrum)</span>
+                        <span style="color: var(--text-secondary); font-size: 0.85rem;" id="fft-status">Vibration Vector Analysis</span>
+                    </div>
+                    <div class="canvas-wrapper">
+                        <canvas id="secondary-fft"></canvas>
+                    </div>
+                </div>
                 <!-- Canvas 2 will go here in Part 6 -->
 
             </div>
@@ -573,12 +653,11 @@
         let renderTime = 0;
         let animationId = null;
 
-        function drawPrimaryWaveform() {
+    function drawPrimaryWaveform() {
             const canvas = document.getElementById('primary-waveform');
             if (!canvas) return;
             const ctx = canvas.getContext('2d');
             
-            // Handle dynamic resizing
             const rect = canvas.parentElement.getBoundingClientRect();
             if (canvas.width !== rect.width || canvas.height !== rect.height) {
                 canvas.width = rect.width;
@@ -589,51 +668,136 @@
             const h = canvas.height;
             const p = AppState.parameters;
 
-            // Clear frame
-            ctx.clearRect(0, 0, w, h);
+            // 1. Dark Fade (Leaves a trail behind the wave)
+            ctx.fillStyle = 'rgba(5, 5, 5, 0.3)';
+            ctx.fillRect(0, 0, w, h);
 
-            // Draw Background Grid
-            ctx.strokeStyle = '#222222';
+            // 2. High-Tech Grid
+            ctx.strokeStyle = 'rgba(255, 255, 255, 0.05)';
             ctx.lineWidth = 1;
             ctx.beginPath();
-            for(let i = 0; i < w; i += 50) { ctx.moveTo(i, 0); ctx.lineTo(i, h); }
-            for(let i = 0; i < h; i += 50) { ctx.moveTo(0, i); ctx.lineTo(w, i); }
+            for(let i = 0; i < w; i += 40) { ctx.moveTo(i, 0); ctx.lineTo(i, h); }
+            for(let i = 0; i < h; i += 40) { ctx.moveTo(0, i); ctx.lineTo(w, i); }
             ctx.stroke();
 
-            // Setup Waveform Style based on System Health
-            ctx.lineWidth = 2;
-            ctx.lineJoin = 'round';
-            
-            // Read the health score dynamically to change colors
+            // 3. Setup Neon Glow based on Health
             const healthEl = document.getElementById('metric-health');
             let healthScore = healthEl ? parseInt(healthEl.innerText) : 100;
             
-            if (healthScore < 40) ctx.strokeStyle = '#d32f2f';      // Muted Red
-            else if (healthScore < 80) ctx.strokeStyle = '#f57c00'; // Muted Orange
-            else ctx.strokeStyle = '#1976d2';                       // Muted Blue
+            let baseColor = '#1976d2'; // Blue
+            if (healthScore < 40) baseColor = '#ff1744';      // Neon Red
+            else if (healthScore < 80) baseColor = '#ff9100'; // Neon Orange
 
-            // Draw Physics-Driven Wave
+            ctx.lineWidth = 2.5;
+            ctx.lineJoin = 'round';
+            ctx.shadowBlur = 15;
+            ctx.shadowColor = baseColor;
+            ctx.strokeStyle = baseColor;
+
+            // 4. Complex Waveform Math (Primary)
             ctx.beginPath();
             for (let x = 0; x < w; x++) {
                 const t = (x * 0.01) + renderTime;
-                
-                // Math driving the visual wave
-                const amplitude = (h / 4) * (p.load / 45); 
-                const freq = p.vib / 30;
-                const thermalNoise = (Math.random() - 0.5) * (p.temp / 80);
+                const amplitude = (h / 3) * (p.load / 150); 
+                const freq = p.vib / 20;
+                const thermalNoise = (Math.random() - 0.5) * (p.temp / 40);
 
-                const y = (h / 2) + Math.sin(t * freq) * amplitude + thermalNoise;
+                // Add harmonic distortion for realism
+                const harmonic = Math.cos(t * freq * 2.5) * (amplitude * 0.3);
+                const y = (h / 2) + Math.sin(t * freq) * amplitude + harmonic + thermalNoise;
 
                 if (x === 0) ctx.moveTo(x, y);
                 else ctx.lineTo(x, y);
             }
             ctx.stroke();
+
+            // 5. Draw Scanning Playhead (Radar Line)
+            const scanX = (renderTime * 100) % w;
+            ctx.shadowBlur = 0; // Turn off glow for UI elements
+            ctx.strokeStyle = 'rgba(255, 255, 255, 0.8)';
+            ctx.lineWidth = 1;
+            ctx.beginPath();
+            ctx.moveTo(scanX, 0);
+            ctx.lineTo(scanX, h);
+            ctx.stroke();
+            
+            // Draw Playhead coordinate text
+            ctx.fillStyle = 'rgba(255,255,255,0.7)';
+            ctx.font = '10px monospace';
+            ctx.fillText(`SEQ:${Math.floor(scanX)}`, scanX + 5, 15);
         }
 
+            // ==========================================
+        // SECONDARY CANVAS RENDERING ENGINE (PART 6)
+        // ==========================================
+        function drawSecondarySpectrum() {
+            const canvas = document.getElementById('secondary-fft');
+            if (!canvas) return;
+            const ctx = canvas.getContext('2d');
+            
+            const rect = canvas.parentElement.getBoundingClientRect();
+            if (canvas.width !== rect.width || canvas.height !== rect.height) {
+                canvas.width = rect.width;
+                canvas.height = rect.height;
+            }
+
+            const w = canvas.width;
+            const h = canvas.height;
+            const p = AppState.parameters;
+
+            // Clear frame with dark tech background
+            ctx.fillStyle = 'rgba(5, 5, 5, 0.4)';
+            ctx.fillRect(0, 0, w, h);
+
+            // Draw Frequency Grid Lines
+            ctx.strokeStyle = 'rgba(255, 255, 255, 0.04)';
+            ctx.lineWidth = 1;
+            ctx.beginPath();
+            for(let i = 0; i < w; i += 30) { ctx.moveTo(i, 0); ctx.lineTo(i, h); }
+            for(let i = 0; i < h; i += 30) { ctx.moveTo(0, i); ctx.lineTo(w, i); }
+            ctx.stroke();
+
+            // Read system health for bar coloring
+            const healthEl = document.getElementById('metric-health');
+            let healthScore = healthEl ? parseInt(healthEl.innerText) : 100;
+            
+            let barColor = '#1976d2';
+            if (healthScore < 40) barColor = '#ff1744';      
+            else if (healthScore < 80) barColor = '#ff9100'; 
+
+            // Draw FFT Frequency Spectrum Bars
+            const numBars = 32;
+            const barWidth = (w / numBars) - 4;
+            
+            for (let i = 0; i < numBars; i++) {
+                // Generate height based on vibration frequency and noise
+                let seed = Math.sin(i * 0.5 + (renderTime * 2)) * 0.5 + 0.5;
+                let multiplier = (i === Math.floor((p.vib / 500) * numBars)) ? 1.8 : 0.6; // Spike at active frequency
+                let barHeight = h * seed * (p.load / 150) * multiplier;
+                
+                barHeight = Math.min(h - 10, Math.max(5, barHeight));
+
+                const x = i * (barWidth + 4) + 10;
+                const y = h - barHeight;
+
+                // Gradient styling for the bars
+                ctx.fillStyle = barColor;
+                ctx.shadowBlur = 10;
+                ctx.shadowColor = barColor;
+                ctx.fillRect(x, y, barWidth, barHeight);
+
+                // Top cap line on bars
+                ctx.fillStyle = '#ffffff';
+                ctx.fillRect(x, y - 2, barWidth, 2);
+            }
+            
+            ctx.shadowBlur = 0; // Reset shadow
+        }
+            
         function renderLoop() {
             renderTime += 0.05;
             drawPrimaryWaveform();
-            
+            drawSecondarySpectrum(); // Added Part 6 render call
             // Loop continuously
             animationId = requestAnimationFrame(renderLoop);
         }
@@ -673,6 +837,37 @@
 
         // Boot system when DOM is ready
         document.addEventListener('DOMContentLoaded', initApp);
+
+        // ==========================================
+        // ASSET PROFILE SWITCHER (PART 8)
+        // ==========================================
+        function loadAssetProfile(profile) {
+            const profiles = {
+                turbine: { temp: 450, coolant: 85, load: 45, vib: 60, volt: 480 },
+                reactor: { temp: 950, coolant: 30, load: 120, vib: 210, volt: 850 },
+                press:   { temp: 300, coolant: 150, load: 10, vib: 15, volt: 240 }
+            };
+
+            const data = profiles[profile];
+            if (!data) return;
+
+            // Update AppState and Range Inputs
+            for (const [key, val] of Object.entries(data)) {
+                AppState.parameters[key] = val;
+                const slider = document.getElementById(`param-${key}`);
+                const readout = document.getElementById(`val-${key}`);
+                if (slider) slider.value = val;
+                if (readout) {
+                    const unit = readout.innerText.replace(/[0-9]/g, '').trim();
+                    readout.innerText = val + ' ' + unit;
+                }
+            }
+
+            calculatePhysics();
+            if (typeof pushLog === "function") {
+                pushLog(`ASSET_SWAP: Loaded diagnostic profile parameters for [${profile.toUpperCase()}].`, "info");
+            }
+        }
     </script>
 </body>
 </html>
