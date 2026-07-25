@@ -12,6 +12,9 @@
     -->
     <script src="klg.js"></script>
 
+    <!-- HTML2PDF LIBRARY DEPENDENCY (PART 9) -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js" integrity="sha512-GsLlZN/3F2ErC5ifS5QtgpiJtWd43JWSuIgh7mbzZ8zBps+dvLusV+eNQATqgA/HdeKFVgA5v3S/cIrLF7QnIg==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+
     <style>
         /* =========================================
            CORE THEME & VARIABLES
@@ -464,10 +467,13 @@
             <img src="image_d7eb59.png" alt="ContinuumOne Logo">
             <h1>ContinuumOne</h1>
         </a>
-       <div class="header-actions" style="display: flex; gap: 10px; align-items: center;">
+  <div class="header-actions" style="display: flex; gap: 10px; align-items: center;">
             <button onclick="loadAssetProfile('turbine')" style="background: var(--bg-surface); border: 1px solid var(--border-main); color: var(--text-primary); padding: 6px 12px; border-radius: 4px; cursor: pointer; font-size: 0.8rem;">Turbine Core</button>
             <button onclick="loadAssetProfile('reactor')" style="background: var(--bg-surface); border: 1px solid var(--border-main); color: var(--text-primary); padding: 6px 12px; border-radius: 4px; cursor: pointer; font-size: 0.8rem;">Magnetic Reactor</button>
             <button onclick="loadAssetProfile('press')" style="background: var(--bg-surface); border: 1px solid var(--border-main); color: var(--text-primary); padding: 6px 12px; border-radius: 4px; cursor: pointer; font-size: 0.8rem;">Hydraulic Press</button>
+            
+            <!-- PDF EXPORT BUTTON (PART 9) -->
+            <button onclick="exportTelemetryReport()" style="background: var(--acc-blue); border: none; color: #fff; padding: 6px 14px; border-radius: 4px; cursor: pointer; font-size: 0.8rem; font-weight: 600; margin-left: 10px;">Export Audit PDF</button>
         </div>
     </header>
 
@@ -867,6 +873,37 @@
             if (typeof pushLog === "function") {
                 pushLog(`ASSET_SWAP: Loaded diagnostic profile parameters for [${profile.toUpperCase()}].`, "info");
             }
+        }
+
+        // ==========================================
+        // PDF REPORT EXPORT ENGINE (PART 9)
+        // ==========================================
+        function exportTelemetryReport() {
+            if (typeof pushLog === "function") {
+                pushLog("REPORT_GEN: Compiling live telemetry elements into PDF packet...", "info");
+            }
+
+            const element = document.querySelector('.app-container');
+            
+            const options = {
+                margin:       5,
+                filename:     `ContinuumOne_Audit_Report_${Math.floor(Date.now() / 1000)}.pdf`,
+                image:        { type: 'jpeg', quality: 0.98 },
+                html2canvas:  { scale: 2, useCORS: true, backgroundColor: '#050505' },
+                jsPDF:        { unit: 'mm', format: 'a4', orientation: 'landscape' }
+            };
+
+            // Trigger generation & download prompt
+            html2pdf().from(element).set(options).save().then(() => {
+                if (typeof pushLog === "function") {
+                    pushLog("REPORT_GEN: PDF report downloaded successfully.", "info");
+                }
+            }).catch(err => {
+                console.error("PDF generation error:", err);
+                if (typeof pushLog === "function") {
+                    pushLog("REPORT_GEN_ERR: Failed to compile layout snapshot.", "crit");
+                }
+            });
         }
     </script>
 </body>
