@@ -437,6 +437,153 @@
         .log-info { color: var(--acc-blue); }
         .log-warn { color: var(--acc-orange); }
         .log-crit { color: var(--acc-red); font-weight: bold; }
+
+        /* =========================================
+           SIMULATION ENGINE TOGGLE (PART 10)
+           ========================================= */
+        .sim-toggle-btn {
+            background-color: var(--bg-surface);
+            border: 1px solid var(--border-main);
+            color: var(--text-primary);
+            padding: 6px 14px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 0.8rem;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            transition: all 0.2s ease;
+        }
+
+        .sim-toggle-btn.running {
+            background-color: rgba(25, 118, 210, 0.2);
+            border-color: var(--acc-blue);
+            color: #64b5f6;
+        }
+
+        .sim-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background-color: var(--text-secondary);
+        }
+
+        .sim-toggle-btn.running .sim-dot {
+            background-color: var(--acc-blue);
+            box-shadow: 0 0 8px var(--acc-blue);
+            animation: pulse-dot 1.5s infinite;
+        }
+
+        @keyframes pulse-dot {
+            0% { transform: scale(1); opacity: 1; }
+            50% { transform: scale(1.4); opacity: 0.4; }
+            100% { transform: scale(1); opacity: 1; }
+        }
+/* =========================================
+           EMERGENCY PURGE / KILL SWITCH (PART 11)
+           ========================================= */
+        .emergency-btn {
+            background-color: rgba(211, 47, 47, 0.15);
+            border: 1px solid var(--acc-red);
+            color: var(--acc-red);
+            padding: 6px 14px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 0.8rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            transition: all 0.2s ease;
+        }
+
+        .emergency-btn:hover {
+            background-color: var(--acc-red);
+            color: #fff;
+            box-shadow: 0 0 12px rgba(211, 47, 47, 0.6);
+        }
+
+        body.emergency-lockdown {
+            animation: flash-lockdown 0.8s infinite alternate;
+        }
+
+        @keyframes flash-lockdown {
+            0% { box-shadow: inset 0 0 0px var(--acc-red); }
+            100% { box-shadow: inset 0 0 40px rgba(211, 47, 47, 0.4); }
+        }
+
+        /* =========================================
+           COMPONENT SUB-SYSTEM MATRIX (PART 12)
+           ========================================= */
+        .subsystem-grid {
+            grid-column: span 12;
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 16px;
+            margin-top: 4px;
+        }
+
+        .subsystem-card {
+            background-color: var(--bg-surface);
+            border: 1px solid var(--border-main);
+            border-radius: 8px;
+            padding: 16px;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            position: relative;
+            overflow: hidden;
+            transition: border-color 0.2s ease;
+        }
+
+        .subsystem-card::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; width: 3px; height: 100%;
+            background-color: var(--acc-blue);
+        }
+
+        .subsystem-card.warn::before { background-color: var(--acc-orange); }
+        .subsystem-card.crit::before { background-color: var(--acc-red); }
+
+        .subsystem-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .subsystem-title {
+            font-size: 0.85rem;
+            font-weight: 600;
+            color: var(--text-primary);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .subsystem-status {
+            font-size: 0.75rem;
+            font-family: monospace;
+            padding: 2px 6px;
+            border-radius: 4px;
+            background: rgba(255, 255, 255, 0.05);
+            color: var(--text-secondary);
+        }
+
+        .subsystem-metrics {
+            display: flex;
+            justify-content: space-between;
+            font-size: 0.8rem;
+            font-family: monospace;
+            color: var(--text-secondary);
+        }
+
+        .subsystem-metrics span {
+            color: var(--text-primary);
+        }
+
+        @media (max-width: 1024px) {
+            .subsystem-grid { grid-template-columns: repeat(2, 1fr); }
+        }
         
     </style>
 </head>
@@ -467,12 +614,19 @@
             <img src="image_d7eb59.png" alt="ContinuumOne Logo">
             <h1>ContinuumOne</h1>
         </a>
-  <div class="header-actions" style="display: flex; gap: 10px; align-items: center;">
+<div class="header-actions" style="display: flex; gap: 10px; align-items: center;">
             <button onclick="loadAssetProfile('turbine')" style="background: var(--bg-surface); border: 1px solid var(--border-main); color: var(--text-primary); padding: 6px 12px; border-radius: 4px; cursor: pointer; font-size: 0.8rem;">Turbine Core</button>
             <button onclick="loadAssetProfile('reactor')" style="background: var(--bg-surface); border: 1px solid var(--border-main); color: var(--text-primary); padding: 6px 12px; border-radius: 4px; cursor: pointer; font-size: 0.8rem;">Magnetic Reactor</button>
             <button onclick="loadAssetProfile('press')" style="background: var(--bg-surface); border: 1px solid var(--border-main); color: var(--text-primary); padding: 6px 12px; border-radius: 4px; cursor: pointer; font-size: 0.8rem;">Hydraulic Press</button>
             
-            <!-- PDF EXPORT BUTTON (PART 9) -->
+            <button id="sim-play-btn" class="sim-toggle-btn" onclick="toggleSimulation()">
+                <div class="sim-dot"></div>
+                <span id="sim-btn-text">Live Drift: OFF</span>
+            </button>
+
+            <!-- EMERGENCY PURGE KILL SWITCH (PART 11) -->
+            <button class="emergency-btn" onclick="executeEmergencyPurge()">Emergency Purge</button>
+
             <button onclick="exportTelemetryReport()" style="background: var(--acc-blue); border: none; color: #fff; padding: 6px 14px; border-radius: 4px; cursor: pointer; font-size: 0.8rem; font-weight: 600; margin-left: 10px;">Export Audit PDF</button>
         </div>
     </header>
@@ -904,6 +1058,103 @@
                     pushLog("REPORT_GEN_ERR: Failed to compile layout snapshot.", "crit");
                 }
             });
+        }
+
+        // ==========================================
+        // AUTONOMOUS SIMULATION LOOP (PART 10)
+        // ==========================================
+        let driftInterval = null;
+
+        function toggleSimulation() {
+            AppState.simulationRunning = !AppState.simulationRunning;
+            const btn = document.getElementById('sim-play-btn');
+            const btnText = document.getElementById('sim-btn-text');
+
+            if (AppState.simulationRunning) {
+                btn.classList.add('running');
+                btnText.innerText = "Live Drift: ENGAGED";
+                if (typeof pushLog === "function") {
+                    pushLog("SIM_ENGINE: Autonomous thermal-mechanical drift loop initiated.", "info");
+                }
+
+                // Run drift loop every 1 second
+                driftInterval = setInterval(() => {
+                    if (!AppState.simulationRunning) return;
+
+                    // Apply micro-drift to temperature and vibration based on random noise
+                    let currentTemp = AppState.parameters.temp || 450;
+                    let driftTemp = currentTemp + (Math.random() * 6 - 2.8); // slight upward bias
+                    driftTemp = Math.min(1200, Math.max(200, driftTemp));
+
+                    let currentVib = AppState.parameters.vib || 60;
+                    let driftVib = currentVib + (Math.random() * 4 - 2);
+                    driftVib = Math.min(500, Math.max(10, driftVib));
+
+                    // Update State & Sliders
+                    AppState.parameters.temp = Math.round(driftTemp);
+                    AppState.parameters.vib = Math.round(driftVib);
+
+                    const tempSlider = document.getElementById('param-temp');
+                    const tempVal = document.getElementById('val-temp');
+                    if (tempSlider) tempSlider.value = AppState.parameters.temp;
+                    if (tempVal) tempVal.innerText = AppState.parameters.temp + " K";
+
+                    const vibSlider = document.getElementById('param-vib');
+                    const vibVal = document.getElementById('val-vib');
+                    if (vibSlider) vibSlider.value = AppState.parameters.vib;
+                    if (vibVal) vibVal.innerText = AppState.parameters.vib + " Hz";
+
+                    calculatePhysics();
+                }, 1000);
+
+            } else {
+                btn.classList.remove('running');
+                btnText.innerText = "Live Drift: OFF";
+                clearInterval(driftInterval);
+                if (typeof pushLog === "function") {
+                    pushLog("SIM_ENGINE: Autonomous loop paused. Manual override active.", "info");
+                }
+            }
+        }
+
+        // ==========================================
+        // EMERGENCY SHUTDOWN / PURGE PROTOCOL (PART 11)
+        // ==========================================
+        function executeEmergencyPurge() {
+            // Stop autonomous drift if running
+            if (AppState.simulationRunning) {
+                toggleSimulation();
+            }
+
+            // Force safe physical parameters
+            AppState.parameters.temp = 250;
+            AppState.parameters.coolant = 200;
+            AppState.parameters.load = 0;
+            AppState.parameters.vib = 10;
+            AppState.parameters.volt = 0;
+
+            // Synchronize UI sliders and readouts
+            for (const [key, val] of Object.entries(AppState.parameters)) {
+                const slider = document.getElementById(`param-${key}`);
+                const readout = document.getElementById(`val-${key}`);
+                if (slider) slider.value = val;
+                if (readout) {
+                    const unit = readout.innerText.replace(/[0-9]/g, '').trim();
+                    readout.innerText = val + ' ' + unit;
+                }
+            }
+
+            calculatePhysics();
+
+            // Flash visual lockdown warning
+            document.body.classList.add('emergency-lockdown');
+            setTimeout(() => {
+                document.body.classList.remove('emergency-lockdown');
+            }, 3000);
+
+            if (typeof pushLog === "function") {
+                pushLog("EMERGENCY_OVERRIDE: Core purge executed. System safely locked down.", "crit");
+            }
         }
     </script>
 </body>
