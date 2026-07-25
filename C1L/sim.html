@@ -601,7 +601,7 @@ var Continuum = (function(){
         if(state.sortBy==="criticality") return a.criticality.localeCompare(b.criticality);
         return a.name.localeCompare(b.name);
       });
-      var g = document.getElementById('asset-grid');
+      var g = grid;
       g.innerHTML = "";
       if(results.length===0){
         g.appendChild(el('<div class="empty-state" style="grid-column:1/-1"><div class="eyebrow">No Matching Assets</div><div>Adjust search terms or category filter.</div></div>'));
