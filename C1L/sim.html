@@ -1,1161 +1,1118 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ContinuumOne | Simulation Engine</title>
-    
-    <!-- 
-      KLG.JS IMPORT 
-      This is where our engineering data will load. 
-      Ensure klg.js is in the same directory.
-    -->
-    <script src="klg.js"></script>
-
-    <!-- HTML2PDF LIBRARY DEPENDENCY (PART 9) -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js" integrity="sha512-GsLlZN/3F2ErC5ifS5QtgpiJtWd43JWSuIgh7mbzZ8zBps+dvLusV+eNQATqgA/HdeKFVgA5v3S/cIrLF7QnIg==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
-
-    <style>
-        /* =========================================
-           CORE THEME & VARIABLES
-           ========================================= */
-        :root {
-            /* Backgrounds: Grey to Black */
-            --bg-base: #050505;
-            --bg-panel: #121212;
-            --bg-surface: #1e1e1e;
-            --border-main: #2a2a2a;
-            
-            /* Typography: White and Muted Greys */
-            --text-primary: #ffffff;
-            --text-secondary: #a0a0a0;
-            --font-main: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-            
-            /* Accents: Non-blinding, muted colors for graphs and statuses */
-            --acc-green: #388e3c;
-            --acc-red: #d32f2f;
-            --acc-blue: #1976d2;
-            --acc-orange: #f57c00;
-        }
-
-        /* =========================================
-           GLOBAL RESET & TYPOGRAPHY
-           ========================================= */
-        * {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
-        }
-
-        body {
-            background-color: var(--bg-base);
-            color: var(--text-primary);
-            font-family: var(--font-main);
-            height: 100vh;
-            display: flex;
-            flex-direction: column;
-            overflow: hidden; /* App-like feel, scroll only in specific containers */
-        }
-
-        /* =========================================
-           HEADER NAVIGATION
-           ========================================= */
-        header {
-            background-color: var(--bg-panel);
-            border-bottom: 1px solid var(--border-main);
-            height: 64px;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            padding: 0 24px;
-            flex-shrink: 0;
-        }
-
-        .logo-container {
-            display: flex;
-            align-items: center;
-            cursor: pointer;
-            text-decoration: none;
-            color: var(--text-primary);
-        }
-
-        .logo-container img {
-            height: 32px;
-            margin-right: 16px;
-        }
-
-        .logo-container h1 {
-            font-size: 1.25rem;
-            font-weight: 500;
-            letter-spacing: 0.5px;
-        }
-
-        .header-actions {
-            display: flex;
-            gap: 16px;
-        }
-
-        /* =========================================
-           MAIN APPLICATION LAYOUT
-           ========================================= */
-        .app-container {
-            display: flex;
-            flex: 1;
-            height: calc(100vh - 64px);
-        }
-
-        /* Sidebar for Controls & Search */
-        .sidebar {
-            width: 350px;
-            background-color: var(--bg-panel);
-            border-right: 1px solid var(--border-main);
-            display: flex;
-            flex-direction: column;
-            overflow-y: auto;
-        }
-
-        /* Main Workspace for Dashboard & Canvases */
-        .workspace {
-            flex: 1;
-            padding: 24px;
-            overflow-y: auto;
-            background-color: var(--bg-base);
-            display: grid;
-            grid-template-columns: repeat(12, 1fr);
-            gap: 24px;
-            align-content: start;
-        }
-
-        /* Base Panel Class for widgets/graphs */
-        .panel {
-            background-color: var(--bg-surface);
-            border: 1px solid var(--border-main);
-            border-radius: 8px;
-            padding: 20px;
-        }
-/* =========================================
-           STARTUP MODAL (PART 2)
-           ========================================= */
-        #startup-modal {
-            position: fixed;
-            inset: 0;
-            background-color: rgba(5, 5, 5, 0.95);
-            z-index: 9999;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            transition: opacity 0.5s ease, visibility 0.5s;
-        }
-
-        .modal-content {
-            background-color: var(--bg-panel);
-            border: 1px solid var(--border-main);
-            border-radius: 12px;
-            padding: 40px;
-            max-width: 800px;
-            text-align: center;
-            box-shadow: 0 20px 50px rgba(0,0,0,0.5);
-        }
-
-        .modal-content h2 {
-            font-size: 2rem;
-            font-weight: 400;
-            margin-bottom: 10px;
-            letter-spacing: 1px;
-        }
-
-        .modal-content p.subtitle {
-            color: var(--text-secondary);
-            margin-bottom: 30px;
-        }
-
-        .mode-selection {
-            display: flex;
-            gap: 20px;
-            justify-content: center;
-        }
-
-        .mode-card {
-            background-color: var(--bg-surface);
-            border: 1px solid var(--border-main);
-            border-radius: 8px;
-            padding: 24px;
-            width: 320px;
-            cursor: pointer;
-            transition: all 0.2s ease;
-            text-align: left;
-        }
-
-        .mode-card:hover {
-            border-color: var(--text-secondary);
-            transform: translateY(-4px);
-            background-color: #252525;
-        }
-
-        .mode-card h3 {
-            color: var(--text-primary);
-            margin-bottom: 12px;
-            font-size: 1.2rem;
-        }
-
-        .mode-card p {
-            color: var(--text-secondary);
-            font-size: 0.9rem;
-            line-height: 1.5;
-        }
-
-/* =========================================
-           SIDEBAR CONTROLS (PART 3)
-           ========================================= */
-        /* Custom Scrollbar for the sidebar */
-        .sidebar::-webkit-scrollbar { width: 6px; }
-        .sidebar::-webkit-scrollbar-track { background: var(--bg-panel); }
-        .sidebar::-webkit-scrollbar-thumb { background: var(--border-main); border-radius: 3px; }
-        .sidebar::-webkit-scrollbar-thumb:hover { background: var(--text-secondary); }
-
-        .control-group {
-            padding: 24px;
-            border-bottom: 1px solid var(--border-main);
-        }
-
-        .control-group:last-child {
-            border-bottom: none;
-        }
-
-        .control-group h3 {
-            font-size: 0.8rem;
-            text-transform: uppercase;
-            color: var(--text-secondary);
-            margin-bottom: 16px;
-            letter-spacing: 1px;
-        }
-
-        .slider-wrapper {
-            margin-bottom: 16px;
-        }
-
-        .slider-wrapper:last-child {
-            margin-bottom: 0;
-        }
-
-        .slider-header {
-            display: flex;
-            justify-content: space-between;
-            margin-bottom: 8px;
-            font-size: 0.85rem;
-        }
-
-        .slider-val {
-            color: var(--text-primary);
-            font-family: monospace;
-            font-size: 0.9rem;
-        }
-
-        input[type=range] {
-            -webkit-appearance: none;
-            width: 100%;
-            background: transparent;
-        }
-
-        input[type=range]::-webkit-slider-thumb {
-            -webkit-appearance: none;
-            height: 12px;
-            width: 12px;
-            border-radius: 50%;
-            background: var(--text-primary);
-            cursor: pointer;
-            margin-top: -4px;
-        }
-
-        input[type=range]::-webkit-slider-runnable-track {
-            width: 100%;
-            height: 4px;
-            cursor: pointer;
-            background: var(--border-main);
-            border-radius: 2px;
-        }
-
-/* =========================================
-           DATA GRID & READOUTS (PART 4)
-           ========================================= */
-        .top-readouts {
-            grid-column: span 12;
-            display: grid;
-            grid-template-columns: repeat(4, 1fr);
-            gap: 24px;
-            margin-bottom: 24px;
-        }
-
-        .metric-card {
-            background-color: var(--bg-surface);
-            border: 1px solid var(--border-main);
-            border-radius: 8px;
-            padding: 20px;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-        }
-
-        .metric-label {
-            font-size: 0.85rem;
-            color: var(--text-secondary);
-            text-transform: uppercase;
-            letter-spacing: 1px;
-            margin-bottom: 8px;
-        }
-
-        .metric-value {
-            font-size: 2rem;
-            font-weight: 600;
-            color: var(--text-primary);
-            font-family: monospace;
-            display: flex;
-            align-items: baseline;
-            gap: 4px;
-        }
-
-        .metric-unit {
-            font-size: 1rem;
-            color: var(--text-secondary);
-            font-weight: 400;
-        }
-
-        /* Status colors for the readouts */
-        .status-optimal { color: var(--acc-green); }
-        .status-warning { color: var(--acc-orange); }
-        .status-critical { color: var(--acc-red); }
-
-/* =========================================
-           CANVAS ENGINE (PART 5)
-           ========================================= */
-        .canvas-panel {
-            grid-column: span 12; /* Spans full width initially */
-            background-color: var(--bg-surface);
-            border: 1px solid var(--border-main);
-            border-radius: 8px;
-            padding: 20px;
-            display: flex;
-            flex-direction: column;
-            min-height: 350px;
-        }
-
-        .canvas-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 16px;
-        }
-
-        .canvas-title {
-            font-size: 1rem;
-            color: var(--text-primary);
-            font-weight: 500;
-        }
-
-        .canvas-wrapper {
-            flex: 1;
-            position: relative;
-            width: 100%;
-            height: 100%;
-        }
-
-        canvas {
-            position: absolute;
-            top: 0; 
-            left: 0;
-            width: 100%; 
-            height: 100%;
-            background-color: var(--bg-base);
-            border: 1px solid var(--border-main);
-            border-radius: 4px;
-        }
-
-        /* =========================================
-           SECONDARY CANVAS & GRID (PART 6)
-           ========================================= */
-        /* Make the canvas container hold two panels side-by-side on wide screens */
-        #canvas-container {
-            grid-template-columns: repeat(12, 1fr) !important;
-        }
-
-        .canvas-panel.half {
-            grid-column: span 6;
-        }
-
-        @media (max-width: 1200px) {
-            .canvas-panel.half {
-                grid-column: span 12;
-            }
-        }
-
-        
-
-/* =========================================
-           DIAGNOSTIC TERMINAL (PART 7)
-           ========================================= */
-        .terminal-panel {
-            grid-column: span 12;
-            background-color: #080808;
-            border: 1px solid var(--border-main);
-            border-radius: 8px;
-            padding: 16px;
-            font-family: monospace;
-            height: 160px;
-            display: flex;
-            flex-direction: column;
-        }
-
-        .terminal-header {
-            font-size: 0.75rem;
-            color: var(--text-secondary);
-            margin-bottom: 8px;
-            display: flex;
-            justify-content: space-between;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-            border-bottom: 1px solid #1a1a1a;
-            padding-bottom: 6px;
-        }
-
-        .terminal-body {
-            flex: 1;
-            overflow-y: auto;
-            font-size: 0.8rem;
-            display: flex;
-            flex-direction: column;
-            gap: 4px;
-            scroll-behavior: smooth;
-        }
-
-        /* Custom scrollbar for terminal */
-        .terminal-body::-webkit-scrollbar { width: 4px; }
-        .terminal-body::-webkit-scrollbar-track { background: #080808; }
-        .terminal-body::-webkit-scrollbar-thumb { background: #222; }
-
-        .log-entry { display: flex; gap: 12px; align-items: baseline; }
-        .log-time { color: var(--text-secondary); font-size: 0.75rem; }
-        .log-info { color: var(--acc-blue); }
-        .log-warn { color: var(--acc-orange); }
-        .log-crit { color: var(--acc-red); font-weight: bold; }
-
-        /* =========================================
-           SIMULATION ENGINE TOGGLE (PART 10)
-           ========================================= */
-        .sim-toggle-btn {
-            background-color: var(--bg-surface);
-            border: 1px solid var(--border-main);
-            color: var(--text-primary);
-            padding: 6px 14px;
-            border-radius: 4px;
-            cursor: pointer;
-            font-size: 0.8rem;
-            font-weight: 600;
-            display: flex;
-            align-items: center;
-            gap: 6px;
-            transition: all 0.2s ease;
-        }
-
-        .sim-toggle-btn.running {
-            background-color: rgba(25, 118, 210, 0.2);
-            border-color: var(--acc-blue);
-            color: #64b5f6;
-        }
-
-        .sim-dot {
-            width: 8px;
-            height: 8px;
-            border-radius: 50%;
-            background-color: var(--text-secondary);
-        }
-
-        .sim-toggle-btn.running .sim-dot {
-            background-color: var(--acc-blue);
-            box-shadow: 0 0 8px var(--acc-blue);
-            animation: pulse-dot 1.5s infinite;
-        }
-
-        @keyframes pulse-dot {
-            0% { transform: scale(1); opacity: 1; }
-            50% { transform: scale(1.4); opacity: 0.4; }
-            100% { transform: scale(1); opacity: 1; }
-        }
-/* =========================================
-           EMERGENCY PURGE / KILL SWITCH (PART 11)
-           ========================================= */
-        .emergency-btn {
-            background-color: rgba(211, 47, 47, 0.15);
-            border: 1px solid var(--acc-red);
-            color: var(--acc-red);
-            padding: 6px 14px;
-            border-radius: 4px;
-            cursor: pointer;
-            font-size: 0.8rem;
-            font-weight: 700;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-            transition: all 0.2s ease;
-        }
-
-        .emergency-btn:hover {
-            background-color: var(--acc-red);
-            color: #fff;
-            box-shadow: 0 0 12px rgba(211, 47, 47, 0.6);
-        }
-
-        body.emergency-lockdown {
-            animation: flash-lockdown 0.8s infinite alternate;
-        }
-
-        @keyframes flash-lockdown {
-            0% { box-shadow: inset 0 0 0px var(--acc-red); }
-            100% { box-shadow: inset 0 0 40px rgba(211, 47, 47, 0.4); }
-        }
-
-        /* =========================================
-           COMPONENT SUB-SYSTEM MATRIX (PART 12)
-           ========================================= */
-        .subsystem-grid {
-            grid-column: span 12;
-            display: grid;
-            grid-template-columns: repeat(4, 1fr);
-            gap: 16px;
-            margin-top: 4px;
-        }
-
-        .subsystem-card {
-            background-color: var(--bg-surface);
-            border: 1px solid var(--border-main);
-            border-radius: 8px;
-            padding: 16px;
-            display: flex;
-            flex-direction: column;
-            gap: 12px;
-            position: relative;
-            overflow: hidden;
-            transition: border-color 0.2s ease;
-        }
-
-        .subsystem-card::before {
-            content: '';
-            position: absolute;
-            top: 0; left: 0; width: 3px; height: 100%;
-            background-color: var(--acc-blue);
-        }
-
-        .subsystem-card.warn::before { background-color: var(--acc-orange); }
-        .subsystem-card.crit::before { background-color: var(--acc-red); }
-
-        .subsystem-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-
-        .subsystem-title {
-            font-size: 0.85rem;
-            font-weight: 600;
-            color: var(--text-primary);
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-        }
-
-        .subsystem-status {
-            font-size: 0.75rem;
-            font-family: monospace;
-            padding: 2px 6px;
-            border-radius: 4px;
-            background: rgba(255, 255, 255, 0.05);
-            color: var(--text-secondary);
-        }
-
-        .subsystem-metrics {
-            display: flex;
-            justify-content: space-between;
-            font-size: 0.8rem;
-            font-family: monospace;
-            color: var(--text-secondary);
-        }
-
-        .subsystem-metrics span {
-            color: var(--text-primary);
-        }
-
-        @media (max-width: 1024px) {
-            .subsystem-grid { grid-template-columns: repeat(2, 1fr); }
-        }
-        
-    </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ContinuumOne :: Virtual Intelligence Simulation</title>
+<style>
+/* =====================================================
+   CONTINUUMONE :: DESIGN TOKENS
+   ===================================================== */
+:root{
+  --c-bg:            #0a0b0d;
+  --c-bg-raised:     #111318;
+  --c-bg-panel:      #14161c;
+  --c-bg-inset:      #0d0e12;
+  --c-border:        #2a2d35;
+  --c-border-bright: #454952;
+  --c-silver:        #c7cad1;
+  --c-silver-dim:    #7d818c;
+  --c-silver-bright: #eef0f3;
+  --c-white:         #f5f6f8;
+  --c-green:         #4ce68a;
+  --c-green-dim:     #1e5c3c;
+  --c-amber:         #f0a93c;
+  --c-amber-dim:     #6b4c14;
+  --c-red:           #ef4b52;
+  --c-red-dim:       #6b1e21;
+  --font-display:    'Segoe UI', 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+  --font-mono:       'Consolas', 'SFMono-Regular', 'Roboto Mono', monospace;
+  --radius:          2px;
+  --header-h:        56px;
+}
+*{ box-sizing:border-box; margin:0; padding:0; }
+html,body{ height:100%; }
+body{
+  background:var(--c-bg);
+  color:var(--c-silver);
+  font-family:var(--font-display);
+  font-size:14px;
+  line-height:1.5;
+  -webkit-font-smoothing:antialiased;
+  background-image:
+    linear-gradient(var(--c-border) 1px, transparent 1px),
+    linear-gradient(90deg, var(--c-border) 1px, transparent 1px);
+  background-size:64px 64px;
+  background-attachment:fixed;
+  background-position:-1px -1px;
+  background-color:var(--c-bg);
+}
+body::before{
+  content:"";
+  position:fixed; inset:0;
+  background:radial-gradient(ellipse at 50% 0%, rgba(199,202,209,0.05), transparent 60%);
+  pointer-events:none;
+  z-index:0;
+}
+a{ color:inherit; text-decoration:none; }
+button{ font-family:inherit; cursor:pointer; }
+input,select{ font-family:inherit; }
+::selection{ background:var(--c-silver-dim); color:var(--c-bg); }
+::-webkit-scrollbar{ width:10px; height:10px; }
+::-webkit-scrollbar-track{ background:var(--c-bg-inset); }
+::-webkit-scrollbar-thumb{ background:var(--c-border-bright); border-radius:0; }
+::-webkit-scrollbar-thumb:hover{ background:var(--c-silver-dim); }
+
+.mono{ font-family:var(--font-mono); }
+.eyebrow{
+  font-family:var(--font-mono);
+  font-size:10px;
+  letter-spacing:2.5px;
+  text-transform:uppercase;
+  color:var(--c-silver-dim);
+}
+.hairline{ height:1px; background:linear-gradient(90deg, transparent, var(--c-border-bright), transparent); border:none; }
+
+/* =====================================================
+   LAYOUT SHELL
+   ===================================================== */
+#app{ position:relative; z-index:1; min-height:100%; display:flex; flex-direction:column; }
+
+/* ---- Header / Mission Bar ---- */
+#topbar{
+  height:var(--header-h);
+  display:flex; align-items:center;
+  padding:0 20px;
+  border-bottom:1px solid var(--c-border);
+  background:linear-gradient(180deg, rgba(20,22,28,0.95), rgba(10,11,13,0.95));
+  backdrop-filter:blur(6px);
+  position:sticky; top:0; z-index:50;
+  gap:24px;
+}
+.brand{ display:flex; align-items:center; gap:10px; cursor:pointer; }
+.brand-mark{
+  width:30px; height:30px;
+  border:1px solid var(--c-border-bright);
+  display:flex; align-items:center; justify-content:center;
+  font-family:var(--font-mono); font-size:11px; font-weight:700;
+  color:var(--c-silver-bright);
+  position:relative;
+  background:conic-gradient(from 45deg, var(--c-bg-panel), var(--c-border-bright), var(--c-bg-panel));
+}
+.brand-mark::after{
+  content:""; position:absolute; inset:3px; border:1px solid var(--c-border);
+}
+.brand-text{ display:flex; flex-direction:column; line-height:1.15; }
+.brand-text .name{ font-size:13px; font-weight:600; letter-spacing:1px; color:var(--c-silver-bright); }
+.brand-text .sub{ font-size:9px; letter-spacing:1.5px; color:var(--c-silver-dim); text-transform:uppercase; }
+
+#topnav{ display:flex; gap:2px; margin-left:12px; }
+.nav-btn{
+  background:transparent; border:1px solid transparent; color:var(--c-silver-dim);
+  padding:8px 14px; font-size:11px; letter-spacing:1.2px; text-transform:uppercase;
+  font-family:var(--font-mono);
+  transition:all .15s ease;
+}
+.nav-btn:hover{ color:var(--c-silver-bright); border-color:var(--c-border); }
+.nav-btn.active{ color:var(--c-white); border-color:var(--c-border-bright); background:var(--c-bg-panel); }
+
+.status-cluster{ margin-left:auto; display:flex; align-items:center; gap:18px; }
+.status-item{ display:flex; align-items:center; gap:6px; font-family:var(--font-mono); font-size:10px; letter-spacing:1px; color:var(--c-silver-dim); text-transform:uppercase; }
+.status-dot{ width:6px; height:6px; border-radius:50%; background:var(--c-green); box-shadow:0 0 6px var(--c-green); }
+#clock{ font-family:var(--font-mono); font-size:11px; color:var(--c-silver); letter-spacing:1px; }
+
+/* ---- Main content ---- */
+#view{ flex:1; padding:28px 32px 60px; max-width:1440px; width:100%; margin:0 auto; }
+.view-header{ display:flex; align-items:flex-end; justify-content:space-between; margin-bottom:22px; flex-wrap:wrap; gap:12px; }
+.view-title{ font-size:22px; font-weight:600; color:var(--c-white); letter-spacing:0.3px; }
+.view-title .accent{ color:var(--c-silver-dim); font-weight:400; }
+.breadcrumb{ font-family:var(--font-mono); font-size:10px; letter-spacing:1.5px; text-transform:uppercase; color:var(--c-silver-dim); margin-bottom:6px; }
+.breadcrumb a:hover{ color:var(--c-silver-bright); }
+
+/* =====================================================
+   COMPONENTS
+   ===================================================== */
+.panel{
+  background:var(--c-bg-panel);
+  border:1px solid var(--c-border);
+  border-radius:var(--radius);
+  position:relative;
+}
+.panel-header{
+  display:flex; align-items:center; justify-content:space-between;
+  padding:12px 16px; border-bottom:1px solid var(--c-border);
+}
+.panel-header h3{ font-size:11px; letter-spacing:1.8px; text-transform:uppercase; color:var(--c-silver-dim); font-weight:600; font-family:var(--font-mono); }
+.panel-body{ padding:16px; }
+
+.btn{
+  display:inline-flex; align-items:center; gap:8px;
+  background:var(--c-bg-raised); border:1px solid var(--c-border-bright);
+  color:var(--c-silver-bright); padding:9px 18px;
+  font-size:11px; letter-spacing:1.5px; text-transform:uppercase; font-family:var(--font-mono);
+  transition:all .15s ease;
+}
+.btn:hover{ background:var(--c-border-bright); color:var(--c-bg); }
+.btn-primary{ border-color:var(--c-silver-bright); color:var(--c-bg); background:var(--c-silver-bright); }
+.btn-primary:hover{ background:var(--c-white); }
+.btn-ghost{ background:transparent; border-color:var(--c-border); color:var(--c-silver-dim); }
+.btn-ghost:hover{ background:var(--c-bg-raised); color:var(--c-silver-bright); border-color:var(--c-border-bright); }
+.btn:disabled{ opacity:0.35; cursor:not-allowed; pointer-events:none; }
+.btn-sm{ padding:6px 12px; font-size:10px; }
+
+.badge{
+  display:inline-flex; align-items:center; gap:5px;
+  font-family:var(--font-mono); font-size:10px; letter-spacing:1px; text-transform:uppercase;
+  padding:3px 8px; border:1px solid var(--c-border-bright); color:var(--c-silver);
+}
+.badge-dot{ width:5px; height:5px; border-radius:50%; }
+.badge.risk-low{ color:var(--c-green); border-color:var(--c-green-dim); }
+.badge.risk-low .badge-dot{ background:var(--c-green); box-shadow:0 0 5px var(--c-green); }
+.badge.risk-moderate{ color:var(--c-amber); border-color:var(--c-amber-dim); }
+.badge.risk-moderate .badge-dot{ background:var(--c-amber); box-shadow:0 0 5px var(--c-amber); }
+.badge.risk-high, .badge.risk-critical{ color:var(--c-red); border-color:var(--c-red-dim); }
+.badge.risk-high .badge-dot, .badge.risk-critical .badge-dot{ background:var(--c-red); box-shadow:0 0 5px var(--c-red); }
+
+/* ---- Asset Library ---- */
+.toolbar{ display:flex; gap:10px; margin-bottom:20px; flex-wrap:wrap; align-items:center; }
+.search-input{
+  flex:1; min-width:220px;
+  background:var(--c-bg-inset); border:1px solid var(--c-border);
+  color:var(--c-silver-bright); padding:10px 14px; font-size:13px;
+}
+.search-input:focus{ outline:none; border-color:var(--c-border-bright); }
+.search-input::placeholder{ color:var(--c-silver-dim); }
+.select{
+  background:var(--c-bg-inset); border:1px solid var(--c-border); color:var(--c-silver);
+  padding:10px 12px; font-size:12px; font-family:var(--font-mono); letter-spacing:0.5px;
+}
+.select:focus{ outline:none; border-color:var(--c-border-bright); }
+
+.category-rail{ display:flex; gap:8px; margin-bottom:20px; flex-wrap:wrap; }
+.category-chip{
+  border:1px solid var(--c-border); background:var(--c-bg-raised); color:var(--c-silver-dim);
+  padding:7px 14px; font-size:10px; letter-spacing:1.3px; text-transform:uppercase; font-family:var(--font-mono);
+  display:flex; align-items:center; gap:8px;
+}
+.category-chip .count{ color:var(--c-silver-dim); }
+.category-chip:hover{ border-color:var(--c-border-bright); color:var(--c-silver-bright); }
+.category-chip.active{ border-color:var(--c-silver-bright); color:var(--c-white); background:var(--c-bg-panel); }
+
+.asset-grid{ display:grid; grid-template-columns:repeat(auto-fill, minmax(300px,1fr)); gap:14px; }
+.asset-card{
+  background:var(--c-bg-panel); border:1px solid var(--c-border); padding:16px;
+  cursor:pointer; transition:all .15s ease; position:relative; overflow:hidden;
+}
+.asset-card:hover{ border-color:var(--c-border-bright); transform:translateY(-1px); box-shadow:0 6px 20px rgba(0,0,0,0.4); }
+.asset-card::before{
+  content:""; position:absolute; top:0; left:0; width:2px; height:100%;
+  background:var(--c-silver-dim); opacity:0; transition:opacity .15s;
+}
+.asset-card:hover::before{ opacity:1; }
+.asset-card-top{ display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:10px; }
+.asset-card .cat-tag{ font-family:var(--font-mono); font-size:9px; letter-spacing:1.5px; text-transform:uppercase; color:var(--c-silver-dim); }
+.asset-card h4{ font-size:15px; color:var(--c-silver-bright); font-weight:600; margin:4px 0 2px; }
+.asset-card .mfg{ font-size:11.5px; color:var(--c-silver-dim); margin-bottom:12px; }
+.asset-card .meta-row{ display:flex; justify-content:space-between; font-family:var(--font-mono); font-size:10px; color:var(--c-silver-dim); border-top:1px solid var(--c-border); padding-top:10px; }
+.asset-card .health-mini{ display:flex; align-items:center; gap:6px; }
+.health-bar{ width:50px; height:4px; background:var(--c-bg-inset); position:relative; overflow:hidden; }
+.health-bar-fill{ height:100%; background:var(--c-green); }
+
+.empty-state{ text-align:center; padding:70px 20px; color:var(--c-silver-dim); }
+.empty-state .eyebrow{ margin-bottom:10px; }
+
+/* ---- Dossier ---- */
+.dossier-grid{ display:grid; grid-template-columns:2fr 1fr; gap:18px; align-items:start; }
+@media (max-width:900px){ .dossier-grid{ grid-template-columns:1fr; } }
+.spec-table{ width:100%; border-collapse:collapse; }
+.spec-table tr{ border-bottom:1px solid var(--c-border); }
+.spec-table tr:last-child{ border-bottom:none; }
+.spec-table td{ padding:10px 4px; font-size:12.5px; }
+.spec-table td:first-child{ color:var(--c-silver-dim); font-family:var(--font-mono); font-size:10.5px; letter-spacing:1px; text-transform:uppercase; width:40%; }
+.spec-table td:last-child{ color:var(--c-silver-bright); text-align:right; }
+
+.failure-mode-item{ padding:12px 0; border-bottom:1px solid var(--c-border); }
+.failure-mode-item:last-child{ border-bottom:none; }
+.failure-mode-item .fm-head{ display:flex; justify-content:space-between; align-items:center; margin-bottom:5px; }
+.failure-mode-item .fm-name{ color:var(--c-silver-bright); font-weight:600; font-size:12.5px; }
+.failure-mode-item .fm-weight{ font-family:var(--font-mono); font-size:10px; color:var(--c-silver-dim); }
+.failure-mode-item p{ font-size:12px; color:var(--c-silver-dim); line-height:1.5; }
+
+.stat-block{ text-align:center; padding:18px 10px; border:1px solid var(--c-border); background:var(--c-bg-inset); }
+.stat-block .num{ font-family:var(--font-mono); font-size:26px; color:var(--c-silver-bright); font-weight:700; }
+.stat-block .lbl{ font-size:9.5px; letter-spacing:1.3px; text-transform:uppercase; color:var(--c-silver-dim); margin-top:4px; }
+.stat-row{ display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-bottom:14px; }
+
+/* ---- Config ---- */
+.config-grid{ display:grid; grid-template-columns:1.3fr 1fr; gap:18px; align-items:start; }
+@media (max-width:900px){ .config-grid{ grid-template-columns:1fr; } }
+.mode-toggle{ display:flex; gap:10px; margin-bottom:18px; }
+.mode-card{
+  flex:1; border:1px solid var(--c-border); background:var(--c-bg-raised); padding:16px;
+  cursor:pointer; transition:all .15s;
+}
+.mode-card:hover{ border-color:var(--c-border-bright); }
+.mode-card.active{ border-color:var(--c-silver-bright); background:var(--c-bg-panel); }
+.mode-card .mc-title{ color:var(--c-silver-bright); font-weight:600; font-size:13px; margin-bottom:4px; }
+.mode-card .mc-desc{ font-size:11.5px; color:var(--c-silver-dim); }
+
+.slider-group{ margin-bottom:20px; }
+.slider-label{ display:flex; justify-content:space-between; margin-bottom:8px; }
+.slider-label .name{ font-size:11.5px; text-transform:uppercase; letter-spacing:1px; color:var(--c-silver-dim); font-family:var(--font-mono); }
+.slider-label .val{ font-family:var(--font-mono); font-size:12px; color:var(--c-silver-bright); }
+input[type=range]{
+  -webkit-appearance:none; width:100%; height:2px; background:var(--c-border-bright); outline:none;
+}
+input[type=range]::-webkit-slider-thumb{
+  -webkit-appearance:none; width:14px; height:14px; background:var(--c-silver-bright);
+  border:2px solid var(--c-bg); cursor:pointer; border-radius:0;
+}
+input[type=range]::-moz-range-thumb{
+  width:14px; height:14px; background:var(--c-silver-bright); border:2px solid var(--c-bg); cursor:pointer; border-radius:0;
+}
+
+.multi-asset-list{ display:flex; flex-direction:column; gap:6px; max-height:340px; overflow-y:auto; }
+.multi-asset-row{
+  display:flex; align-items:center; gap:10px; padding:9px 10px; border:1px solid var(--c-border);
+  font-size:12px; cursor:pointer;
+}
+.multi-asset-row:hover{ border-color:var(--c-border-bright); }
+.multi-asset-row.checked{ border-color:var(--c-silver-bright); background:var(--c-bg-raised); }
+.multi-asset-row input{ accent-color:var(--c-silver-bright); }
+
+/* ---- Dashboard / Gauges ---- */
+.dashboard-grid{ display:grid; grid-template-columns:repeat(4, 1fr); gap:14px; margin-bottom:20px; }
+@media (max-width:1100px){ .dashboard-grid{ grid-template-columns:repeat(2,1fr); } }
+.gauge-card{ text-align:center; padding:20px 14px; }
+.gauge-card svg{ display:block; margin:0 auto; }
+.gauge-value{ font-family:var(--font-mono); font-size:28px; font-weight:700; }
+.gauge-label{ font-size:10px; letter-spacing:1.5px; text-transform:uppercase; color:var(--c-silver-dim); margin-top:6px; }
+
+.result-lower{ display:grid; grid-template-columns:1.3fr 1fr; gap:14px; }
+@media (max-width:900px){ .result-lower{ grid-template-columns:1fr; } }
+.mode-rank{ display:flex; justify-content:space-between; align-items:center; padding:10px 0; border-bottom:1px solid var(--c-border); }
+.mode-rank:last-child{ border-bottom:none; }
+.mode-rank .rank-name{ font-size:12.5px; color:var(--c-silver-bright); }
+.mode-rank .rank-bar-wrap{ display:flex; align-items:center; gap:10px; width:55%; }
+.rank-bar{ flex:1; height:6px; background:var(--c-bg-inset); position:relative; overflow:hidden; }
+.rank-bar-fill{ height:100%; background:var(--c-silver); }
+.rank-pct{ font-family:var(--font-mono); font-size:11px; width:38px; text-align:right; color:var(--c-silver-dim); }
+
+.readout-list{ display:flex; flex-direction:column; gap:0; }
+.readout-row{ display:flex; justify-content:space-between; padding:9px 0; border-bottom:1px solid var(--c-border); font-size:12px; }
+.readout-row:last-child{ border-bottom:none; }
+.readout-row .k{ color:var(--c-silver-dim); font-family:var(--font-mono); font-size:10.5px; letter-spacing:0.8px; text-transform:uppercase; }
+.readout-row .v{ color:var(--c-silver-bright); font-weight:600; }
+
+/* ---- Report ---- */
+.report-toggle{ display:flex; gap:10px; margin-bottom:18px; }
+.report-doc{
+  background:#f5f6f8; color:#14161c; padding:44px 52px; max-width:820px; margin:0 auto;
+  font-family:'Georgia', serif; line-height:1.6; border:1px solid var(--c-border-bright);
+}
+.report-doc h1{ font-family:var(--font-display); font-size:22px; border-bottom:3px solid #14161c; padding-bottom:12px; margin-bottom:4px; }
+.report-doc .report-sub{ font-family:var(--font-mono); font-size:11px; letter-spacing:1px; color:#555; margin-bottom:24px; text-transform:uppercase; }
+.report-doc h2{ font-size:14px; text-transform:uppercase; letter-spacing:1.5px; margin:26px 0 10px; border-bottom:1px solid #ccc; padding-bottom:6px; font-family:var(--font-display); }
+.report-doc p{ font-size:13.5px; margin-bottom:10px; }
+.report-doc table{ width:100%; border-collapse:collapse; margin:10px 0; }
+.report-doc td, .report-doc th{ padding:7px 8px; border:1px solid #ccc; font-size:12.5px; text-align:left; }
+.report-doc th{ background:#e8e8ea; font-family:var(--font-mono); font-size:10px; text-transform:uppercase; letter-spacing:1px; }
+.report-doc .risk-flag{ font-weight:700; }
+.report-actions{ display:flex; justify-content:center; gap:10px; margin-top:20px; }
+
+/* ---- Analytics ---- */
+.analytics-grid{ display:grid; grid-template-columns:1fr 1fr; gap:14px; margin-bottom:14px; }
+@media (max-width:900px){ .analytics-grid{ grid-template-columns:1fr; } }
+.heatmap{ display:grid; grid-template-columns:repeat(auto-fill,minmax(90px,1fr)); gap:6px; }
+.heatmap-cell{ aspect-ratio:1; border:1px solid var(--c-border); display:flex; flex-direction:column; align-items:center; justify-content:center; gap:4px; padding:6px; text-align:center; }
+.heatmap-cell .hc-name{ font-size:9.5px; color:var(--c-silver-bright); line-height:1.2; }
+.heatmap-cell .hc-val{ font-family:var(--font-mono); font-size:14px; font-weight:700; }
+
+.rank-list-row{ display:flex; align-items:center; gap:12px; padding:10px 0; border-bottom:1px solid var(--c-border); }
+.rank-list-row:last-child{ border-bottom:none; }
+.rank-list-row .rl-idx{ font-family:var(--font-mono); color:var(--c-silver-dim); font-size:11px; width:20px; }
+.rank-list-row .rl-name{ flex:1; font-size:12.5px; color:var(--c-silver-bright); }
+.rank-list-row .rl-bar{ width:100px; height:5px; background:var(--c-bg-inset); position:relative; }
+.rank-list-row .rl-fill{ height:100%; }
+
+/* ---- Footer status bar ---- */
+#statusbar{
+  border-top:1px solid var(--c-border); padding:8px 20px; display:flex; gap:24px;
+  font-family:var(--font-mono); font-size:10px; color:var(--c-silver-dim); letter-spacing:0.8px;
+}
+
+/* ---- Utility ---- */
+.flex-between{ display:flex; justify-content:space-between; align-items:center; }
+.mb-10{ margin-bottom:10px; } .mb-14{ margin-bottom:14px; } .mb-18{ margin-bottom:18px; } .mb-20{ margin-bottom:20px; }
+.text-dim{ color:var(--c-silver-dim); }
+.section-gap{ margin-bottom:18px; }
+</style>
 </head>
 <body>
+<div id="app">
 
-    <!-- STARTUP SELECTION MODAL (PART 2) -->
-    <div id="startup-modal">
-        <div class="modal-content">
-            <h2>System Initialization</h2>
-            <p class="subtitle">Select the telemetry reporting protocol.</p>
-            <div class="mode-selection">
-                <div class="mode-card" onclick="setMode('detailed')">
-                    <h3>Detailed Diagnostics</h3>
-                    <p>Deep-dive analysis on a singular critical sub-system. High-resolution telemetry, individual component stress factors, and precise physical modeling.</p>
-                </div>
-                <div class="mode-card" onclick="setMode('summary')">
-                    <h3>Simultaneous Summary</h3>
-                    <p>High-level holistic overview across all sectors. Consolidated metrics, aggregate system health scores, and generalized trend analysis.</p>
-                </div>
-            </div>
-        </div>
+  <!-- ============= TOP BAR ============= -->
+  <header id="topbar">
+    <div class="brand" onclick="Continuum.navigate('library')">
+      <div class="brand-mark">C1</div>
+      <div class="brand-text">
+        <span class="name">CONTINUUMONE</span>
+        <span class="sub">Virtual Intelligence Simulation</span>
+      </div>
     </div>
-
-    <!-- HEADER -->
-    <header>
-        <!-- Clicking this redirects to index.html per specs -->
-        <a href="index.html" class="logo-container">
-            <img src="image_d7eb59.png" alt="ContinuumOne Logo">
-            <h1>ContinuumOne</h1>
-        </a>
-<div class="header-actions" style="display: flex; gap: 10px; align-items: center;">
-            <button onclick="loadAssetProfile('turbine')" style="background: var(--bg-surface); border: 1px solid var(--border-main); color: var(--text-primary); padding: 6px 12px; border-radius: 4px; cursor: pointer; font-size: 0.8rem;">Turbine Core</button>
-            <button onclick="loadAssetProfile('reactor')" style="background: var(--bg-surface); border: 1px solid var(--border-main); color: var(--text-primary); padding: 6px 12px; border-radius: 4px; cursor: pointer; font-size: 0.8rem;">Magnetic Reactor</button>
-            <button onclick="loadAssetProfile('press')" style="background: var(--bg-surface); border: 1px solid var(--border-main); color: var(--text-primary); padding: 6px 12px; border-radius: 4px; cursor: pointer; font-size: 0.8rem;">Hydraulic Press</button>
-            
-            <button id="sim-play-btn" class="sim-toggle-btn" onclick="toggleSimulation()">
-                <div class="sim-dot"></div>
-                <span id="sim-btn-text">Live Drift: OFF</span>
-            </button>
-
-            <!-- EMERGENCY PURGE KILL SWITCH (PART 11) -->
-            <button class="emergency-btn" onclick="executeEmergencyPurge()">Emergency Purge</button>
-
-            <button onclick="exportTelemetryReport()" style="background: var(--acc-blue); border: none; color: #fff; padding: 6px 14px; border-radius: 4px; cursor: pointer; font-size: 0.8rem; font-weight: 600; margin-left: 10px;">Export Audit PDF</button>
-        </div>
-    </header>
-
-    <!-- MAIN APP -->
-    <div class="app-container">
-        
-       <!-- UI CONTROLS & ASSET SEARCH (PART 3) -->
-        <aside class="sidebar" id="ui-sidebar">
-            <div class="control-group">
-                <h3>Thermal Dynamics</h3>
-                <div class="slider-wrapper">
-                    <div class="slider-header"><span>Core Temp</span><span class="slider-val" id="val-temp">450 K</span></div>
-                    <input type="range" id="param-temp" min="200" max="1200" value="450" oninput="updateParam('temp', this.value, ' K')">
-                </div>
-                <div class="slider-wrapper">
-                    <div class="slider-header"><span>Coolant Flow</span><span class="slider-val" id="val-coolant">85 L/m</span></div>
-                    <input type="range" id="param-coolant" min="0" max="200" value="85" oninput="updateParam('coolant', this.value, ' L/m')">
-                </div>
-            </div>
-
-            <div class="control-group">
-                <h3>Structural / Mechanical</h3>
-                <div class="slider-wrapper">
-                    <div class="slider-header"><span>Axial Load</span><span class="slider-val" id="val-load">45 kN</span></div>
-                    <input type="range" id="param-load" min="0" max="150" value="45" oninput="updateParam('load', this.value, ' kN')">
-                </div>
-                <div class="slider-wrapper">
-                    <div class="slider-header"><span>Vibration (Freq)</span><span class="slider-val" id="val-vib">60 Hz</span></div>
-                    <input type="range" id="param-vib" min="10" max="500" value="60" oninput="updateParam('vib', this.value, ' Hz')">
-                </div>
-            </div>
-
-            <div class="control-group">
-                <h3>Electrical Systems</h3>
-                <div class="slider-wrapper">
-                    <div class="slider-header"><span>Input Voltage</span><span class="slider-val" id="val-volt">480 V</span></div>
-                    <input type="range" id="param-volt" min="100" max="1000" value="480" oninput="updateParam('volt', this.value, ' V')">
-                </div>
-            </div>
-        </aside>
-
-       <!-- SIMULATION DASHBOARD (PART 4) -->
-        <main class="workspace" id="main-workspace">
-            
-            <!-- TOP METRICS ROW -->
-            <div class="top-readouts">
-                <div class="metric-card">
-                    <div class="metric-label">System Entropy</div>
-                    <div class="metric-value"><span id="metric-entropy">12.4</span><span class="metric-unit"> J/K</span></div>
-                </div>
-                <div class="metric-card">
-                    <div class="metric-label">Remaining Useful Life (RUL)</div>
-                    <div class="metric-value"><span id="metric-rul" class="status-optimal">8,420</span><span class="metric-unit"> hrs</span></div>
-                </div>
-                <div class="metric-card">
-                    <div class="metric-label">Failure Probability</div>
-                    <div class="metric-value"><span id="metric-prob">2.1</span><span class="metric-unit"> %</span></div>
-                </div>
-                <div class="metric-card">
-                    <div class="metric-label">Overall Health</div>
-                    <div class="metric-value"><span id="metric-health" class="status-optimal">98</span><span class="metric-unit"> /100</span></div>
-                </div>
-            </div>
-
-          <!-- CANVAS CONTAINER (PART 5) -->
-            <div id="canvas-container" style="grid-column: span 12; display: grid; gap: 24px; grid-template-columns: repeat(12, 1fr);">
-                
-           <!-- PRIMARY WAVEFORM -->
-                <div class="canvas-panel half">
-                    <div class="canvas-header">
-                        <span class="canvas-title">Primary Telemetry Waveform</span>
-                        <span style="color: var(--text-secondary); font-size: 0.85rem;" id="waveform-status">Real-time Core Monitoring</span>
-                    </div>
-                    <div class="canvas-wrapper">
-                        <canvas id="primary-waveform"></canvas>
-                    </div>
-                </div>
-
-                <!-- SECONDARY SPECTRUM ANALYSIS (PART 6) -->
-                <div class="canvas-panel half">
-                    <div class="canvas-header">
-                        <span class="canvas-title">Frequency Domain (FFT / Harmonic Spectrum)</span>
-                        <span style="color: var(--text-secondary); font-size: 0.85rem;" id="fft-status">Vibration Vector Analysis</span>
-                    </div>
-                    <div class="canvas-wrapper">
-                        <canvas id="secondary-fft"></canvas>
-                    </div>
-                </div>
-                <!-- Canvas 2 will go here in Part 6 -->
-
-            </div>
-
-        </main>
-
+    <nav id="topnav">
+      <button class="nav-btn" data-route="library" onclick="Continuum.navigate('library')">Asset Library</button>
+      <button class="nav-btn" data-route="dashboard" onclick="Continuum.navigate('dashboard')">Prediction Dashboard</button>
+      <button class="nav-btn" data-route="analytics" onclick="Continuum.navigate('analytics')">Analytics</button>
+      <button class="nav-btn" data-route="report" onclick="Continuum.navigate('report')">Report</button>
+    </nav>
+    <div class="status-cluster">
+      <div class="status-item"><span class="status-dot"></span>SYSTEM NOMINAL</div>
+      <div class="status-item" id="asset-count-status">— ASSETS INDEXED</div>
+      <div class="mono" id="clock">--:--:--</div>
     </div>
+  </header>
 
-    <!-- CORE ENGINE LOGIC -->
-    <script>
-        // ==========================================
-        // STATE MANAGEMENT
-        // ==========================================
-        const AppState = {
-            activeAsset: null,
-            simulationRunning: false,
-            mode: null,
-            parameters: {temp: 450,
-                coolant: 85,
-                load: 45,
-                vib: 60,
-                volt: 480}
-        };
+  <main id="view"><!-- rendered by router --></main>
 
-        // ==========================================
-        // STARTUP MODAL LOGIC (PART 2)
-        // ==========================================
-        function setMode(mode) {
-            AppState.mode = mode;
-            console.log("Diagnostic mode engaged:", mode);
+  <footer id="statusbar">
+    <span>CONTINUUMONE ENGINE v1.0</span>
+    <span id="sb-mode">MODE: STANDBY</span>
+    <span id="sb-asset">ASSET: NONE SELECTED</span>
+    <span style="margin-left:auto">SESSION LOCAL // NO TELEMETRY UPLINK</span>
+  </footer>
 
-            // ==========================================
-        // SIDEBAR CONTROL LOGIC (PART 3)
-        // ==========================================
-        function updateParam(key, value, unit) {
-            // Update the internal state memory
-            AppState.parameters[key] = parseFloat(value);
+</div>
 
-            // ==========================================
-        // PHYSICS & READOUT LOGIC (PART 4)
-        // ==========================================
-        function calculatePhysics() {
-            const p = AppState.parameters;
-            
-            // 1. Calculate System Entropy (Based on Temp and Vibration)
-            // Baseline entropy increases with temperature and high vibration
-            let entropy = (p.temp / 100) + (p.vib / 20);
-            
-            // 2. Calculate Failure Probability (Based on Load, Volt, and Coolant)
-            // High load + low coolant = exponential probability increase
-            let coolantFactor = Math.max(1, 100 - p.coolant);
-            let probability = ((p.load / 150) * (p.volt / 480) * (coolantFactor / 50)) * 10;
-            
-            // Cap probability at 99.9%
-            probability = Math.min(99.9, Math.max(0.1, probability));
-            
-            // 3. Calculate Health Score
-            let health = 100 - (probability * 1.5) - (entropy * 0.5);
-            health = Math.min(100, Math.max(0, Math.round(health)));
+<script src="klg.js"></script>
+<script>
+/* ============================================================
+   CONTINUUMONE :: APPLICATION LAYER (sim.html embedded JS)
+   Router + State + Rendering + Prediction Engine + Reports
+   ============================================================ */
+var Continuum = (function(){
 
-            // 4. Calculate RUL (Remaining Useful Life)
-            let baseRul = 10000;
-            let rul = baseRul * (health / 100);
+  /* ---------------- STATE ---------------- */
+  var state = {
+    route: "library",
+    params: {},
+    search: "",
+    categoryFilter: "all",
+    sortBy: "name",
+    selectedAssetId: null,
+    simMode: "detailed",             // detailed | multi
+    multiSelection: [],              // array of asset ids
+    conditions: {
+      operatingHours: 8000,
+      temperature: 50,               // 0-100 severity scale
+      load: 60,
+      vibration: 30,
+      maintenanceQuality: 75,        // higher = better maintained
+      environment: 40,               // severity of environment
+      utilization: 65
+    },
+    lastResults: null,               // computed prediction result(s)
+    reportMode: "executive"
+  };
 
-            // Update DOM Elements
-            document.getElementById('metric-entropy').innerText = entropy.toFixed(2);
-            document.getElementById('metric-prob').innerText = probability.toFixed(1);
-            document.getElementById('metric-health').innerText = health;
-            document.getElementById('metric-rul').innerText = Math.round(rul).toLocaleString();
+  /* ---------------- UTIL ---------------- */
+  function el(html){
+    var t = document.createElement('template');
+    t.innerHTML = html.trim();
+    return t.content.firstChild;
+  }
+  function clamp(v, lo, hi){ return Math.max(lo, Math.min(hi, v)); }
+  function fmt(n, d){ return Number(n).toFixed(d===undefined?0:d); }
+  function riskClass(level){
+    if(level==="Low") return "risk-low";
+    if(level==="Moderate") return "risk-moderate";
+    if(level==="High") return "risk-high";
+    return "risk-critical";
+  }
+  function colorForRisk(level){
+    if(level==="Low") return "var(--c-green)";
+    if(level==="Moderate") return "var(--c-amber)";
+    return "var(--c-red)";
+  }
+  function healthColor(h){
+    if(h>=75) return "var(--c-green)";
+    if(h>=45) return "var(--c-amber)";
+    return "var(--c-red)";
+  }
 
-            // Update Colors based on Health Status
-            const healthEl = document.getElementById('metric-health');
-            const rulEl = document.getElementById('metric-rul');
-            
-            // Remove existing status classes
-            healthEl.classList.remove('status-optimal', 'status-warning', 'status-critical');
-            rulEl.classList.remove('status-optimal', 'status-warning', 'status-critical');
+  /* ---------------- PREDICTION ENGINE ---------------- */
+  /* Deterministic engineering-plausible model:
+     health index derives from asset baseline degraded by weighted
+     operating-condition stress across each failure mode's sensitivity. */
+  function computePrediction(asset, cond){
+    var modes = klgGetFailureModesForAsset(asset);
+    var c = {
+      temp: cond.temperature/100, load: cond.load/100, vibration: cond.vibration/100,
+      maintenance: (100-cond.maintenanceQuality)/100, // invert: poor maintenance = stress
+      environment: cond.environment/100, utilization: cond.utilization/100
+    };
+    var lifeFraction = clamp(cond.operatingHours / asset.designLife, 0, 1.4);
 
-            // Apply new status classes
-            if (health >= 80) {
-                healthEl.classList.add('status-optimal');
-                rulEl.classList.add('status-optimal');
-            } else if (health >= 40) {
-                healthEl.classList.add('status-warning');
-                rulEl.classList.add('status-warning');
-            } else {
-                healthEl.classList.add('status-critical');
-                rulEl.classList.add('status-critical');
-            }
-        }
+    var scoredModes = modes.map(function(m){
+      var stress = (
+        m.sensitivity.temp*c.temp +
+        m.sensitivity.load*c.load +
+        m.sensitivity.vibration*c.vibration +
+        m.sensitivity.maintenance*c.maintenance +
+        m.sensitivity.environment*c.environment +
+        m.sensitivity.utilization*c.utilization
+      ) / 6;
+      var ageFactor = 0.3 + 0.7*lifeFraction;
+      var score = m.weight * stress * ageFactor;
+      return { mode:m, stress:stress, score:score };
+    });
 
-            // ==========================================
-        // CANVAS RENDERING ENGINE (PART 5)
-        // ==========================================
-        let renderTime = 0;
-        let animationId = null;
+    var totalScore = scoredModes.reduce(function(s,x){return s+x.score;},0) || 0.0001;
+    scoredModes.forEach(function(x){ x.contribution = x.score/totalScore; });
+    scoredModes.sort(function(a,b){ return b.score-a.score; });
 
-    function drawPrimaryWaveform() {
-            const canvas = document.getElementById('primary-waveform');
-            if (!canvas) return;
-            const ctx = canvas.getContext('2d');
-            
-            const rect = canvas.parentElement.getBoundingClientRect();
-            if (canvas.width !== rect.width || canvas.height !== rect.height) {
-                canvas.width = rect.width;
-                canvas.height = rect.height;
-            }
+    var aggregateStress = scoredModes.reduce(function(s,x){return s + x.stress*x.mode.weight;},0) /
+                           modes.reduce(function(s,m){return s+m.weight;},0);
 
-            const w = canvas.width;
-            const h = canvas.height;
-            const p = AppState.parameters;
+    var healthIndex = clamp(asset.baselineHealth - (aggregateStress*55) - (lifeFraction*20), 2, 99);
+    var failureProbability = clamp( (aggregateStress*0.55 + lifeFraction*0.45) * 100, 1, 98 );
+    var reliabilityScore = clamp(100 - failureProbability*0.9 - (1-healthIndex/100)*10, 1, 99);
 
-            // 1. Dark Fade (Leaves a trail behind the wave)
-            ctx.fillStyle = 'rgba(5, 5, 5, 0.3)';
-            ctx.fillRect(0, 0, w, h);
+    var riskLevel;
+    if(failureProbability < 25) riskLevel = "Low";
+    else if(failureProbability < 50) riskLevel = "Moderate";
+    else if(failureProbability < 75) riskLevel = "High";
+    else riskLevel = "Critical";
 
-            // 2. High-Tech Grid
-            ctx.strokeStyle = 'rgba(255, 255, 255, 0.05)';
-            ctx.lineWidth = 1;
-            ctx.beginPath();
-            for(let i = 0; i < w; i += 40) { ctx.moveTo(i, 0); ctx.lineTo(i, h); }
-            for(let i = 0; i < h; i += 40) { ctx.moveTo(0, i); ctx.lineTo(w, i); }
-            ctx.stroke();
+    var remainingFraction = clamp(1 - (aggregateStress*0.6 + lifeFraction*0.5), 0.02, 1);
+    var rul = Math.round(asset.designLife * remainingFraction * (0.35 + 0.65*(1-lifeFraction*0.3)));
+    rul = Math.max(rul, Math.round(asset.designLife*0.01));
 
-            // 3. Setup Neon Glow based on Health
-            const healthEl = document.getElementById('metric-health');
-            let healthScore = healthEl ? parseInt(healthEl.innerText) : 100;
-            
-            let baseColor = '#1976d2'; // Blue
-            if (healthScore < 40) baseColor = '#ff1744';      // Neon Red
-            else if (healthScore < 80) baseColor = '#ff9100'; // Neon Orange
+    return {
+      asset: asset,
+      conditions: JSON.parse(JSON.stringify(cond)),
+      healthIndex: healthIndex,
+      failureProbability: failureProbability,
+      reliabilityScore: reliabilityScore,
+      riskLevel: riskLevel,
+      remainingUsefulLife: rul,
+      lifeFraction: lifeFraction,
+      rankedModes: scoredModes,
+      primaryMode: scoredModes[0] ? scoredModes[0].mode : null,
+      secondaryMode: scoredModes[1] ? scoredModes[1].mode : null,
+      timestamp: new Date()
+    };
+  }
 
-            ctx.lineWidth = 2.5;
-            ctx.lineJoin = 'round';
-            ctx.shadowBlur = 15;
-            ctx.shadowColor = baseColor;
-            ctx.strokeStyle = baseColor;
+  /* ---------------- ROUTER ---------------- */
+  function navigate(route, params){
+    state.route = route;
+    state.params = params || {};
+    document.querySelectorAll('.nav-btn').forEach(function(b){
+      b.classList.toggle('active', b.getAttribute('data-route')===route ||
+        (route==='dossier'||route==='config') && b.getAttribute('data-route')==='library');
+      if(route==='dashboard' && b.getAttribute('data-route')==='dashboard') b.classList.add('active');
+    });
+    render();
+    window.scrollTo(0,0);
+  }
 
-            // 4. Complex Waveform Math (Primary)
-            ctx.beginPath();
-            for (let x = 0; x < w; x++) {
-                const t = (x * 0.01) + renderTime;
-                const amplitude = (h / 3) * (p.load / 150); 
-                const freq = p.vib / 20;
-                const thermalNoise = (Math.random() - 0.5) * (p.temp / 40);
+  function render(){
+    var view = document.getElementById('view');
+    view.innerHTML = "";
+    var r = state.route;
+    if(r==="library") view.appendChild(renderLibrary());
+    else if(r==="dossier") view.appendChild(renderDossier());
+    else if(r==="config") view.appendChild(renderConfig());
+    else if(r==="dashboard") view.appendChild(renderDashboard());
+    else if(r==="report") view.appendChild(renderReport());
+    else if(r==="analytics") view.appendChild(renderAnalytics());
+    else view.appendChild(renderLibrary());
+    updateStatusBar();
+  }
 
-                // Add harmonic distortion for realism
-                const harmonic = Math.cos(t * freq * 2.5) * (amplitude * 0.3);
-                const y = (h / 2) + Math.sin(t * freq) * amplitude + harmonic + thermalNoise;
+  function updateStatusBar(){
+    document.getElementById('asset-count-status').textContent = CONTINUUM_ASSETS.length + " ASSETS INDEXED";
+    document.getElementById('sb-mode').textContent = "MODE: " + (state.simMode==="multi"?"MULTI-ASSET ANALYSIS":"DETAILED ANALYSIS").toUpperCase();
+    var a = state.selectedAssetId ? klgGetAssetById(state.selectedAssetId) : null;
+    document.getElementById('sb-asset').textContent = "ASSET: " + (a ? (a.manufacturer+" "+a.name).toUpperCase() : "NONE SELECTED");
+  }
 
-                if (x === 0) ctx.moveTo(x, y);
-                else ctx.lineTo(x, y);
-            }
-            ctx.stroke();
+  /* ================= VIEW: LIBRARY ================= */
+  function renderLibrary(){
+    var wrap = el('<div></div>');
 
-            // 5. Draw Scanning Playhead (Radar Line)
-            const scanX = (renderTime * 100) % w;
-            ctx.shadowBlur = 0; // Turn off glow for UI elements
-            ctx.strokeStyle = 'rgba(255, 255, 255, 0.8)';
-            ctx.lineWidth = 1;
-            ctx.beginPath();
-            ctx.moveTo(scanX, 0);
-            ctx.lineTo(scanX, h);
-            ctx.stroke();
-            
-            // Draw Playhead coordinate text
-            ctx.fillStyle = 'rgba(255,255,255,0.7)';
-            ctx.font = '10px monospace';
-            ctx.fillText(`SEQ:${Math.floor(scanX)}`, scanX + 5, 15);
-        }
+    wrap.appendChild(el(
+      '<div class="view-header">'+
+        '<div><div class="breadcrumb">ENGINEERING INTELLIGENCE CENTER</div>'+
+        '<div class="view-title">Asset Library <span class="accent">/ Fleet Index</span></div></div>'+
+      '</div>'
+    ));
 
-            // ==========================================
-        // SECONDARY CANVAS RENDERING ENGINE (PART 6)
-        // ==========================================
-        function drawSecondarySpectrum() {
-            const canvas = document.getElementById('secondary-fft');
-            if (!canvas) return;
-            const ctx = canvas.getContext('2d');
-            
-            const rect = canvas.parentElement.getBoundingClientRect();
-            if (canvas.width !== rect.width || canvas.height !== rect.height) {
-                canvas.width = rect.width;
-                canvas.height = rect.height;
-            }
+    var toolbar = el('<div class="toolbar"></div>');
+    var searchInput = el('<input class="search-input" type="text" placeholder="Search by asset, manufacturer, designation, category...">');
+    searchInput.value = state.search;
+    searchInput.addEventListener('input', function(e){ state.search = e.target.value; renderLibraryResults(); });
+    toolbar.appendChild(searchInput);
 
-            const w = canvas.width;
-            const h = canvas.height;
-            const p = AppState.parameters;
+    var sortSel = el(
+      '<select class="select">'+
+        '<option value="name">Sort: Name</option>'+
+        '<option value="health">Sort: Health Index</option>'+
+        '<option value="criticality">Sort: Criticality</option>'+
+        '<option value="manufacturer">Sort: Manufacturer</option>'+
+      '</select>'
+    );
+    sortSel.value = state.sortBy;
+    sortSel.addEventListener('change', function(e){ state.sortBy = e.target.value; renderLibraryResults(); });
+    toolbar.appendChild(sortSel);
+    wrap.appendChild(toolbar);
 
-            // Clear frame with dark tech background
-            ctx.fillStyle = 'rgba(5, 5, 5, 0.4)';
-            ctx.fillRect(0, 0, w, h);
+    var rail = el('<div class="category-rail"></div>');
+    var allChip = el('<button class="category-chip'+(state.categoryFilter==="all"?" active":"")+'">All Categories <span class="count">'+CONTINUUM_ASSETS.length+'</span></button>');
+    allChip.addEventListener('click', function(){ state.categoryFilter="all"; renderLibraryResults(); refreshChips(); });
+    rail.appendChild(allChip);
+    Object.keys(CONTINUUM_CATEGORIES).forEach(function(catId){
+      var cat = CONTINUUM_CATEGORIES[catId];
+      var n = klgGetAssetsByCategory(catId).length;
+      var chip = el('<button class="category-chip'+(state.categoryFilter===catId?" active":"")+'" data-cat="'+catId+'">'+cat.label+' <span class="count">'+n+'</span></button>');
+      chip.addEventListener('click', function(){ state.categoryFilter = catId; renderLibraryResults(); refreshChips(); });
+      rail.appendChild(chip);
+    });
+    wrap.appendChild(rail);
 
-            // Draw Frequency Grid Lines
-            ctx.strokeStyle = 'rgba(255, 255, 255, 0.04)';
-            ctx.lineWidth = 1;
-            ctx.beginPath();
-            for(let i = 0; i < w; i += 30) { ctx.moveTo(i, 0); ctx.lineTo(i, h); }
-            for(let i = 0; i < h; i += 30) { ctx.moveTo(0, i); ctx.lineTo(w, i); }
-            ctx.stroke();
+    function refreshChips(){
+      rail.querySelectorAll('.category-chip').forEach(function(c){
+        var cid = c.getAttribute('data-cat');
+        c.classList.toggle('active', (cid===undefined && state.categoryFilter==="all") || cid===state.categoryFilter);
+      });
+      allChip.classList.toggle('active', state.categoryFilter==="all");
+    }
 
-            // Read system health for bar coloring
-            const healthEl = document.getElementById('metric-health');
-            let healthScore = healthEl ? parseInt(healthEl.innerText) : 100;
-            
-            let barColor = '#1976d2';
-            if (healthScore < 40) barColor = '#ff1744';      
-            else if (healthScore < 80) barColor = '#ff9100'; 
+    var grid = el('<div class="asset-grid" id="asset-grid"></div>');
+    wrap.appendChild(grid);
 
-            // Draw FFT Frequency Spectrum Bars
-            const numBars = 32;
-            const barWidth = (w / numBars) - 4;
-            
-            for (let i = 0; i < numBars; i++) {
-                // Generate height based on vibration frequency and noise
-                let seed = Math.sin(i * 0.5 + (renderTime * 2)) * 0.5 + 0.5;
-                let multiplier = (i === Math.floor((p.vib / 500) * numBars)) ? 1.8 : 0.6; // Spike at active frequency
-                let barHeight = h * seed * (p.load / 150) * multiplier;
-                
-                barHeight = Math.min(h - 10, Math.max(5, barHeight));
+    function renderLibraryResults(){
+      var results = klgSearchAssets(state.search);
+      if(state.categoryFilter!=="all") results = results.filter(function(a){return a.category===state.categoryFilter;});
+      results = results.slice().sort(function(a,b){
+        if(state.sortBy==="health") return b.baselineHealth-a.baselineHealth;
+        if(state.sortBy==="manufacturer") return a.manufacturer.localeCompare(b.manufacturer);
+        if(state.sortBy==="criticality") return a.criticality.localeCompare(b.criticality);
+        return a.name.localeCompare(b.name);
+      });
+      var g = document.getElementById('asset-grid');
+      g.innerHTML = "";
+      if(results.length===0){
+        g.appendChild(el('<div class="empty-state" style="grid-column:1/-1"><div class="eyebrow">No Matching Assets</div><div>Adjust search terms or category filter.</div></div>'));
+        return;
+      }
+      results.forEach(function(a){
+        var cat = CONTINUUM_CATEGORIES[a.category];
+        var hc = healthColor(a.baselineHealth);
+        var card = el(
+          '<div class="asset-card">'+
+            '<div class="asset-card-top">'+
+              '<span class="cat-tag">'+cat.label+'</span>'+
+              '<span class="badge"><span class="badge-dot" style="background:'+hc+'"></span>'+a.criticality+'</span>'+
+            '</div>'+
+            '<h4>'+a.name+'</h4>'+
+            '<div class="mfg">'+a.manufacturer+' &middot; '+a.designation+'</div>'+
+            '<div class="meta-row">'+
+              '<div class="health-mini">HEALTH <div class="health-bar"><div class="health-bar-fill" style="width:'+a.baselineHealth+'%;background:'+hc+'"></div></div> '+a.baselineHealth+'%</div>'+
+              '<div>'+a.designLife.toLocaleString()+' '+a.designLifeUnit.toUpperCase()+'</div>'+
+            '</div>'+
+          '</div>'
+        );
+        card.addEventListener('click', function(){
+          state.selectedAssetId = a.id;
+          navigate('dossier', {id:a.id});
+        });
+        g.appendChild(card);
+      });
+    }
+    renderLibraryResults();
+    return wrap;
+  }
 
-                const x = i * (barWidth + 4) + 10;
-                const y = h - barHeight;
+  /* ================= VIEW: DOSSIER ================= */
+  function renderDossier(){
+    var id = state.params.id || state.selectedAssetId;
+    var asset = klgGetAssetById(id);
+    var wrap = el('<div></div>');
+    if(!asset){
+      wrap.appendChild(el('<div class="empty-state"><div class="eyebrow">No Asset Selected</div><div>Return to the Asset Library to select an engineering asset.</div></div>'));
+      return wrap;
+    }
+    state.selectedAssetId = asset.id;
+    var cat = CONTINUUM_CATEGORIES[asset.category];
+    var modes = klgGetFailureModesForAsset(asset);
+    var hc = healthColor(asset.baselineHealth);
 
-                // Gradient styling for the bars
-                ctx.fillStyle = barColor;
-                ctx.shadowBlur = 10;
-                ctx.shadowColor = barColor;
-                ctx.fillRect(x, y, barWidth, barHeight);
+    wrap.appendChild(el(
+      '<div class="breadcrumb"><a href="#" id="bc-lib">Asset Library</a> / '+cat.label+' / '+asset.name+'</div>'+
+      '<div class="view-header"><div class="view-title">'+asset.name+' <span class="accent">/ Engineering Dossier</span></div>'+
+      '<button class="btn btn-primary" id="to-config">Configure Simulation &rarr;</button></div>'
+    ));
+    wrap.querySelector('#bc-lib').addEventListener('click', function(e){e.preventDefault(); navigate('library');});
+    wrap.querySelector('#to-config').addEventListener('click', function(){ navigate('config', {id:asset.id}); });
 
-                // Top cap line on bars
-                ctx.fillStyle = '#ffffff';
-                ctx.fillRect(x, y - 2, barWidth, 2);
-            }
-            
-            ctx.shadowBlur = 0; // Reset shadow
-        }
-            
-        function renderLoop() {
-            renderTime += 0.05;
-            drawPrimaryWaveform();
-            drawSecondarySpectrum(); // Added Part 6 render call
-            // Loop continuously
-            animationId = requestAnimationFrame(renderLoop);
-        }
+    var grid = el('<div class="dossier-grid"></div>');
 
-        // Start the engine as soon as the script loads
-        renderLoop();
-        calculatePhysics(); // Run math once to populate initial data
-            
-            // Update the visual readout on the sidebar
-            document.getElementById(`val-${key}`).innerText = value + unit;
-            
-            // Trigger the physics engine recalculation (Will be built in Part 4 & 5)
-            if (typeof calculatePhysics === "function") {
-                calculatePhysics();
-            }
-        }
-            
-            // Fade out the modal smoothly
-            const modal = document.getElementById('startup-modal');
-            modal.style.opacity = '0';
-            
-            setTimeout(() => {
-                modal.style.visibility = 'hidden';
-                
-                // Add a CSS class to the body so the UI can adapt based on the mode
-                document.body.classList.add(`mode-${mode}`);
-            }, 500);
-        }
+    var left = el('<div></div>');
+    left.appendChild(el(
+      '<div class="panel section-gap"><div class="panel-header"><h3>Asset Overview</h3><span class="badge"><span class="badge-dot" style="background:'+hc+'"></span>'+asset.criticality+'</span></div>'+
+      '<div class="panel-body"><p style="font-size:13px;color:var(--c-silver);line-height:1.6;margin-bottom:16px;">'+asset.description+'</p>'+
+      '<table class="spec-table">'+
+        '<tr><td>Manufacturer</td><td>'+asset.manufacturer+'</td></tr>'+
+        '<tr><td>Designation</td><td>'+asset.designation+'</td></tr>'+
+        '<tr><td>Category</td><td>'+cat.label+'</td></tr>'+
+        '<tr><td>Design Life</td><td>'+asset.designLife.toLocaleString()+' '+asset.designLifeUnit+'</td></tr>'+
+        '<tr><td>Rated Output</td><td>'+asset.ratedOutput+'</td></tr>'+
+        '<tr><td>Criticality</td><td>'+asset.criticality+'</td></tr>'+
+      '</table></div></div>'
+    ));
 
-        // ==========================================
-        // INITIALIZATION
-        // ==========================================
-        function initApp() {
-            console.log("ContinuumOne Engine Initialized.");
-            // Future startup logic, modal triggers, and data binding will go here
-        }
+    left.appendChild(el(
+      '<div class="panel"><div class="panel-header"><h3>Failure Mode Profile</h3></div><div class="panel-body" id="fm-list"></div></div>'
+    ));
+    var fmList = left.querySelector('#fm-list');
+    modes.forEach(function(m){
+      fmList.appendChild(el(
+        '<div class="failure-mode-item"><div class="fm-head"><span class="fm-name">'+m.label+'</span><span class="fm-weight">BASE WEIGHT '+(m.weight*100).toFixed(0)+'%</span></div>'+
+        '<p>'+m.description+'</p></div>'
+      ));
+    });
 
-        // Boot system when DOM is ready
-        document.addEventListener('DOMContentLoaded', initApp);
+    grid.appendChild(left);
 
-        // ==========================================
-        // ASSET PROFILE SWITCHER (PART 8)
-        // ==========================================
-        function loadAssetProfile(profile) {
-            const profiles = {
-                turbine: { temp: 450, coolant: 85, load: 45, vib: 60, volt: 480 },
-                reactor: { temp: 950, coolant: 30, load: 120, vib: 210, volt: 850 },
-                press:   { temp: 300, coolant: 150, load: 10, vib: 15, volt: 240 }
-            };
+    var right = el('<div></div>');
+    right.appendChild(el(
+      '<div class="stat-row">'+
+        '<div class="stat-block"><div class="num" style="color:'+hc+'">'+asset.baselineHealth+'</div><div class="lbl">Baseline Health Index</div></div>'+
+        '<div class="stat-block"><div class="num">'+modes.length+'</div><div class="lbl">Tracked Failure Modes</div></div>'+
+      '</div>'
+    ));
+    right.appendChild(el(
+      '<div class="panel section-gap"><div class="panel-header"><h3>Reliability Profile</h3></div><div class="panel-body">'+
+      '<div class="readout-list">'+
+        '<div class="readout-row"><span class="k">Design Life</span><span class="v">'+asset.designLife.toLocaleString()+' '+asset.designLifeUnit+'</span></div>'+
+        '<div class="readout-row"><span class="k">Criticality Class</span><span class="v">'+asset.criticality+'</span></div>'+
+        '<div class="readout-row"><span class="k">Category</span><span class="v">'+cat.label+'</span></div>'+
+        '<div class="readout-row"><span class="k">Failure Modes Tracked</span><span class="v">'+modes.length+'</span></div>'+
+      '</div></div></div>'
+    ));
+    right.appendChild(el(
+      '<div class="panel"><div class="panel-header"><h3>Maintenance Profile</h3></div><div class="panel-body">'+
+      '<p style="font-size:12.5px;color:var(--c-silver);line-height:1.6;">'+asset.maintenanceProfile+'</p></div></div>'
+    ));
+    grid.appendChild(right);
 
-            const data = profiles[profile];
-            if (!data) return;
+    wrap.appendChild(grid);
+    return wrap;
+  }
 
-            // Update AppState and Range Inputs
-            for (const [key, val] of Object.entries(data)) {
-                AppState.parameters[key] = val;
-                const slider = document.getElementById(`param-${key}`);
-                const readout = document.getElementById(`val-${key}`);
-                if (slider) slider.value = val;
-                if (readout) {
-                    const unit = readout.innerText.replace(/[0-9]/g, '').trim();
-                    readout.innerText = val + ' ' + unit;
-                }
-            }
+  /* ================= VIEW: CONFIG ================= */
+  function renderConfig(){
+    var id = state.params.id || state.selectedAssetId;
+    var asset = klgGetAssetById(id);
+    var wrap = el('<div></div>');
+    if(!asset && state.simMode==="detailed"){
+      wrap.appendChild(el('<div class="empty-state"><div class="eyebrow">No Asset Selected</div><div>Select an asset from the Library first.</div></div>'));
+      return wrap;
+    }
 
-            calculatePhysics();
-            if (typeof pushLog === "function") {
-                pushLog(`ASSET_SWAP: Loaded diagnostic profile parameters for [${profile.toUpperCase()}].`, "info");
-            }
-        }
+    wrap.appendChild(el(
+      '<div class="breadcrumb">Simulation Configuration Center</div>'+
+      '<div class="view-header"><div class="view-title">Simulation Configuration <span class="accent">/ '+(asset?asset.name:'Multi-Asset')+'</span></div></div>'
+    ));
 
-        // ==========================================
-        // PDF REPORT EXPORT ENGINE (PART 9)
-        // ==========================================
-        function exportTelemetryReport() {
-            if (typeof pushLog === "function") {
-                pushLog("REPORT_GEN: Compiling live telemetry elements into PDF packet...", "info");
-            }
+    var modeToggle = el(
+      '<div class="mode-toggle">'+
+        '<div class="mode-card'+(state.simMode==="detailed"?" active":"")+'" id="mode-detailed"><div class="mc-title">Detailed Analysis</div><div class="mc-desc">Single-asset deep reliability simulation.</div></div>'+
+        '<div class="mode-card'+(state.simMode==="multi"?" active":"")+'" id="mode-multi"><div class="mc-title">Multi-Asset Analysis</div><div class="mc-desc">Comparative reliability study across selected assets.</div></div>'+
+      '</div>'
+    );
+    wrap.appendChild(modeToggle);
+    modeToggle.querySelector('#mode-detailed').addEventListener('click', function(){ state.simMode="detailed"; navigate('config', state.params); });
+    modeToggle.querySelector('#mode-multi').addEventListener('click', function(){ state.simMode="multi"; navigate('config', state.params); });
 
-            const element = document.querySelector('.app-container');
-            
-            const options = {
-                margin:       5,
-                filename:     `ContinuumOne_Audit_Report_${Math.floor(Date.now() / 1000)}.pdf`,
-                image:        { type: 'jpeg', quality: 0.98 },
-                html2canvas:  { scale: 2, useCORS: true, backgroundColor: '#050505' },
-                jsPDF:        { unit: 'mm', format: 'a4', orientation: 'landscape' }
-            };
+    var grid = el('<div class="config-grid"></div>');
+    var left = el('<div class="panel"><div class="panel-header"><h3>Operating Conditions</h3></div><div class="panel-body" id="slider-host"></div></div>');
+    grid.appendChild(left);
 
-            // Trigger generation & download prompt
-            html2pdf().from(element).set(options).save().then(() => {
-                if (typeof pushLog === "function") {
-                    pushLog("REPORT_GEN: PDF report downloaded successfully.", "info");
-                }
-            }).catch(err => {
-                console.error("PDF generation error:", err);
-                if (typeof pushLog === "function") {
-                    pushLog("REPORT_GEN_ERR: Failed to compile layout snapshot.", "crit");
-                }
-            });
-        }
+    var sliderHost = left.querySelector('#slider-host');
+    var sliderDefs = [
+      {key:"operatingHours", label:"Operating Hours", min:0, max: asset ? asset.designLife : 100000, step:100, suffix:""},
+      {key:"temperature", label:"Thermal Severity", min:0, max:100, step:1, suffix:"%"},
+      {key:"load", label:"Load Factor", min:0, max:100, step:1, suffix:"%"},
+      {key:"vibration", label:"Vibration Severity", min:0, max:100, step:1, suffix:"%"},
+      {key:"maintenanceQuality", label:"Maintenance Quality", min:0, max:100, step:1, suffix:"%"},
+      {key:"environment", label:"Environment Severity", min:0, max:100, step:1, suffix:"%"},
+      {key:"utilization", label:"Utilization Rate", min:0, max:100, step:1, suffix:"%"}
+    ];
+    sliderDefs.forEach(function(def){
+      var group = el(
+        '<div class="slider-group">'+
+          '<div class="slider-label"><span class="name">'+def.label+'</span><span class="val" id="val-'+def.key+'">'+state.conditions[def.key]+def.suffix+'</span></div>'+
+          '<input type="range" min="'+def.min+'" max="'+def.max+'" step="'+def.step+'" value="'+state.conditions[def.key]+'" id="slider-'+def.key+'">'+
+        '</div>'
+      );
+      var input = group.querySelector('input');
+      var valSpan = group.querySelector('span[id^="val-"]');
+      input.addEventListener('input', function(e){
+        state.conditions[def.key] = Number(e.target.value);
+        valSpan.textContent = e.target.value + def.suffix;
+      });
+      sliderHost.appendChild(group);
+    });
 
-        // ==========================================
-        // AUTONOMOUS SIMULATION LOOP (PART 10)
-        // ==========================================
-        let driftInterval = null;
+    var right = el('<div></div>');
+    if(state.simMode==="detailed"){
+      right.appendChild(el(
+        '<div class="panel"><div class="panel-header"><h3>Target Asset</h3></div><div class="panel-body">'+
+        '<div class="stat-block" style="margin-bottom:14px;"><div class="num" style="font-size:16px;">'+asset.manufacturer+'</div><div class="lbl">'+asset.name+'</div></div>'+
+        '<button class="btn btn-primary" style="width:100%;justify-content:center" id="run-sim">Run Predictive Simulation</button>'+
+        '</div></div>'
+      ));
+      right.querySelector('#run-sim').addEventListener('click', function(){
+        var result = computePrediction(asset, state.conditions);
+        state.lastResults = { mode:"detailed", results:[result] };
+        navigate('dashboard');
+      });
+    } else {
+      var listWrap = el('<div class="panel"><div class="panel-header"><h3>Select Assets</h3></div><div class="panel-body"><div class="multi-asset-list" id="multi-list"></div>'+
+        '<button class="btn btn-primary" style="width:100%;justify-content:center;margin-top:14px" id="run-sim-multi">Run Comparative Simulation</button></div></div>');
+      right.appendChild(listWrap);
+      var mlist = listWrap.querySelector('#multi-list');
+      CONTINUUM_ASSETS.forEach(function(a){
+        var checked = state.multiSelection.indexOf(a.id)!==-1;
+        var row = el('<label class="multi-asset-row'+(checked?" checked":"")+'"><input type="checkbox" '+(checked?"checked":"")+'> '+a.manufacturer+' '+a.name+'</label>');
+        row.querySelector('input').addEventListener('change', function(e){
+          if(e.target.checked){ state.multiSelection.push(a.id); row.classList.add('checked'); }
+          else { state.multiSelection = state.multiSelection.filter(function(x){return x!==a.id;}); row.classList.remove('checked'); }
+        });
+        mlist.appendChild(row);
+      });
+      listWrap.querySelector('#run-sim-multi').addEventListener('click', function(){
+        if(state.multiSelection.length===0){ alert("Select at least one asset for comparative analysis."); return; }
+        var results = state.multiSelection.map(function(aid){ return computePrediction(klgGetAssetById(aid), state.conditions); });
+        state.lastResults = { mode:"multi", results:results };
+        navigate('dashboard');
+      });
+    }
+    grid.appendChild(right);
+    wrap.appendChild(grid);
+    return wrap;
+  }
 
-        function toggleSimulation() {
-            AppState.simulationRunning = !AppState.simulationRunning;
-            const btn = document.getElementById('sim-play-btn');
-            const btnText = document.getElementById('sim-btn-text');
+  /* ================= GAUGE SVG ================= */
+  function gaugeSvg(value, max, color, size){
+    size = size || 130;
+    var r = size/2 - 10;
+    var c = size/2;
+    var circumference = Math.PI * r; // half circle
+    var pct = clamp(value/max, 0, 1);
+    var offset = circumference * (1-pct);
+    return (
+      '<svg width="'+size+'" height="'+(size/2+16)+'" viewBox="0 0 '+size+' '+(size/2+16)+'">'+
+        '<path d="M 10 '+c+' A '+r+' '+r+' 0 0 1 '+(size-10)+' '+c+'" fill="none" stroke="var(--c-border)" stroke-width="9" stroke-linecap="round"/>'+
+        '<path d="M 10 '+c+' A '+r+' '+r+' 0 0 1 '+(size-10)+' '+c+'" fill="none" stroke="'+color+'" stroke-width="9" stroke-linecap="round" '+
+          'stroke-dasharray="'+circumference+'" stroke-dashoffset="'+offset+'" style="transition:stroke-dashoffset .5s ease"/>'+
+      '</svg>'
+    );
+  }
 
-            if (AppState.simulationRunning) {
-                btn.classList.add('running');
-                btnText.innerText = "Live Drift: ENGAGED";
-                if (typeof pushLog === "function") {
-                    pushLog("SIM_ENGINE: Autonomous thermal-mechanical drift loop initiated.", "info");
-                }
+  /* ================= VIEW: DASHBOARD ================= */
+  function renderDashboard(){
+    var wrap = el('<div></div>');
+    var lr = state.lastResults;
+    wrap.appendChild(el(
+      '<div class="breadcrumb">Predictive Intelligence Engine</div>'+
+      '<div class="view-header"><div class="view-title">Prediction Dashboard <span class="accent">/ Simulation Output</span></div>'+
+      '<button class="btn btn-ghost" id="reconfig">&larr; Reconfigure</button></div>'
+    ));
+    wrap.querySelector('#reconfig').addEventListener('click', function(){ navigate('config', {id:state.selectedAssetId}); });
 
-                // Run drift loop every 1 second
-                driftInterval = setInterval(() => {
-                    if (!AppState.simulationRunning) return;
+    if(!lr || !lr.results.length){
+      wrap.appendChild(el('<div class="empty-state"><div class="eyebrow">No Simulation Results</div><div>Configure and run a simulation from the Asset Library to populate this dashboard.</div><br><button class="btn btn-primary" id="goto-lib">Go to Asset Library</button></div>'));
+      wrap.querySelector('#goto-lib').addEventListener('click', function(){ navigate('library'); });
+      return wrap;
+    }
 
-                    // Apply micro-drift to temperature and vibration based on random noise
-                    let currentTemp = AppState.parameters.temp || 450;
-                    let driftTemp = currentTemp + (Math.random() * 6 - 2.8); // slight upward bias
-                    driftTemp = Math.min(1200, Math.max(200, driftTemp));
+    if(lr.mode==="detailed"){
+      var res = lr.results[0];
+      var hc = healthColor(res.healthIndex);
+      var rc = colorForRisk(res.riskLevel);
 
-                    let currentVib = AppState.parameters.vib || 60;
-                    let driftVib = currentVib + (Math.random() * 4 - 2);
-                    driftVib = Math.min(500, Math.max(10, driftVib));
+      var dg = el('<div class="dashboard-grid"></div>');
+      dg.appendChild(el('<div class="panel gauge-card">'+gaugeSvg(res.healthIndex,100,hc)+'<div class="gauge-value" style="color:'+hc+'">'+fmt(res.healthIndex,0)+'</div><div class="gauge-label">Health Index</div></div>'));
+      dg.appendChild(el('<div class="panel gauge-card">'+gaugeSvg(res.failureProbability,100,colorForRisk(res.riskLevel))+'<div class="gauge-value" style="color:'+rc+'">'+fmt(res.failureProbability,0)+'%</div><div class="gauge-label">Failure Probability</div></div>'));
+      dg.appendChild(el('<div class="panel gauge-card">'+gaugeSvg(res.reliabilityScore,100,"var(--c-silver)")+'<div class="gauge-value">'+fmt(res.reliabilityScore,0)+'</div><div class="gauge-label">Reliability Score</div></div>'));
+      dg.appendChild(el('<div class="panel" style="display:flex;flex-direction:column;align-items:center;justify-content:center;padding:20px;"><span class="badge risk-'+res.riskLevel.toLowerCase()+'" style="font-size:13px;padding:8px 16px;"><span class="badge-dot"></span>'+res.riskLevel+' Risk</span><div class="gauge-label" style="margin-top:10px;">Risk Classification</div></div>'));
+      wrap.appendChild(dg);
 
-                    // Update State & Sliders
-                    AppState.parameters.temp = Math.round(driftTemp);
-                    AppState.parameters.vib = Math.round(driftVib);
+      var lower = el('<div class="result-lower"></div>');
+      var modesPanel = el('<div class="panel"><div class="panel-header"><h3>Failure Mode Ranking</h3></div><div class="panel-body" id="mode-rank-body"></div></div>');
+      var mrb = modesPanel.querySelector('#mode-rank-body');
+      res.rankedModes.forEach(function(rm){
+        var pct = (rm.contribution*100);
+        mrb.appendChild(el(
+          '<div class="mode-rank"><span class="rank-name">'+rm.mode.label+'</span>'+
+          '<div class="rank-bar-wrap"><div class="rank-bar"><div class="rank-bar-fill" style="width:'+pct+'%"></div></div>'+
+          '<span class="rank-pct">'+fmt(pct,1)+'%</span></div></div>'
+        ));
+      });
+      lower.appendChild(modesPanel);
 
-                    const tempSlider = document.getElementById('param-temp');
-                    const tempVal = document.getElementById('val-temp');
-                    if (tempSlider) tempSlider.value = AppState.parameters.temp;
-                    if (tempVal) tempVal.innerText = AppState.parameters.temp + " K";
+      var readoutPanel = el('<div class="panel"><div class="panel-header"><h3>Engineering Readout</h3></div><div class="panel-body">'+
+        '<div class="readout-list">'+
+          '<div class="readout-row"><span class="k">Asset</span><span class="v">'+res.asset.manufacturer+' '+res.asset.name+'</span></div>'+
+          '<div class="readout-row"><span class="k">Primary Failure Mode</span><span class="v">'+(res.primaryMode?res.primaryMode.label:'—')+'</span></div>'+
+          '<div class="readout-row"><span class="k">Secondary Failure Mode</span><span class="v">'+(res.secondaryMode?res.secondaryMode.label:'—')+'</span></div>'+
+          '<div class="readout-row"><span class="k">Estimated RUL</span><span class="v">'+res.remainingUsefulLife.toLocaleString()+' '+res.asset.designLifeUnit+'</span></div>'+
+          '<div class="readout-row"><span class="k">Life Consumed</span><span class="v">'+fmt(res.lifeFraction*100,1)+'%</span></div>'+
+          '<div class="readout-row"><span class="k">Operating Hours Input</span><span class="v">'+res.conditions.operatingHours.toLocaleString()+'</span></div>'+
+          '<div class="readout-row"><span class="k">Simulation Timestamp</span><span class="v">'+res.timestamp.toLocaleString()+'</span></div>'+
+        '</div></div></div>');
+      lower.appendChild(readoutPanel);
+      wrap.appendChild(lower);
 
-                    const vibSlider = document.getElementById('param-vib');
-                    const vibVal = document.getElementById('val-vib');
-                    if (vibSlider) vibSlider.value = AppState.parameters.vib;
-                    if (vibVal) vibVal.innerText = AppState.parameters.vib + " Hz";
+      var actions = el('<div style="display:flex;gap:10px;margin-top:18px;"><button class="btn btn-primary" id="to-report">Generate Engineering Report &rarr;</button><button class="btn btn-ghost" id="to-analytics">View Analytics &rarr;</button></div>');
+      actions.querySelector('#to-report').addEventListener('click', function(){ navigate('report'); });
+      actions.querySelector('#to-analytics').addEventListener('click', function(){ navigate('analytics'); });
+      wrap.appendChild(actions);
 
-                    calculatePhysics();
-                }, 1000);
+    } else {
+      // multi-asset comparative summary
+      var sorted = lr.results.slice().sort(function(a,b){ return b.failureProbability-a.failureProbability; });
+      var grid = el('<div class="asset-grid"></div>');
+      sorted.forEach(function(r){
+        var hc2 = healthColor(r.healthIndex);
+        var rc2 = colorForRisk(r.riskLevel);
+        grid.appendChild(el(
+          '<div class="panel" style="padding:16px;">'+
+            '<div class="flex-between mb-10"><h4 style="color:var(--c-silver-bright);font-size:14px;">'+r.asset.manufacturer+' '+r.asset.name+'</h4>'+
+            '<span class="badge risk-'+r.riskLevel.toLowerCase()+'"><span class="badge-dot"></span>'+r.riskLevel+'</span></div>'+
+            '<div class="readout-list">'+
+              '<div class="readout-row"><span class="k">Health Index</span><span class="v" style="color:'+hc2+'">'+fmt(r.healthIndex,0)+'</span></div>'+
+              '<div class="readout-row"><span class="k">Failure Probability</span><span class="v" style="color:'+rc2+'">'+fmt(r.failureProbability,0)+'%</span></div>'+
+              '<div class="readout-row"><span class="k">Est. RUL</span><span class="v">'+r.remainingUsefulLife.toLocaleString()+' '+r.asset.designLifeUnit+'</span></div>'+
+              '<div class="readout-row"><span class="k">Primary Mode</span><span class="v">'+(r.primaryMode?r.primaryMode.label:'—')+'</span></div>'+
+            '</div></div>'
+        ));
+      });
+      wrap.appendChild(grid);
+      var actions2 = el('<div style="display:flex;gap:10px;margin-top:18px;"><button class="btn btn-primary" id="to-report2">Generate Comparative Report &rarr;</button><button class="btn btn-ghost" id="to-analytics2">View Analytics &rarr;</button></div>');
+      actions2.querySelector('#to-report2').addEventListener('click', function(){ navigate('report'); });
+      actions2.querySelector('#to-analytics2').addEventListener('click', function(){ navigate('analytics'); });
+      wrap.appendChild(actions2);
+    }
 
-            } else {
-                btn.classList.remove('running');
-                btnText.innerText = "Live Drift: OFF";
-                clearInterval(driftInterval);
-                if (typeof pushLog === "function") {
-                    pushLog("SIM_ENGINE: Autonomous loop paused. Manual override active.", "info");
-                }
-            }
-        }
+    return wrap;
+  }
 
-        // ==========================================
-        // EMERGENCY SHUTDOWN / PURGE PROTOCOL (PART 11)
-        // ==========================================
-        function executeEmergencyPurge() {
-            // Stop autonomous drift if running
-            if (AppState.simulationRunning) {
-                toggleSimulation();
-            }
+  /* ================= VIEW: REPORT ================= */
+  function renderReport(){
+    var wrap = el('<div></div>');
+    var lr = state.lastResults;
+    wrap.appendChild(el(
+      '<div class="breadcrumb">Engineering Report Generator</div>'+
+      '<div class="view-header"><div class="view-title">Engineering Report</div></div>'
+    ));
 
-            // Force safe physical parameters
-            AppState.parameters.temp = 250;
-            AppState.parameters.coolant = 200;
-            AppState.parameters.load = 0;
-            AppState.parameters.vib = 10;
-            AppState.parameters.volt = 0;
+    if(!lr || !lr.results.length){
+      wrap.appendChild(el('<div class="empty-state"><div class="eyebrow">No Simulation Data</div><div>Run a simulation first to generate a report.</div></div>'));
+      return wrap;
+    }
 
-            // Synchronize UI sliders and readouts
-            for (const [key, val] of Object.entries(AppState.parameters)) {
-                const slider = document.getElementById(`param-${key}`);
-                const readout = document.getElementById(`val-${key}`);
-                if (slider) slider.value = val;
-                if (readout) {
-                    const unit = readout.innerText.replace(/[0-9]/g, '').trim();
-                    readout.innerText = val + ' ' + unit;
-                }
-            }
+    var toggle = el(
+      '<div class="report-toggle">'+
+        '<button class="btn'+(state.reportMode==="executive"?" btn-primary":" btn-ghost")+'" id="rm-exec">Executive Report</button>'+
+        '<button class="btn'+(state.reportMode==="technical"?" btn-primary":" btn-ghost")+'" id="rm-tech">Technical Report</button>'+
+        '<button class="btn btn-ghost" id="rm-print" style="margin-left:auto">Print / Export</button>'+
+      '</div>'
+    );
+    wrap.appendChild(toggle);
+    toggle.querySelector('#rm-exec').addEventListener('click', function(){ state.reportMode="executive"; navigate('report'); });
+    toggle.querySelector('#rm-tech').addEventListener('click', function(){ state.reportMode="technical"; navigate('report'); });
+    toggle.querySelector('#rm-print').addEventListener('click', function(){ window.print(); });
 
-            calculatePhysics();
+    var doc = el('<div class="report-doc" id="report-doc"></div>');
+    doc.innerHTML = buildReportHtml(lr, state.reportMode);
+    wrap.appendChild(doc);
+    return wrap;
+  }
 
-            // Flash visual lockdown warning
-            document.body.classList.add('emergency-lockdown');
-            setTimeout(() => {
-                document.body.classList.remove('emergency-lockdown');
-            }, 3000);
+  function buildReportHtml(lr, mode){
+    var now = new Date();
+    var isMulti = lr.mode==="multi";
+    var results = lr.results;
+    var title = isMulti ? "Comparative Reliability Assessment" : "Engineering Reliability Report";
+    var html = '<h1>'+title+'</h1>';
+    html += '<div class="report-sub">ContinuumOne Predictive Intelligence Engine &middot; Generated '+now.toLocaleString()+' &middot; '+(mode==="executive"?"Executive Summary":"Technical Detail")+'</div>';
 
-            if (typeof pushLog === "function") {
-                pushLog("EMERGENCY_OVERRIDE: Core purge executed. System safely locked down.", "crit");
-            }
-        }
-    </script>
+    html += '<h2>Executive Summary</h2>';
+    if(!isMulti){
+      var r = results[0];
+      html += '<p>This report presents predictive reliability analysis for the '+r.asset.manufacturer+' '+r.asset.name+' ('+r.asset.designation+'), classified as '+r.asset.criticality+'. Under the modeled operating profile, the asset returns a health index of '+fmt(r.healthIndex,0)+' out of 100 and a failure probability of '+fmt(r.failureProbability,0)+'%, corresponding to a <span class="risk-flag">'+r.riskLevel.toUpperCase()+'</span> risk classification.</p>';
+      html += '<p>The dominant degradation mechanism identified is <strong>'+(r.primaryMode?r.primaryMode.label:'—')+'</strong>'+(r.secondaryMode?', with '+r.secondaryMode.label+' as a contributing secondary mechanism.':'.')+' Estimated remaining useful life under current conditions is approximately '+r.remainingUsefulLife.toLocaleString()+' '+r.asset.designLifeUnit+'.</p>';
+    } else {
+      html += '<p>This comparative study evaluates '+results.length+' assets under a common operating profile to identify relative reliability risk across the fleet subset. Assets are ranked by failure probability to support maintenance prioritization.</p>';
+    }
+
+    html += '<h2>Asset Information</h2>';
+    if(!isMulti){
+      var a = results[0].asset;
+      html += '<table><tr><th>Field</th><th>Value</th></tr>'+
+        '<tr><td>Manufacturer</td><td>'+a.manufacturer+'</td></tr>'+
+        '<tr><td>Asset</td><td>'+a.name+' ('+a.designation+')</td></tr>'+
+        '<tr><td>Category</td><td>'+CONTINUUM_CATEGORIES[a.category].label+'</td></tr>'+
+        '<tr><td>Design Life</td><td>'+a.designLife.toLocaleString()+' '+a.designLifeUnit+'</td></tr>'+
+        '<tr><td>Criticality</td><td>'+a.criticality+'</td></tr>'+
+      '</table>';
+    } else {
+      html += '<table><tr><th>Asset</th><th>Category</th><th>Criticality</th></tr>';
+      results.forEach(function(r){ html += '<tr><td>'+r.asset.manufacturer+' '+r.asset.name+'</td><td>'+CONTINUUM_CATEGORIES[r.asset.category].label+'</td><td>'+r.asset.criticality+'</td></tr>'; });
+      html += '</table>';
+    }
+
+    var c = results[0].conditions;
+    html += '<h2>Operating Conditions Modeled</h2>';
+    html += '<table><tr><th>Parameter</th><th>Value</th></tr>'+
+      '<tr><td>Operating Hours</td><td>'+c.operatingHours.toLocaleString()+'</td></tr>'+
+      '<tr><td>Thermal Severity</td><td>'+c.temperature+'%</td></tr>'+
+      '<tr><td>Load Factor</td><td>'+c.load+'%</td></tr>'+
+      '<tr><td>Vibration Severity</td><td>'+c.vibration+'%</td></tr>'+
+      '<tr><td>Maintenance Quality</td><td>'+c.maintenanceQuality+'%</td></tr>'+
+      '<tr><td>Environment Severity</td><td>'+c.environment+'%</td></tr>'+
+      '<tr><td>Utilization Rate</td><td>'+c.utilization+'%</td></tr>'+
+    '</table>';
+
+    html += '<h2>Risk Analysis</h2>';
+    html += '<table><tr><th>Asset</th><th>Health Index</th><th>Failure Probability</th><th>Risk Level</th><th>Est. RUL</th></tr>';
+    results.slice().sort(function(x,y){return y.failureProbability-x.failureProbability;}).forEach(function(r){
+      html += '<tr><td>'+r.asset.manufacturer+' '+r.asset.name+'</td><td>'+fmt(r.healthIndex,0)+'</td><td>'+fmt(r.failureProbability,0)+'%</td><td class="risk-flag">'+r.riskLevel+'</td><td>'+r.remainingUsefulLife.toLocaleString()+' '+r.asset.designLifeUnit+'</td></tr>';
+    });
+    html += '</table>';
+
+    if(mode==="technical"){
+      html += '<h2>Failure Mode Detail</h2>';
+      results.forEach(function(r){
+        html += '<p><strong>'+r.asset.manufacturer+' '+r.asset.name+'</strong></p>';
+        html += '<table><tr><th>Failure Mode</th><th>Contribution</th><th>Base Weight</th></tr>';
+        r.rankedModes.forEach(function(rm){
+          html += '<tr><td>'+rm.mode.label+'</td><td>'+fmt(rm.contribution*100,1)+'%</td><td>'+(rm.mode.weight*100).toFixed(0)+'%</td></tr>';
+        });
+        html += '</table>';
+      });
+      html += '<h2>Reliability Assessment</h2>';
+      html += '<p>Reliability scores incorporate weighted contributions from all tracked failure mechanisms adjusted for elapsed life fraction relative to design life. Scores below 50 indicate elevated intervention priority.</p>';
+    }
+
+    html += '<h2>Recommendations</h2>';
+    html += '<p>'+buildRecommendation(results)+'</p>';
+
+    return html;
+  }
+
+  function buildRecommendation(results){
+    var worst = results.slice().sort(function(a,b){return b.failureProbability-a.failureProbability;})[0];
+    if(worst.riskLevel==="Critical" || worst.riskLevel==="High"){
+      return "Prioritize inspection of "+worst.asset.manufacturer+" "+worst.asset.name+" targeting "+(worst.primaryMode?worst.primaryMode.label:"the dominant failure mechanism")+". Recommend condition-based maintenance intervention ahead of the next scheduled interval and increased monitoring cadence given current operating severity.";
+    }
+    if(worst.riskLevel==="Moderate"){
+      return "Continue on-condition monitoring at standard cadence. Reassess if operating severity (thermal, load, or vibration) increases beyond modeled thresholds.";
+    }
+    return "No immediate intervention indicated. Maintain current maintenance program and monitoring schedule.";
+  }
+
+  /* ================= VIEW: ANALYTICS ================= */
+  function renderAnalytics(){
+    var wrap = el('<div></div>');
+    wrap.appendChild(el(
+      '<div class="breadcrumb">Reliability Analytics Center</div>'+
+      '<div class="view-header"><div class="view-title">Reliability Analytics <span class="accent">/ Fleet-Wide Intelligence</span></div></div>'
+    ));
+
+    // Baseline snapshot across full fleet (uses baselineHealth, not sim-dependent)
+    var byCategory = {};
+    Object.keys(CONTINUUM_CATEGORIES).forEach(function(c){ byCategory[c] = klgGetAssetsByCategory(c); });
+
+    var top = el('<div class="analytics-grid"></div>');
+
+    var heatPanel = el('<div class="panel"><div class="panel-header"><h3>Fleet Health Heatmap</h3></div><div class="panel-body"><div class="heatmap" id="heatmap"></div></div></div>');
+    var hm = heatPanel.querySelector('#heatmap');
+    CONTINUUM_ASSETS.forEach(function(a){
+      var hc = healthColor(a.baselineHealth);
+      var cell = el('<div class="heatmap-cell" style="border-color:'+hc+'55"><div class="hc-val" style="color:'+hc+'">'+a.baselineHealth+'</div><div class="hc-name">'+a.name+'</div></div>');
+      hm.appendChild(cell);
+    });
+    top.appendChild(heatPanel);
+
+    var rankPanel = el('<div class="panel"><div class="panel-header"><h3>Reliability Ranking</h3></div><div class="panel-body" id="rank-list"></div></div>');
+    var rl = rankPanel.querySelector('#rank-list');
+    CONTINUUM_ASSETS.slice().sort(function(a,b){return b.baselineHealth-a.baselineHealth;}).forEach(function(a,i){
+      var hc = healthColor(a.baselineHealth);
+      rl.appendChild(el(
+        '<div class="rank-list-row"><span class="rl-idx">'+(i+1).toString().padStart(2,'0')+'</span>'+
+        '<span class="rl-name">'+a.manufacturer+' '+a.name+'</span>'+
+        '<div class="rl-bar"><div class="rl-fill" style="width:'+a.baselineHealth+'%;background:'+hc+'"></div></div></div>'
+      ));
+    });
+    top.appendChild(rankPanel);
+    wrap.appendChild(top);
+
+    // Category degradation indicator averages
+    var catPanel = el('<div class="panel section-gap"><div class="panel-header"><h3>Category Health Trends</h3></div><div class="panel-body" id="cat-trends"></div></div>');
+    wrap.appendChild(catPanel);
+    var ct = catPanel.querySelector('#cat-trends');
+    Object.keys(byCategory).forEach(function(cid){
+      var arr = byCategory[cid];
+      var avg = arr.reduce(function(s,a){return s+a.baselineHealth;},0)/arr.length;
+      var hc = healthColor(avg);
+      ct.appendChild(el(
+        '<div class="mode-rank"><span class="rank-name">'+CONTINUUM_CATEGORIES[cid].label+' <span class="text-dim mono" style="font-size:10px;">('+arr.length+' assets)</span></span>'+
+        '<div class="rank-bar-wrap"><div class="rank-bar"><div class="rank-bar-fill" style="width:'+avg+'%;background:'+hc+'"></div></div>'+
+        '<span class="rank-pct">'+fmt(avg,0)+'</span></div></div>'
+      ));
+    });
+
+    // Latest simulation trend (if any)
+    if(state.lastResults && state.lastResults.results.length){
+      var simPanel = el('<div class="panel"><div class="panel-header"><h3>Last Simulation — Risk Distribution</h3></div><div class="panel-body" id="sim-trend"></div></div>');
+      wrap.appendChild(simPanel);
+      var st = simPanel.querySelector('#sim-trend');
+      state.lastResults.results.forEach(function(r){
+        var rc = colorForRisk(r.riskLevel);
+        st.appendChild(el(
+          '<div class="mode-rank"><span class="rank-name">'+r.asset.manufacturer+' '+r.asset.name+'</span>'+
+          '<div class="rank-bar-wrap"><div class="rank-bar"><div class="rank-bar-fill" style="width:'+r.failureProbability+'%;background:'+rc+'"></div></div>'+
+          '<span class="rank-pct">'+fmt(r.failureProbability,0)+'%</span></div></div>'
+        ));
+      });
+    }
+
+    return wrap;
+  }
+
+  /* ---------------- CLOCK ---------------- */
+  function tickClock(){
+    var d = new Date();
+    document.getElementById('clock').textContent = d.toLocaleTimeString('en-US', {hour12:false});
+  }
+
+  /* ---------------- INIT ---------------- */
+  function init(){
+    tickClock();
+    setInterval(tickClock, 1000);
+    navigate('library');
+  }
+
+  return { navigate: navigate, state: state, init: init };
+})();
+
+document.addEventListener('DOMContentLoaded', Continuum.init);
+</script>
 </body>
 </html>
