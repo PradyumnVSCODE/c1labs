@@ -3,28 +3,41 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ContinuumOne | Advanced Simulation</title>
+    <title>ContinuumOne | Simulation Engine</title>
+    
+    <!-- 
+      KLG.JS IMPORT 
+      This is where our engineering data will load. 
+      Ensure klg.js is in the same directory.
+    -->
+    <script src="klg.js"></script>
+
     <style>
         /* =========================================
-           THEME & VARIABLES
+           CORE THEME & VARIABLES
            ========================================= */
         :root {
-            --bg-base: #0a0a0a;
-            --bg-panel: #1a1a1a;
-            --bg-input: #2a2a2a;
-            --text-main: #ffffff;
-            --text-muted: #888888;
-            --border-color: #333333;
+            /* Backgrounds: Grey to Black */
+            --bg-base: #050505;
+            --bg-panel: #121212;
+            --bg-surface: #1e1e1e;
+            --border-main: #2a2a2a;
             
-            /* Muted Accents */
-            --accent-green: #2e7d32; /* Muted Forest Green */
-            --accent-red: #c62828;   /* Muted Crimson */
-            --accent-blue: #1565c0;  /* Muted Deep Blue */
-            --accent-warn: #d97d00;  /* Muted Orange */
+            /* Typography: White and Muted Greys */
+            --text-primary: #ffffff;
+            --text-secondary: #a0a0a0;
+            --font-main: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
             
-            --font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            /* Accents: Non-blinding, muted colors for graphs and statuses */
+            --acc-green: #388e3c;
+            --acc-red: #d32f2f;
+            --acc-blue: #1976d2;
+            --acc-orange: #f57c00;
         }
 
+        /* =========================================
+           GLOBAL RESET & TYPOGRAPHY
+           ========================================= */
         * {
             box-sizing: border-box;
             margin: 0;
@@ -33,178 +46,206 @@
 
         body {
             background-color: var(--bg-base);
-            color: var(--text-main);
-            font-family: var(--font-family);
-            font-size: 14px;
-            overflow: hidden; /* Prevent body scroll, manage within panels */
+            color: var(--text-primary);
+            font-family: var(--font-main);
+            height: 100vh;
             display: flex;
             flex-direction: column;
-            height: 100vh;
+            overflow: hidden; /* App-like feel, scroll only in specific containers */
         }
 
         /* =========================================
-           STARTUP MODAL
+           HEADER NAVIGATION
+           ========================================= */
+        header {
+            background-color: var(--bg-panel);
+            border-bottom: 1px solid var(--border-main);
+            height: 64px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 24px;
+            flex-shrink: 0;
+        }
+
+        .logo-container {
+            display: flex;
+            align-items: center;
+            cursor: pointer;
+            text-decoration: none;
+            color: var(--text-primary);
+        }
+
+        .logo-container img {
+            height: 32px;
+            margin-right: 16px;
+        }
+
+        .logo-container h1 {
+            font-size: 1.25rem;
+            font-weight: 500;
+            letter-spacing: 0.5px;
+        }
+
+        .header-actions {
+            display: flex;
+            gap: 16px;
+        }
+
+        /* =========================================
+           MAIN APPLICATION LAYOUT
+           ========================================= */
+        .app-container {
+            display: flex;
+            flex: 1;
+            height: calc(100vh - 64px);
+        }
+
+        /* Sidebar for Controls & Search */
+        .sidebar {
+            width: 350px;
+            background-color: var(--bg-panel);
+            border-right: 1px solid var(--border-main);
+            display: flex;
+            flex-direction: column;
+            overflow-y: auto;
+        }
+
+        /* Main Workspace for Dashboard & Canvases */
+        .workspace {
+            flex: 1;
+            padding: 24px;
+            overflow-y: auto;
+            background-color: var(--bg-base);
+            display: grid;
+            grid-template-columns: repeat(12, 1fr);
+            gap: 24px;
+            align-content: start;
+        }
+
+        /* Base Panel Class for widgets/graphs */
+        .panel {
+            background-color: var(--bg-surface);
+            border: 1px solid var(--border-main);
+            border-radius: 8px;
+            padding: 20px;
+        }
+/* =========================================
+           STARTUP MODAL (PART 2)
            ========================================= */
         #startup-modal {
             position: fixed;
-            top: 0; left: 0; width: 100%; height: 100%;
-            background-color: rgba(0, 0, 0, 0.95);
+            inset: 0;
+            background-color: rgba(5, 5, 5, 0.95);
             z-index: 9999;
             display: flex;
-            flex-direction: column;
             align-items: center;
             justify-content: center;
-            transition: opacity 0.5s ease;
+            transition: opacity 0.5s ease, visibility 0.5s;
         }
 
         .modal-content {
-            text-align: center;
+            background-color: var(--bg-panel);
+            border: 1px solid var(--border-main);
+            border-radius: 12px;
+            padding: 40px;
             max-width: 800px;
+            text-align: center;
+            box-shadow: 0 20px 50px rgba(0,0,0,0.5);
         }
 
-        .modal-content h1 {
-            font-size: 2.5rem;
-            font-weight: 300;
-            letter-spacing: 2px;
-            margin-bottom: 40px;
+        .modal-content h2 {
+            font-size: 2rem;
+            font-weight: 400;
+            margin-bottom: 10px;
+            letter-spacing: 1px;
         }
 
-        .mode-cards {
+        .modal-content p.subtitle {
+            color: var(--text-secondary);
+            margin-bottom: 30px;
+        }
+
+        .mode-selection {
             display: flex;
             gap: 20px;
             justify-content: center;
         }
 
         .mode-card {
-            background-color: var(--bg-panel);
-            border: 1px solid var(--border-color);
+            background-color: var(--bg-surface);
+            border: 1px solid var(--border-main);
             border-radius: 8px;
-            padding: 30px;
-            width: 350px;
+            padding: 24px;
+            width: 320px;
             cursor: pointer;
             transition: all 0.2s ease;
+            text-align: left;
         }
 
         .mode-card:hover {
-            border-color: var(--text-muted);
-            transform: translateY(-5px);
+            border-color: var(--text-secondary);
+            transform: translateY(-4px);
+            background-color: #252525;
         }
 
-        .mode-card h2 {
-            color: var(--text-main);
-            margin-bottom: 15px;
+        .mode-card h3 {
+            color: var(--text-primary);
+            margin-bottom: 12px;
+            font-size: 1.2rem;
         }
 
         .mode-card p {
-            color: var(--text-muted);
+            color: var(--text-secondary);
+            font-size: 0.9rem;
             line-height: 1.5;
         }
 
-        /* =========================================
-           TOP NAVIGATION
+/* =========================================
+           SIDEBAR CONTROLS (PART 3)
            ========================================= */
-        header {
-            background-color: var(--bg-panel);
-            border-bottom: 1px solid var(--border-color);
-            height: 60px;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            padding: 0 20px;
-            flex-shrink: 0;
-        }
-
-        .brand {
-            display: flex;
-            align-items: center;
-            text-decoration: none;
-            color: var(--text-main);
-        }
-
-        .brand img {
-            height: 40px;
-            margin-right: 15px;
-        }
-
-        .brand-text {
-            font-size: 1.2rem;
-            font-weight: 600;
-            letter-spacing: 1px;
-        }
-
-        .header-controls button {
-            background-color: var(--bg-input);
-            color: var(--text-main);
-            border: 1px solid var(--border-color);
-            padding: 8px 16px;
-            border-radius: 4px;
-            cursor: pointer;
-            font-size: 0.9rem;
-            transition: background 0.2s;
-        }
-
-        .header-controls button:hover {
-            background-color: var(--accent-blue);
-            border-color: var(--accent-blue);
-        }
-
-        /* =========================================
-           MAIN LAYOUT
-           ========================================= */
-        .dashboard {
-            display: flex;
-            flex: 1;
-            overflow: hidden;
-            opacity: 0; /* Hidden until modal resolves */
-            pointer-events: none;
-            transition: opacity 0.5s ease;
-        }
-
-        .dashboard.active {
-            opacity: 1;
-            pointer-events: all;
-        }
-
-        /* =========================================
-           SIDEBAR CONTROLS
-           ========================================= */
-        .sidebar {
-            width: 320px;
-            background-color: var(--bg-panel);
-            border-right: 1px solid var(--border-color);
-            display: flex;
-            flex-direction: column;
-            overflow-y: auto;
-        }
-
-        /* Custom Scrollbar for dark theme */
-        ::-webkit-scrollbar { width: 8px; }
-        ::-webkit-scrollbar-track { background: var(--bg-base); }
-        ::-webkit-scrollbar-thumb { background: var(--border-color); border-radius: 4px; }
-        ::-webkit-scrollbar-thumb:hover { background: var(--text-muted); }
+        /* Custom Scrollbar for the sidebar */
+        .sidebar::-webkit-scrollbar { width: 6px; }
+        .sidebar::-webkit-scrollbar-track { background: var(--bg-panel); }
+        .sidebar::-webkit-scrollbar-thumb { background: var(--border-main); border-radius: 3px; }
+        .sidebar::-webkit-scrollbar-thumb:hover { background: var(--text-secondary); }
 
         .control-group {
-            padding: 20px;
-            border-bottom: 1px solid var(--border-color);
+            padding: 24px;
+            border-bottom: 1px solid var(--border-main);
+        }
+
+        .control-group:last-child {
+            border-bottom: none;
         }
 
         .control-group h3 {
-            font-size: 0.85rem;
+            font-size: 0.8rem;
             text-transform: uppercase;
-            color: var(--text-muted);
-            margin-bottom: 15px;
+            color: var(--text-secondary);
+            margin-bottom: 16px;
             letter-spacing: 1px;
         }
 
-        .slider-container {
-            margin-bottom: 15px;
+        .slider-wrapper {
+            margin-bottom: 16px;
+        }
+
+        .slider-wrapper:last-child {
+            margin-bottom: 0;
         }
 
         .slider-header {
             display: flex;
             justify-content: space-between;
-            margin-bottom: 5px;
+            margin-bottom: 8px;
             font-size: 0.85rem;
+        }
+
+        .slider-val {
+            color: var(--text-primary);
+            font-family: monospace;
+            font-size: 0.9rem;
         }
 
         input[type=range] {
@@ -215,494 +256,329 @@
 
         input[type=range]::-webkit-slider-thumb {
             -webkit-appearance: none;
-            height: 14px;
-            width: 14px;
+            height: 12px;
+            width: 12px;
             border-radius: 50%;
-            background: var(--text-main);
+            background: var(--text-primary);
             cursor: pointer;
-            margin-top: -5px;
+            margin-top: -4px;
         }
 
         input[type=range]::-webkit-slider-runnable-track {
             width: 100%;
             height: 4px;
             cursor: pointer;
-            background: var(--bg-input);
+            background: var(--border-main);
             border-radius: 2px;
         }
 
-        /* =========================================
-           MAIN VIEW & GRAPHS
+/* =========================================
+           DATA GRID & READOUTS (PART 4)
            ========================================= */
-        .main-content {
-            flex: 1;
-            padding: 20px;
-            overflow-y: auto;
+        .top-readouts {
+            grid-column: span 12;
             display: grid;
-            grid-template-columns: repeat(2, 1fr);
-            grid-auto-rows: minmax(300px, auto);
-            gap: 20px;
-            align-content: flex-start;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 24px;
+            margin-bottom: 24px;
         }
 
-        .panel {
-            background-color: var(--bg-panel);
-            border: 1px solid var(--border-color);
-            border-radius: 6px;
+        .metric-card {
+            background-color: var(--bg-surface);
+            border: 1px solid var(--border-main);
+            border-radius: 8px;
             padding: 20px;
             display: flex;
             flex-direction: column;
+            justify-content: center;
         }
 
-        .panel.full-width {
-            grid-column: span 2;
+        .metric-label {
+            font-size: 0.85rem;
+            color: var(--text-secondary);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 8px;
         }
 
-        .panel-header {
+        .metric-value {
+            font-size: 2rem;
+            font-weight: 600;
+            color: var(--text-primary);
+            font-family: monospace;
+            display: flex;
+            align-items: baseline;
+            gap: 4px;
+        }
+
+        .metric-unit {
             font-size: 1rem;
-            font-weight: 500;
-            margin-bottom: 15px;
+            color: var(--text-secondary);
+            font-weight: 400;
+        }
+
+        /* Status colors for the readouts */
+        .status-optimal { color: var(--acc-green); }
+        .status-warning { color: var(--acc-orange); }
+        .status-critical { color: var(--acc-red); }
+
+/* =========================================
+           CANVAS ENGINE (PART 5)
+           ========================================= */
+        .canvas-panel {
+            grid-column: span 12; /* Spans full width initially */
+            background-color: var(--bg-surface);
+            border: 1px solid var(--border-main);
+            border-radius: 8px;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            min-height: 350px;
+        }
+
+        .canvas-header {
             display: flex;
             justify-content: space-between;
+            align-items: center;
+            margin-bottom: 16px;
         }
 
-        .status-indicator {
-            padding: 2px 8px;
-            border-radius: 4px;
-            font-size: 0.75rem;
-            font-weight: bold;
-            text-transform: uppercase;
+        .canvas-title {
+            font-size: 1rem;
+            color: var(--text-primary);
+            font-weight: 500;
         }
 
-        .status-nominal { background-color: var(--accent-green); color: #fff; }
-        .status-warning { background-color: var(--accent-warn); color: #fff; }
-        .status-critical { background-color: var(--accent-red); color: #fff; }
-
-        canvas {
+        .canvas-wrapper {
+            flex: 1;
+            position: relative;
             width: 100%;
             height: 100%;
+        }
+
+        canvas {
+            position: absolute;
+            top: 0; 
+            left: 0;
+            width: 100%; 
+            height: 100%;
             background-color: var(--bg-base);
-            border: 1px solid var(--border-color);
+            border: 1px solid var(--border-main);
             border-radius: 4px;
         }
-
-        /* Data Readouts */
-        .data-grid {
-            display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            gap: 15px;
-        }
-
-        .data-box {
-            background-color: var(--bg-base);
-            border: 1px solid var(--border-color);
-            padding: 15px;
-            border-radius: 4px;
-            text-align: center;
-        }
-
-        .data-box .label {
-            font-size: 0.75rem;
-            color: var(--text-muted);
-            margin-bottom: 5px;
-            text-transform: uppercase;
-        }
-
-        .data-box .value {
-            font-size: 1.5rem;
-            font-weight: 300;
-        }
-
-        /* =========================================
-           PRINT STYLES (PDF GENERATION)
-           ========================================= */
-        @media print {
-            body {
-                background-color: #ffffff;
-                color: #000000;
-                overflow: visible;
-                height: auto;
-            }
-
-            /* Hide UI Elements */
-            #startup-modal, .sidebar, .header-controls {
-                display: none !important;
-            }
-
-            header {
-                background-color: transparent;
-                border-bottom: 2px solid #000;
-                padding: 0;
-                margin-bottom: 20px;
-            }
-
-            .brand-text { color: #000; }
-
-            .dashboard {
-                display: block;
-                opacity: 1;
-                pointer-events: auto;
-            }
-
-            .main-content {
-                display: block;
-                padding: 0;
-            }
-
-            .panel {
-                background-color: transparent;
-                border: 1px solid #ccc;
-                margin-bottom: 20px;
-                page-break-inside: avoid;
-            }
-
-            canvas {
-                border: 1px solid #ccc;
-                background-color: #fff;
-            }
-
-            .data-box {
-                background-color: transparent;
-                border: 1px solid #ccc;
-                color: #000;
-            }
-
-            .data-box .label { color: #555; }
-            .data-box .value { color: #000; font-weight: bold; }
-
-            /* Detailed Mode Specific Print Layout */
-            body.mode-detailed .summary-only-print { display: none !important; }
-            body.mode-detailed .detailed-only-print { display: block !important; }
-
-            /* Summary Mode Specific Print Layout */
-            body.mode-summary .detailed-only-print { display: none !important; }
-            body.mode-summary .summary-only-print { display: block !important; }
-            
-            /* Override colors for print visibility */
-            .status-nominal { background-color: #e8f5e9; color: #2e7d32; border: 1px solid #2e7d32;}
-            .status-warning { background-color: #fff3e0; color: #d97d00; border: 1px solid #d97d00;}
-            .status-critical { background-color: #ffebee; color: #c62828; border: 1px solid #c62828;}
-        }
+        
     </style>
 </head>
 <body>
 
-    <!-- STARTUP SELECTION MODAL -->
+    <!-- STARTUP SELECTION MODAL (PART 2) -->
     <div id="startup-modal">
         <div class="modal-content">
-            <h1>SYSTEM INITIALIZATION</h1>
-            <div class="mode-cards">
-                <div class="mode-card" onclick="initSimulation('detailed')">
-                    <h2>Detailed Diagnostics</h2>
+            <h2>System Initialization</h2>
+            <p class="subtitle">Select the telemetry reporting protocol.</p>
+            <div class="mode-selection">
+                <div class="mode-card" onclick="setMode('detailed')">
+                    <h3>Detailed Diagnostics</h3>
                     <p>Deep-dive analysis on a singular critical sub-system. High-resolution telemetry, individual component stress factors, and precise physical modeling.</p>
                 </div>
-                <div class="mode-card" onclick="initSimulation('summary')">
-                    <h2>Simultaneous Summary</h2>
-                    <p>High-level holistic overview across all sectors (Thermal, Structural, Electrical, Fluid). Consolidated metrics and overall system health scores.</p>
+                <div class="mode-card" onclick="setMode('summary')">
+                    <h3>Simultaneous Summary</h3>
+                    <p>High-level holistic overview across all sectors. Consolidated metrics, aggregate system health scores, and generalized trend analysis.</p>
                 </div>
             </div>
         </div>
     </div>
 
-    <!-- MAIN INTERFACE -->
+    <!-- HEADER -->
     <header>
-        <a href="index.html" class="brand">
+        <!-- Clicking this redirects to index.html per specs -->
+        <a href="index.html" class="logo-container">
             <img src="image_d7eb59.png" alt="ContinuumOne Logo">
-            <span class="brand-text">ContinuumOne</span>
+            <h1>ContinuumOne</h1>
         </a>
-        <div class="header-controls">
-            <span id="mode-display" style="margin-right: 20px; color: var(--text-muted); font-size: 0.9rem;"></span>
-            <button onclick="generatePDF()">Generate PDF Report</button>
+        <div class="header-actions">
+            <!-- Future Report Generators will go here -->
         </div>
     </header>
 
-    <div class="dashboard" id="main-dashboard">
+    <!-- MAIN APP -->
+    <div class="app-container">
         
-        <!-- SIDEBAR PARAMETERS -->
-        <aside class="sidebar">
+       <!-- UI CONTROLS & ASSET SEARCH (PART 3) -->
+        <aside class="sidebar" id="ui-sidebar">
             <div class="control-group">
                 <h3>Thermal Dynamics</h3>
-                <div class="slider-container">
-                    <div class="slider-header"><span>Core Temp</span><span id="val-temp">450 K</span></div>
-                    <input type="range" id="sim-temp" min="200" max="1200" value="450" oninput="updateVal('temp', this.value, ' K')">
+                <div class="slider-wrapper">
+                    <div class="slider-header"><span>Core Temp</span><span class="slider-val" id="val-temp">450 K</span></div>
+                    <input type="range" id="param-temp" min="200" max="1200" value="450" oninput="updateParam('temp', this.value, ' K')">
                 </div>
-                <div class="slider-container">
-                    <div class="slider-header"><span>Coolant Flow</span><span id="val-coolant">85 L/m</span></div>
-                    <input type="range" id="sim-coolant" min="0" max="200" value="85" oninput="updateVal('coolant', this.value, ' L/m')">
-                </div>
-                <div class="slider-container">
-                    <div class="slider-header"><span>Exhaust Delta</span><span id="val-exhaust">120 K</span></div>
-                    <input type="range" id="sim-exhaust" min="50" max="400" value="120" oninput="updateVal('exhaust', this.value, ' K')">
+                <div class="slider-wrapper">
+                    <div class="slider-header"><span>Coolant Flow</span><span class="slider-val" id="val-coolant">85 L/m</span></div>
+                    <input type="range" id="param-coolant" min="0" max="200" value="85" oninput="updateParam('coolant', this.value, ' L/m')">
                 </div>
             </div>
 
             <div class="control-group">
                 <h3>Structural / Mechanical</h3>
-                <div class="slider-container">
-                    <div class="slider-header"><span>Axial Load</span><span id="val-load">45 kN</span></div>
-                    <input type="range" id="sim-load" min="0" max="150" value="45" oninput="updateVal('load', this.value, ' kN')">
+                <div class="slider-wrapper">
+                    <div class="slider-header"><span>Axial Load</span><span class="slider-val" id="val-load">45 kN</span></div>
+                    <input type="range" id="param-load" min="0" max="150" value="45" oninput="updateParam('load', this.value, ' kN')">
                 </div>
-                <div class="slider-container">
-                    <div class="slider-header"><span>Vibration (Freq)</span><span id="val-vib">60 Hz</span></div>
-                    <input type="range" id="sim-vib" min="10" max="500" value="60" oninput="updateVal('vib', this.value, ' Hz')">
-                </div>
-                <div class="slider-container">
-                    <div class="slider-header"><span>Internal Pressure</span><span id="val-pressure">1.2 MPa</span></div>
-                    <input type="range" id="sim-pressure" min="0.1" max="10.0" step="0.1" value="1.2" oninput="updateVal('pressure', this.value, ' MPa')">
+                <div class="slider-wrapper">
+                    <div class="slider-header"><span>Vibration (Freq)</span><span class="slider-val" id="val-vib">60 Hz</span></div>
+                    <input type="range" id="param-vib" min="10" max="500" value="60" oninput="updateParam('vib', this.value, ' Hz')">
                 </div>
             </div>
 
             <div class="control-group">
-                <h3>Electrical / Power</h3>
-                <div class="slider-container">
-                    <div class="slider-header"><span>Input Voltage</span><span id="val-volt">480 V</span></div>
-                    <input type="range" id="sim-volt" min="100" max="1000" value="480" oninput="updateVal('volt', this.value, ' V')">
-                </div>
-                <div class="slider-container">
-                    <div class="slider-header"><span>Phase Current</span><span id="val-curr">120 A</span></div>
-                    <input type="range" id="sim-curr" min="10" max="500" value="120" oninput="updateVal('curr', this.value, ' A')">
-                </div>
-                <div class="slider-container">
-                    <div class="slider-header"><span>Magnetic Flux</span><span id="val-flux">0.8 T</span></div>
-                    <input type="range" id="sim-flux" min="0.1" max="2.5" step="0.1" value="0.8" oninput="updateVal('flux', this.value, ' T')">
-                </div>
-            </div>
-
-            <div class="control-group">
-                <h3>Environmental</h3>
-                <div class="slider-container">
-                    <div class="slider-header"><span>Humidity</span><span id="val-hum">45 %</span></div>
-                    <input type="range" id="sim-hum" min="0" max="100" value="45" oninput="updateVal('hum', this.value, ' %')">
-                </div>
-                <div class="slider-container">
-                    <div class="slider-header"><span>Oxidation Index</span><span id="val-ox">0.02</span></div>
-                    <input type="range" id="sim-ox" min="0" max="1" step="0.01" value="0.02" oninput="updateVal('ox', this.value, '')">
+                <h3>Electrical Systems</h3>
+                <div class="slider-wrapper">
+                    <div class="slider-header"><span>Input Voltage</span><span class="slider-val" id="val-volt">480 V</span></div>
+                    <input type="range" id="param-volt" min="100" max="1000" value="480" oninput="updateParam('volt', this.value, ' V')">
                 </div>
             </div>
         </aside>
 
-        <!-- MAIN DATA PANELS -->
-        <main class="main-content">
+       <!-- SIMULATION DASHBOARD (PART 4) -->
+        <main class="workspace" id="main-workspace">
             
-            <!-- Panel 1: Live Oscilloscope (Visible in Both, but behaves differently) -->
-            <div class="panel full-width">
-                <div class="panel-header">
-                    <span id="title-graph1">Primary Telemetry Waveform</span>
-                    <span id="status-primary" class="status-indicator status-nominal">NOMINAL</span>
+            <!-- TOP METRICS ROW -->
+            <div class="top-readouts">
+                <div class="metric-card">
+                    <div class="metric-label">System Entropy</div>
+                    <div class="metric-value"><span id="metric-entropy">12.4</span><span class="metric-unit"> J/K</span></div>
                 </div>
-                <div style="height: 250px;">
-                    <canvas id="canvas-wave"></canvas>
+                <div class="metric-card">
+                    <div class="metric-label">Remaining Useful Life (RUL)</div>
+                    <div class="metric-value"><span id="metric-rul" class="status-optimal">8,420</span><span class="metric-unit"> hrs</span></div>
                 </div>
-            </div>
-
-            <!-- Panel 2: Numerical Readouts -->
-            <div class="panel full-width">
-                <div class="panel-header">
-                    <span>Instantaneous Metrics</span>
+                <div class="metric-card">
+                    <div class="metric-label">Failure Probability</div>
+                    <div class="metric-value"><span id="metric-prob">2.1</span><span class="metric-unit"> %</span></div>
                 </div>
-                <div class="data-grid">
-                    <div class="data-box">
-                        <div class="label">System Entropy (ΔS)</div>
-                        <div class="value" id="out-entropy">0.000 J/K</div>
-                    </div>
-                    <div class="data-box">
-                        <div class="label">Failure Probability (Pf)</div>
-                        <div class="value" id="out-prob">0.01%</div>
-                    </div>
-                    <div class="data-box">
-                        <div class="label">Remaining Useful Life</div>
-                        <div class="value" id="out-rul">14,500 Hrs</div>
-                    </div>
-                    <div class="data-box detailed-only-print">
-                        <div class="label">Resonance Factor</div>
-                        <div class="value" id="out-res">1.00</div>
-                    </div>
-                    <div class="data-box detailed-only-print">
-                        <div class="label">Thermal Stress Coefficient</div>
-                        <div class="value" id="out-therm">0.45</div>
-                    </div>
-                    <div class="data-box detailed-only-print">
-                        <div class="label">Power Factor (cos φ)</div>
-                        <div class="value" id="out-pf">0.95</div>
-                    </div>
+                <div class="metric-card">
+                    <div class="metric-label">Overall Health</div>
+                    <div class="metric-value"><span id="metric-health" class="status-optimal">98</span><span class="metric-unit"> /100</span></div>
                 </div>
             </div>
 
-            <!-- Panel 3: Secondary Graph (Detailed Mode: Frequency Spectrum, Summary Mode: Sub-system bars) -->
-            <div class="panel full-width">
-                <div class="panel-header">
-                    <span id="title-graph2">Secondary Analysis</span>
+          <!-- CANVAS CONTAINER (PART 5) -->
+            <div id="canvas-container" style="grid-column: span 12; display: grid; gap: 24px; grid-template-columns: repeat(12, 1fr);">
+                
+                <!-- PRIMARY WAVEFORM -->
+                <div class="canvas-panel">
+                    <div class="canvas-header">
+                        <span class="canvas-title">Primary Telemetry Waveform</span>
+                        <span style="color: var(--text-secondary); font-size: 0.85rem;" id="waveform-status">Real-time Core Monitoring</span>
+                    </div>
+                    <div class="canvas-wrapper">
+                        <canvas id="primary-waveform"></canvas>
+                    </div>
                 </div>
-                <div style="height: 300px;">
-                    <canvas id="canvas-secondary"></canvas>
-                </div>
-            </div>
+                
+                <!-- Canvas 2 will go here in Part 6 -->
 
-            <!-- Document Text Block for PDF (Hidden in UI, visible in Print) -->
-            <div class="panel full-width summary-only-print" style="display: none;">
-                <div class="panel-header"><span>Executive Summary</span></div>
-                <p style="color: #555; line-height: 1.6;">
-                    This automated summary report synthesizes data across the thermal, structural, electrical, and environmental sub-systems. 
-                    Calculations indicate overall structural integrity is maintained, though thermal efficiency is heavily dependent on coolant flow parameters. 
-                    Any variance beyond ±15% of nominal operating thresholds in pressure or vibration will exponentially increase the Failure Probability (Pf).
-                </p>
-            </div>
-
-            <div class="panel full-width detailed-only-print" style="display: none;">
-                <div class="panel-header"><span>Deep Dive Diagnostics</span></div>
-                <p style="color: #555; line-height: 1.6;">
-                    This detailed diagnostic isolates singular component behavior under the defined physical loads. Harmonic analysis shows a direct correlation 
-                    between input voltage frequency and mechanical resonance. 
-                    <br><br>
-                    <strong>Critical Calculation Parameters:</strong><br>
-                    Thermal Stress: <em>σ_t = E · α · ΔT</em><br>
-                    Resonance Multiplier: Active based on frequency overlap.
-                </p>
             </div>
 
         </main>
+
     </div>
 
+    <!-- CORE ENGINE LOGIC -->
     <script>
-        /* =========================================
-           STATE & CONFIGURATION
-           ========================================= */
-        let currentMode = ''; // 'detailed' or 'summary'
-        let animationFrameId;
-        
-        // Colors for canvases (matching the muted theme)
-        const colors = {
-            grid: '#333333',
-            traceDetailed: '#c62828', // Muted Red
-            traceSummary1: '#1565c0', // Muted Blue
-            traceSummary2: '#2e7d32', // Muted Green
-            traceSummary3: '#d97d00', // Muted Orange
-            text: '#888888'
+        // ==========================================
+        // STATE MANAGEMENT
+        // ==========================================
+        const AppState = {
+            activeAsset: null,
+            simulationRunning: false,
+            mode: null,
+            parameters: {temp: 450,
+                coolant: 85,
+                load: 45,
+                vib: 60,
+                volt: 480}
         };
 
-        // System state holding all slider values
-        const state = {
-            temp: 450, coolant: 85, exhaust: 120,
-            load: 45, vib: 60, pressure: 1.2,
-            volt: 480, curr: 120, flux: 0.8,
-            hum: 45, ox: 0.02,
-            time: 0
-        };
+        // ==========================================
+        // STARTUP MODAL LOGIC (PART 2)
+        // ==========================================
+        function setMode(mode) {
+            AppState.mode = mode;
+            console.log("Diagnostic mode engaged:", mode);
 
-        /* =========================================
-           INITIALIZATION & UI LOGIC
-           ========================================= */
-        function initSimulation(mode) {
-            currentMode = mode;
-            document.body.classList.add(`mode-${mode}`);
-            
-            // Hide Modal, Show Dashboard
-            document.getElementById('startup-modal').style.opacity = '0';
-            setTimeout(() => {
-                document.getElementById('startup-modal').style.display = 'none';
-                document.getElementById('main-dashboard').classList.add('active');
-            }, 500);
+            // ==========================================
+        // SIDEBAR CONTROL LOGIC (PART 3)
+        // ==========================================
+        function updateParam(key, value, unit) {
+            // Update the internal state memory
+            AppState.parameters[key] = parseFloat(value);
 
-            // Set titles based on mode
-            document.getElementById('mode-display').innerText = mode === 'detailed' ? 'MODE: DETAILED DIAGNOSTIC' : 'MODE: SIMULTANEOUS SUMMARY';
-            document.getElementById('title-graph1').innerText = mode === 'detailed' ? 'High-Resolution Harmonic Waveform (Core)' : 'Aggregate System Stability Trends';
-            document.getElementById('title-graph2').innerText = mode === 'detailed' ? 'Frequency Spectrum Analysis (FFT Approx)' : 'Sub-System Health Distribution';
-
-            // Start Render Loop
-            renderLoop();
-        }
-
-        function updateVal(key, value, unit) {
-            state[key] = parseFloat(value);
-            document.getElementById(`val-${key}`).innerText = value + unit;
-            calculatePhysics();
-        }
-
-        function generatePDF() {
-            // Since we cannot load heavy external libraries natively without risks of breaking in closed environments,
-            // we utilize a heavily styled print stylesheet to format the document as a high-quality PDF layout.
-            window.print();
-        }
-
-        /* =========================================
-           PHYSICS & MATH ENGINE
-           ========================================= */
+            // ==========================================
+        // PHYSICS & READOUT LOGIC (PART 4)
+        // ==========================================
         function calculatePhysics() {
-            // Complex (mock) physics calculations for "Detail and Precision"
+            const p = AppState.parameters;
             
-            // 1. Thermal Stress
-            const baseTemp = 293; // Room temp K
-            const deltaT = state.temp - baseTemp;
-            const thermalStress = (deltaT * 0.0012) - (state.coolant * 0.005);
-            const clampedThermal = Math.max(0, thermalStress);
-
-            // 2. Resonance (Detailed mode emphasis)
-            // If vibration hits harmonics of 60Hz (60, 120, 180...)
-            const remainder = state.vib % 60;
-            const resFactor = (remainder < 5 || remainder > 55) ? 1.5 + (state.load * 0.01) : 1.0;
-
-            // 3. Failure Probability
-            let baseProb = 0.001;
-            if (state.temp > 800) baseProb += (state.temp - 800) * 0.0005;
-            if (state.pressure > 5.0) baseProb += (state.pressure - 5.0) * 0.02;
-            baseProb *= resFactor;
+            // 1. Calculate System Entropy (Based on Temp and Vibration)
+            // Baseline entropy increases with temperature and high vibration
+            let entropy = (p.temp / 100) + (p.vib / 20);
             
-            // Add environmental degradation
-            baseProb += (state.hum * state.ox * 0.01);
+            // 2. Calculate Failure Probability (Based on Load, Volt, and Coolant)
+            // High load + low coolant = exponential probability increase
+            let coolantFactor = Math.max(1, 100 - p.coolant);
+            let probability = ((p.load / 150) * (p.volt / 480) * (coolantFactor / 50)) * 10;
             
-            const probPct = Math.min(99.99, baseProb * 100);
-
-            // 4. Remaining Useful Life (RUL)
-            const baseRul = 20000;
-            const currentRul = baseRul / Math.max(1, (baseProb * 1000));
-
-            // 5. Entropy calculation
-            const entropy = (state.volt * state.curr) / Math.max(1, state.temp);
-
-            // Update DOM
-            document.getElementById('out-entropy').innerText = entropy.toFixed(3) + ' J/K';
-            document.getElementById('out-prob').innerText = probPct.toFixed(2) + '%';
-            document.getElementById('out-rul').innerText = currentRul.toLocaleString(undefined, {maximumFractionDigits: 0}) + ' Hrs';
+            // Cap probability at 99.9%
+            probability = Math.min(99.9, Math.max(0.1, probability));
             
-            if(currentMode === 'detailed') {
-                document.getElementById('out-res').innerText = resFactor.toFixed(2);
-                document.getElementById('out-therm').innerText = clampedThermal.toFixed(2);
-                const pf = 1 - (state.flux * 0.1);
-                document.getElementById('out-pf').innerText = pf.toFixed(2);
-            }
+            // 3. Calculate Health Score
+            let health = 100 - (probability * 1.5) - (entropy * 0.5);
+            health = Math.min(100, Math.max(0, Math.round(health)));
 
-            // Update Status Badge
-            const statusBadge = document.getElementById('status-primary');
-            if (probPct > 50) {
-                statusBadge.className = 'status-indicator status-critical';
-                statusBadge.innerText = 'CRITICAL';
-            } else if (probPct > 15) {
-                statusBadge.className = 'status-indicator status-warning';
-                statusBadge.innerText = 'WARNING';
+            // 4. Calculate RUL (Remaining Useful Life)
+            let baseRul = 10000;
+            let rul = baseRul * (health / 100);
+
+            // Update DOM Elements
+            document.getElementById('metric-entropy').innerText = entropy.toFixed(2);
+            document.getElementById('metric-prob').innerText = probability.toFixed(1);
+            document.getElementById('metric-health').innerText = health;
+            document.getElementById('metric-rul').innerText = Math.round(rul).toLocaleString();
+
+            // Update Colors based on Health Status
+            const healthEl = document.getElementById('metric-health');
+            const rulEl = document.getElementById('metric-rul');
+            
+            // Remove existing status classes
+            healthEl.classList.remove('status-optimal', 'status-warning', 'status-critical');
+            rulEl.classList.remove('status-optimal', 'status-warning', 'status-critical');
+
+            // Apply new status classes
+            if (health >= 80) {
+                healthEl.classList.add('status-optimal');
+                rulEl.classList.add('status-optimal');
+            } else if (health >= 40) {
+                healthEl.classList.add('status-warning');
+                rulEl.classList.add('status-warning');
             } else {
-                statusBadge.className = 'status-indicator status-nominal';
-                statusBadge.innerText = 'NOMINAL';
+                healthEl.classList.add('status-critical');
+                rulEl.classList.add('status-critical');
             }
         }
 
-        /* =========================================
-           CANVAS RENDERER
-           ========================================= */
-        function renderLoop() {
-            state.time += 0.05;
-            
-            drawPrimaryGraph();
-            drawSecondaryGraph();
+            // ==========================================
+        // CANVAS RENDERING ENGINE (PART 5)
+        // ==========================================
+        let renderTime = 0;
+        let animationId = null;
 
-            animationFrameId = requestAnimationFrame(renderLoop);
-        }
-
-        function drawPrimaryGraph() {
-            const canvas = document.getElementById('canvas-wave');
-            if(!canvas) return;
+        function drawPrimaryWaveform() {
+            const canvas = document.getElementById('primary-waveform');
+            if (!canvas) return;
             const ctx = canvas.getContext('2d');
             
-            // Handle resizing
+            // Handle dynamic resizing
             const rect = canvas.parentElement.getBoundingClientRect();
             if (canvas.width !== rect.width || canvas.height !== rect.height) {
                 canvas.width = rect.width;
@@ -711,126 +587,92 @@
 
             const w = canvas.width;
             const h = canvas.height;
+            const p = AppState.parameters;
 
-            // Clear
+            // Clear frame
             ctx.clearRect(0, 0, w, h);
 
-            // Draw Grid
-            ctx.strokeStyle = colors.grid;
+            // Draw Background Grid
+            ctx.strokeStyle = '#222222';
             ctx.lineWidth = 1;
             ctx.beginPath();
-            for(let i=0; i<w; i+=50) { ctx.moveTo(i,0); ctx.lineTo(i,h); }
-            for(let i=0; i<h; i+=50) { ctx.moveTo(0,i); ctx.lineTo(w,i); }
+            for(let i = 0; i < w; i += 50) { ctx.moveTo(i, 0); ctx.lineTo(i, h); }
+            for(let i = 0; i < h; i += 50) { ctx.moveTo(0, i); ctx.lineTo(w, i); }
             ctx.stroke();
 
+            // Setup Waveform Style based on System Health
             ctx.lineWidth = 2;
             ctx.lineJoin = 'round';
-
-            if (currentMode === 'detailed') {
-                // High frequency complex wave (Singular deep focus)
-                ctx.strokeStyle = colors.traceDetailed;
-                ctx.beginPath();
-                for(let x=0; x<w; x++) {
-                    const t = x * 0.01 + state.time;
-                    const amplitude = h/3 + (state.load * 0.5);
-                    const baseFreq = Math.sin(t * (state.vib/20));
-                    const noise = Math.random() * (state.pressure * 2);
-                    const y = (h/2) + Math.sin(t) * amplitude * baseFreq + noise;
-                    if(x===0) ctx.moveTo(x, y);
-                    else ctx.lineTo(x, y);
-                }
-                ctx.stroke();
-
-            } else {
-                // Multiple slower trend lines (Summary focus)
-                const drawLine = (color, offset, speed, ampMod) => {
-                    ctx.strokeStyle = color;
-                    ctx.beginPath();
-                    for(let x=0; x<w; x+=5) {
-                        const t = x * 0.005 + state.time * speed;
-                        const y = (h/2) + offset + Math.sin(t) * (30 * ampMod);
-                        if(x===0) ctx.moveTo(x, y);
-                        else ctx.lineTo(x, y);
-                    }
-                    ctx.stroke();
-                };
-                
-                drawLine(colors.traceSummary1, -40, 0.5, state.temp/450); // Thermal trend
-                drawLine(colors.traceSummary2, 0, 0.8, state.load/45);    // Structural trend
-                drawLine(colors.traceSummary3, 40, 1.2, state.volt/480);  // Electrical trend
-            }
-        }
-
-        function drawSecondaryGraph() {
-            const canvas = document.getElementById('canvas-secondary');
-            if(!canvas) return;
-            const ctx = canvas.getContext('2d');
             
-            const rect = canvas.parentElement.getBoundingClientRect();
-            if (canvas.width !== rect.width || canvas.height !== rect.height) {
-                canvas.width = rect.width;
-                canvas.height = rect.height;
+            // Read the health score dynamically to change colors
+            const healthEl = document.getElementById('metric-health');
+            let healthScore = healthEl ? parseInt(healthEl.innerText) : 100;
+            
+            if (healthScore < 40) ctx.strokeStyle = '#d32f2f';      // Muted Red
+            else if (healthScore < 80) ctx.strokeStyle = '#f57c00'; // Muted Orange
+            else ctx.strokeStyle = '#1976d2';                       // Muted Blue
+
+            // Draw Physics-Driven Wave
+            ctx.beginPath();
+            for (let x = 0; x < w; x++) {
+                const t = (x * 0.01) + renderTime;
+                
+                // Math driving the visual wave
+                const amplitude = (h / 4) * (p.load / 45); 
+                const freq = p.vib / 30;
+                const thermalNoise = (Math.random() - 0.5) * (p.temp / 80);
+
+                const y = (h / 2) + Math.sin(t * freq) * amplitude + thermalNoise;
+
+                if (x === 0) ctx.moveTo(x, y);
+                else ctx.lineTo(x, y);
             }
-
-            const w = canvas.width;
-            const h = canvas.height;
-
-            ctx.clearRect(0, 0, w, h);
-
-            if (currentMode === 'detailed') {
-                // Draw FFT Spectrum Bars (Simulated based on Vibration and Flux)
-                const bars = 40;
-                const barW = (w / bars) - 2;
-                
-                ctx.fillStyle = colors.traceDetailed;
-                for(let i=0; i<bars; i++) {
-                    const peakTarget = Math.floor(state.vib / (500/bars));
-                    let val = Math.random() * 20;
-                    
-                    // Artificial resonance peak
-                    if (Math.abs(i - peakTarget) < 2) {
-                        val = 100 + (Math.random() * 50 * state.flux);
-                    }
-                    
-                    const barH = (val / 150) * h;
-                    ctx.fillRect(i * (barW + 2), h - barH, barW, barH);
-                }
-            } else {
-                // Draw System Health Radar/Bar Chart (Summary)
-                const sysNames = ['Thermal', 'Structural', 'Electrical', 'Environmental'];
-                
-                // Inverse health calculations (lower is better, we invert to show health bar)
-                const hTherm = 100 - ((state.temp/1200)*100);
-                const hStruc = 100 - ((state.load/150)*50 + (state.pressure/10)*50);
-                const hElec = 100 - (Math.abs(state.volt - 480)/1000 * 100);
-                const hEnv = 100 - ((state.hum/100)*50 + (state.ox/1)*50);
-                
-                const healths = [hTherm, hStruc, hElec, hEnv];
-                const barColors = [colors.traceSummary1, colors.traceSummary2, colors.traceSummary3, colors.text];
-
-                const barW = 60;
-                const spacing = (w - (barW * 4)) / 5;
-
-                for(let i=0; i<4; i++) {
-                    const x = spacing + (i * (barW + spacing));
-                    const barH = (Math.max(5, healths[i]) / 100) * (h - 40);
-                    
-                    // Draw Bar
-                    ctx.fillStyle = barColors[i];
-                    ctx.fillRect(x, (h-20) - barH, barW, barH);
-                    
-                    // Draw Label
-                    ctx.fillStyle = colors.text;
-                    ctx.font = "12px sans-serif";
-                    ctx.textAlign = "center";
-                    ctx.fillText(sysNames[i], x + (barW/2), h - 5);
-                }
-            }
+            ctx.stroke();
         }
 
-        // Initialize math on load
-        calculatePhysics();
+        function renderLoop() {
+            renderTime += 0.05;
+            drawPrimaryWaveform();
+            
+            // Loop continuously
+            animationId = requestAnimationFrame(renderLoop);
+        }
 
+        // Start the engine as soon as the script loads
+        renderLoop();
+        calculatePhysics(); // Run math once to populate initial data
+            
+            // Update the visual readout on the sidebar
+            document.getElementById(`val-${key}`).innerText = value + unit;
+            
+            // Trigger the physics engine recalculation (Will be built in Part 4 & 5)
+            if (typeof calculatePhysics === "function") {
+                calculatePhysics();
+            }
+        }
+            
+            // Fade out the modal smoothly
+            const modal = document.getElementById('startup-modal');
+            modal.style.opacity = '0';
+            
+            setTimeout(() => {
+                modal.style.visibility = 'hidden';
+                
+                // Add a CSS class to the body so the UI can adapt based on the mode
+                document.body.classList.add(`mode-${mode}`);
+            }, 500);
+        }
+
+        // ==========================================
+        // INITIALIZATION
+        // ==========================================
+        function initApp() {
+            console.log("ContinuumOne Engine Initialized.");
+            // Future startup logic, modal triggers, and data binding will go here
+        }
+
+        // Boot system when DOM is ready
+        document.addEventListener('DOMContentLoaded', initApp);
     </script>
 </body>
 </html>
