@@ -1,1559 +1,9169 @@
 <!DOCTYPE html>
-<html lang="en" data-theme="silver">
+<html lang="en">
+
 <head>
+
 <meta charset="UTF-8">
+
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>ContinuumOne :: Virtual Intelligence Simulation</title>
+
+
+<title>
+ContinuumOne | Industrial Predictive Intelligence Platform
+</title>
+
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+
+
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+
+
 <style>
+
+
 /* =====================================================
-   CONTINUUMONE :: DESIGN TOKENS
-   ===================================================== */
+CONTINUUMONE V2 FOUNDATION
+INDUSTRIAL INTELLIGENCE PLATFORM
+===================================================== */
+
+
 :root{
-  --c-bg:            #0a0b0d;
-  --c-bg-raised:     #111318;
-  --c-bg-panel:      #14161c;
-  --c-bg-inset:      #0d0e12;
-  --c-border:        #2a2d35;
-  --c-border-bright: #454952;
-  --c-silver:        #c7cad1;
-  --c-silver-dim:    #7d818c;
-  --c-silver-bright: #eef0f3;
-  --c-white:         #f5f6f8;
-  --c-green:         #4ce68a;
-  --c-green-dim:     #1e5c3c;
-  --c-amber:         #f0a93c;
-  --c-amber-dim:     #6b4c14;
-  --c-red:           #ef4b52;
-  --c-red-dim:       #6b1e21;
-  --c-accent:        var(--c-silver-bright);
-  --c-accent-dim:    var(--c-border-bright);
-  --font-display:    'Segoe UI', 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
-  --font-mono:       'Consolas', 'SFMono-Regular', 'Roboto Mono', monospace;
-  --radius:          2px;
-  --header-h:        56px;
-  --gap:             14px;
-  --pad:             16px;
-}
-/* ---- Theming: accent variants (kept within brand palette; no rainbow) ---- */
-html[data-theme="green"]{ --c-accent: var(--c-green); --c-accent-dim: var(--c-green-dim); }
-html[data-theme="amber"]{ --c-accent: var(--c-amber); --c-accent-dim: var(--c-amber-dim); }
-html[data-theme="silver"]{ --c-accent: var(--c-silver-bright); --c-accent-dim: var(--c-border-bright); }
-/* ---- Density ---- */
-body.density-compact{ --gap:9px; --pad:11px; font-size:13px; }
-body.density-compact .view-title{ font-size:19px; }
-body.density-compact #view{ padding:20px 26px 44px; }
 
-*{ box-sizing:border-box; margin:0; padding:0; }
-html,body{ height:100%; }
+
+--black:#050505;
+
+--panel:#0b0b0b;
+
+--panel-secondary:#101010;
+
+
+--border:#292929;
+
+
+--white:#f3f3f3;
+
+--silver:#bdbdbd;
+
+--grey:#7d7d7d;
+
+
+
+/* System states */
+
+--healthy:#477c59;
+
+--warning:#8a6c30;
+
+--critical:#853d3d;
+
+
+
+--font:
+"Inter",
+sans-serif;
+
+
+--mono:
+"Space Mono",
+monospace;
+
+
+}
+
+
+
+/* =====================================================
+BASE
+===================================================== */
+
+
+*{
+
+margin:0;
+
+padding:0;
+
+box-sizing:border-box;
+
+}
+
+
+
 body{
-  background:var(--c-bg);
-  color:var(--c-silver);
-  font-family:var(--font-display);
-  font-size:14px;
-  line-height:1.5;
-  -webkit-font-smoothing:antialiased;
-  background-image:
-    linear-gradient(var(--c-border) 1px, transparent 1px),
-    linear-gradient(90deg, var(--c-border) 1px, transparent 1px);
-  background-size:64px 64px;
-  background-attachment:fixed;
-  background-position:-1px -1px;
-  background-color:var(--c-bg);
-}
-body::before{
-  content:"";
-  position:fixed; inset:0;
-  background:radial-gradient(ellipse at 50% 0%, rgba(199,202,209,0.05), transparent 60%);
-  pointer-events:none;
-  z-index:0;
-}
-@media (prefers-reduced-motion: reduce){
-  *{ animation-duration:0.001ms !important; animation-iteration-count:1 !important; transition-duration:0.001ms !important; }
-}
-a{ color:inherit; text-decoration:none; }
-button{ font-family:inherit; cursor:pointer; }
-input,select{ font-family:inherit; }
-:focus-visible{ outline:1px solid var(--c-accent); outline-offset:2px; }
-::selection{ background:var(--c-silver-dim); color:var(--c-bg); }
-::-webkit-scrollbar{ width:10px; height:10px; }
-::-webkit-scrollbar-track{ background:var(--c-bg-inset); }
-::-webkit-scrollbar-thumb{ background:var(--c-border-bright); border-radius:0; }
-::-webkit-scrollbar-thumb:hover{ background:var(--c-silver-dim); }
 
-.mono{ font-family:var(--font-mono); }
-.eyebrow{
-  font-family:var(--font-mono);
-  font-size:10px;
-  letter-spacing:2.5px;
-  text-transform:uppercase;
-  color:var(--c-silver-dim);
+
+background:var(--black);
+
+color:var(--white);
+
+font-family:var(--font);
+
+height:100vh;
+
+overflow:hidden;
+
+
 }
-.hairline{ height:1px; background:linear-gradient(90deg, transparent, var(--c-border-bright), transparent); border:none; }
+
+
+
+a{
+
+color:inherit;
+
+text-decoration:none;
+
+}
+
+
 
 /* =====================================================
-   LAYOUT SHELL
-   ===================================================== */
-#app{ position:relative; z-index:1; min-height:100%; display:flex; flex-direction:column; }
+APPLICATION ROOT
+===================================================== */
 
-/* ---- Header / Mission Bar ---- */
-#topbar{
-  height:var(--header-h);
-  display:flex; align-items:center;
-  padding:0 20px;
-  border-bottom:1px solid var(--c-border);
-  background:linear-gradient(180deg, rgba(20,22,28,0.95), rgba(10,11,13,0.95));
-  backdrop-filter:blur(6px);
-  position:sticky; top:0; z-index:50;
-  gap:24px;
-}
-.brand{ display:flex; align-items:center; gap:10px; cursor:pointer; }
-.brand-mark{
-  width:30px; height:30px;
-  border:1px solid var(--c-border-bright);
-  display:flex; align-items:center; justify-content:center;
-  font-family:var(--font-mono); font-size:11px; font-weight:700;
-  color:var(--c-silver-bright);
-  position:relative;
-  background:conic-gradient(from 45deg, var(--c-bg-panel), var(--c-border-bright), var(--c-bg-panel));
-  overflow:hidden;
-}
-.brand-mark::after{
-  content:""; position:absolute; inset:3px; border:1px solid var(--c-border);
-}
-.brand-mark::before{
-  content:""; position:absolute; left:0; top:-100%; width:100%; height:40%;
-  background:linear-gradient(180deg, transparent, rgba(238,240,243,0.35), transparent);
-  animation:scan 3.2s linear infinite;
-}
-@keyframes scan{ 0%{ top:-40%; } 100%{ top:120%; } }
-.brand-text{ display:flex; flex-direction:column; line-height:1.15; }
-.brand-text .name{ font-size:13px; font-weight:600; letter-spacing:1px; color:var(--c-silver-bright); }
-.brand-text .sub{ font-size:9px; letter-spacing:1.5px; color:var(--c-silver-dim); text-transform:uppercase; }
 
-#topnav{ display:flex; gap:2px; margin-left:12px; }
-.nav-btn{
-  background:transparent; border:1px solid transparent; color:var(--c-silver-dim);
-  padding:8px 14px; font-size:11px; letter-spacing:1.2px; text-transform:uppercase;
-  font-family:var(--font-mono);
-  transition:all .15s ease;
-}
-.nav-btn:hover{ color:var(--c-silver-bright); border-color:var(--c-border); }
-.nav-btn.active{ color:var(--c-bg); border-color:var(--c-accent); background:var(--c-accent); }
+#continuumone{
 
-.status-cluster{ margin-left:auto; display:flex; align-items:center; gap:18px; }
-.status-item{ display:flex; align-items:center; gap:6px; font-family:var(--font-mono); font-size:10px; letter-spacing:1px; color:var(--c-silver-dim); text-transform:uppercase; }
-.status-dot{ width:6px; height:6px; border-radius:50%; background:var(--c-green); box-shadow:0 0 6px var(--c-green); }
-#clock{ font-family:var(--font-mono); font-size:11px; color:var(--c-silver); letter-spacing:1px; }
-.icon-btn{
-  width:30px; height:30px; display:flex; align-items:center; justify-content:center;
-  background:transparent; border:1px solid var(--c-border); color:var(--c-silver-dim);
-  transition:all .15s ease;
-}
-.icon-btn:hover{ color:var(--c-silver-bright); border-color:var(--c-border-bright); }
-.icon-btn svg{ width:15px; height:15px; }
 
-/* ---- Main content ---- */
-#view{ flex:1; padding:28px 32px 60px; max-width:1500px; width:100%; margin:0 auto; }
-.view-header{ display:flex; align-items:flex-end; justify-content:space-between; margin-bottom:22px; flex-wrap:wrap; gap:12px; }
-.view-title{ font-size:22px; font-weight:600; color:var(--c-white); letter-spacing:0.3px; }
-.view-title .accent{ color:var(--c-silver-dim); font-weight:400; }
-.breadcrumb{ font-family:var(--font-mono); font-size:10px; letter-spacing:1.5px; text-transform:uppercase; color:var(--c-silver-dim); margin-bottom:6px; }
-.breadcrumb a:hover{ color:var(--c-silver-bright); }
-.header-actions{ display:flex; gap:8px; align-items:center; }
+height:100vh;
+
+display:flex;
+
+flex-direction:column;
+
+
+}
+
+
 
 /* =====================================================
-   COMPONENTS
-   ===================================================== */
-.panel{
-  background:var(--c-bg-panel);
-  border:1px solid var(--c-border);
-  border-radius:var(--radius);
-  position:relative;
-}
-.panel-header{
-  display:flex; align-items:center; justify-content:space-between;
-  padding:12px 16px; border-bottom:1px solid var(--c-border);
-  gap:10px; flex-wrap:wrap;
-}
-.panel-header h3{ font-size:11px; letter-spacing:1.8px; text-transform:uppercase; color:var(--c-silver-dim); font-weight:600; font-family:var(--font-mono); }
-.panel-body{ padding:var(--pad); }
+HEADER
+===================================================== */
 
-.btn{
-  display:inline-flex; align-items:center; gap:8px;
-  background:var(--c-bg-raised); border:1px solid var(--c-border-bright);
-  color:var(--c-silver-bright); padding:9px 18px;
-  font-size:11px; letter-spacing:1.5px; text-transform:uppercase; font-family:var(--font-mono);
-  transition:all .15s ease;
-}
-.btn:hover{ background:var(--c-border-bright); color:var(--c-bg); }
-.btn-primary{ border-color:var(--c-accent); color:var(--c-bg); background:var(--c-accent); }
-.btn-primary:hover{ filter:brightness(1.12); }
-.btn-ghost{ background:transparent; border-color:var(--c-border); color:var(--c-silver-dim); }
-.btn-ghost:hover{ background:var(--c-bg-raised); color:var(--c-silver-bright); border-color:var(--c-border-bright); }
-.btn:disabled{ opacity:0.35; cursor:not-allowed; pointer-events:none; }
-.btn-sm{ padding:6px 12px; font-size:10px; }
 
-.badge{
-  display:inline-flex; align-items:center; gap:5px;
-  font-family:var(--font-mono); font-size:10px; letter-spacing:1px; text-transform:uppercase;
-  padding:3px 8px; border:1px solid var(--c-border-bright); color:var(--c-silver);
-}
-.badge-dot{ width:5px; height:5px; border-radius:50%; }
-.badge.risk-low{ color:var(--c-green); border-color:var(--c-green-dim); }
-.badge.risk-low .badge-dot{ background:var(--c-green); box-shadow:0 0 5px var(--c-green); }
-.badge.risk-moderate{ color:var(--c-amber); border-color:var(--c-amber-dim); }
-.badge.risk-moderate .badge-dot{ background:var(--c-amber); box-shadow:0 0 5px var(--c-amber); }
-.badge.risk-high, .badge.risk-critical{ color:var(--c-red); border-color:var(--c-red-dim); }
-.badge.risk-high .badge-dot, .badge.risk-critical .badge-dot{ background:var(--c-red); box-shadow:0 0 5px var(--c-red); }
+.top-header{
 
-/* ---- Tabs ---- */
-.tabbar{ display:flex; gap:2px; border-bottom:1px solid var(--c-border); margin-bottom:16px; }
-.tab-btn{
-  background:transparent; border:none; border-bottom:2px solid transparent;
-  color:var(--c-silver-dim); padding:10px 16px; font-size:11px; letter-spacing:1.3px;
-  text-transform:uppercase; font-family:var(--font-mono);
-}
-.tab-btn:hover{ color:var(--c-silver-bright); }
-.tab-btn.active{ color:var(--c-accent); border-bottom-color:var(--c-accent); }
 
-/* ---- Asset Library ---- */
-.toolbar{ display:flex; gap:10px; margin-bottom:20px; flex-wrap:wrap; align-items:center; }
-.search-input{
-  flex:1; min-width:220px;
-  background:var(--c-bg-inset); border:1px solid var(--c-border);
-  color:var(--c-silver-bright); padding:10px 14px; font-size:13px;
-}
-.search-input:focus{ outline:none; border-color:var(--c-accent); }
-.search-input::placeholder{ color:var(--c-silver-dim); }
-.select{
-  background:var(--c-bg-inset); border:1px solid var(--c-border); color:var(--c-silver);
-  padding:10px 12px; font-size:12px; font-family:var(--font-mono); letter-spacing:0.5px;
-}
-.select:focus{ outline:none; border-color:var(--c-accent); }
+height:84px;
 
-.category-rail{ display:flex; gap:8px; margin-bottom:20px; flex-wrap:wrap; }
-.category-chip{
-  border:1px solid var(--c-border); background:var(--c-bg-raised); color:var(--c-silver-dim);
-  padding:7px 14px; font-size:10px; letter-spacing:1.3px; text-transform:uppercase; font-family:var(--font-mono);
-  display:flex; align-items:center; gap:8px;
-}
-.category-chip .count{ color:var(--c-silver-dim); }
-.category-chip:hover{ border-color:var(--c-border-bright); color:var(--c-silver-bright); }
-.category-chip.active{ border-color:var(--c-accent); color:var(--c-white); background:var(--c-bg-panel); }
+background:#070707;
 
-.asset-grid{ display:grid; grid-template-columns:repeat(auto-fill, minmax(300px,1fr)); gap:var(--gap); }
-.asset-card{
-  background:var(--c-bg-panel); border:1px solid var(--c-border); padding:16px;
-  cursor:pointer; transition:all .15s ease; position:relative; overflow:hidden;
-}
-.asset-card:hover{ border-color:var(--c-accent-dim); transform:translateY(-1px); box-shadow:0 6px 20px rgba(0,0,0,0.4); }
-.asset-card::before{
-  content:""; position:absolute; top:0; left:0; width:2px; height:100%;
-  background:var(--c-accent); opacity:0; transition:opacity .15s;
-}
-.asset-card:hover::before{ opacity:1; }
-.asset-card-top{ display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:10px; }
-.asset-card .cat-tag{ font-family:var(--font-mono); font-size:9px; letter-spacing:1.5px; text-transform:uppercase; color:var(--c-silver-dim); }
-.asset-card h4{ font-size:15px; color:var(--c-silver-bright); font-weight:600; margin:4px 0 2px; }
-.asset-card .mfg{ font-size:11.5px; color:var(--c-silver-dim); margin-bottom:12px; }
-.asset-card .meta-row{ display:flex; justify-content:space-between; font-family:var(--font-mono); font-size:10px; color:var(--c-silver-dim); border-top:1px solid var(--c-border); padding-top:10px; }
-.asset-card .health-mini{ display:flex; align-items:center; gap:6px; }
-.health-bar{ width:50px; height:4px; background:var(--c-bg-inset); position:relative; overflow:hidden; }
-.health-bar-fill{ height:100%; background:var(--c-green); }
-.pin-btn{
-  position:absolute; top:10px; right:10px; width:22px; height:22px;
-  border:1px solid var(--c-border); background:var(--c-bg-raised); color:var(--c-silver-dim);
-  display:flex; align-items:center; justify-content:center; font-size:12px; z-index:2;
-}
-.pin-btn.pinned{ color:var(--c-accent); border-color:var(--c-accent); }
+border-bottom:1px solid var(--border);
 
-.empty-state{ text-align:center; padding:70px 20px; color:var(--c-silver-dim); }
-.empty-state .eyebrow{ margin-bottom:10px; }
 
-/* ---- Dossier ---- */
-.dossier-grid{ display:grid; grid-template-columns:2fr 1fr; gap:var(--gap); align-items:start; }
-@media (max-width:900px){ .dossier-grid{ grid-template-columns:1fr; } }
-.spec-table{ width:100%; border-collapse:collapse; }
-.spec-table tr{ border-bottom:1px solid var(--c-border); }
-.spec-table tr:last-child{ border-bottom:none; }
-.spec-table td{ padding:10px 4px; font-size:12.5px; }
-.spec-table td:first-child{ color:var(--c-silver-dim); font-family:var(--font-mono); font-size:10.5px; letter-spacing:1px; text-transform:uppercase; width:40%; }
-.spec-table td:last-child{ color:var(--c-silver-bright); text-align:right; }
+display:flex;
 
-.failure-mode-item{ padding:12px 0; border-bottom:1px solid var(--c-border); }
-.failure-mode-item:last-child{ border-bottom:none; }
-.failure-mode-item .fm-head{ display:flex; justify-content:space-between; align-items:center; margin-bottom:5px; gap:10px; }
-.failure-mode-item .fm-name{ color:var(--c-silver-bright); font-weight:600; font-size:12.5px; }
-.failure-mode-item .fm-weight{ font-family:var(--font-mono); font-size:10px; color:var(--c-silver-dim); white-space:nowrap; }
-.failure-mode-item p{ font-size:12px; color:var(--c-silver-dim); line-height:1.5; margin-bottom:6px; }
-.sensitivity-row{ display:flex; gap:3px; margin-top:6px; }
-.sensitivity-seg{ flex:1; height:4px; background:var(--c-bg-inset); position:relative; }
-.sensitivity-seg .fill{ position:absolute; left:0; top:0; bottom:0; background:var(--c-silver-dim); }
-.sensitivity-legend{ display:flex; justify-content:space-between; font-family:var(--font-mono); font-size:8px; color:var(--c-silver-dim); margin-top:3px; letter-spacing:0.5px; }
+align-items:center;
 
-.telemetry-row{ display:flex; justify-content:space-between; align-items:center; padding:10px 0; border-bottom:1px solid var(--c-border); gap:10px; }
-.telemetry-row:last-child{ border-bottom:none; }
-.telemetry-row .t-name{ font-size:12px; color:var(--c-silver-bright); }
-.telemetry-row .t-mode{ font-size:9.5px; color:var(--c-silver-dim); font-family:var(--font-mono); text-transform:uppercase; }
-.telemetry-row .t-unit{ font-family:var(--font-mono); font-size:10px; color:var(--c-silver-dim); white-space:nowrap; }
+justify-content:space-between;
 
-.stat-block{ text-align:center; padding:18px 10px; border:1px solid var(--c-border); background:var(--c-bg-inset); }
-.stat-block .num{ font-family:var(--font-mono); font-size:26px; color:var(--c-silver-bright); font-weight:700; }
-.stat-block .lbl{ font-size:9.5px; letter-spacing:1.3px; text-transform:uppercase; color:var(--c-silver-dim); margin-top:4px; }
-.stat-row{ display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-bottom:14px; }
 
-/* ---- Config ---- */
-.config-grid{ display:grid; grid-template-columns:1.3fr 1fr; gap:var(--gap); align-items:start; }
-@media (max-width:900px){ .config-grid{ grid-template-columns:1fr; } }
-.mode-toggle{ display:flex; gap:10px; margin-bottom:18px; }
-.mode-card{
-  flex:1; border:1px solid var(--c-border); background:var(--c-bg-raised); padding:16px;
-  cursor:pointer; transition:all .15s;
-}
-.mode-card:hover{ border-color:var(--c-border-bright); }
-.mode-card.active{ border-color:var(--c-accent); background:var(--c-bg-panel); }
-.mode-card .mc-title{ color:var(--c-silver-bright); font-weight:600; font-size:13px; margin-bottom:4px; }
-.mode-card .mc-desc{ font-size:11.5px; color:var(--c-silver-dim); }
+padding:0 35px;
 
-.preset-row{ display:flex; gap:8px; flex-wrap:wrap; margin-bottom:18px; }
-.preset-chip{
-  border:1px solid var(--c-border); background:var(--c-bg-raised); color:var(--c-silver-dim);
-  padding:6px 12px; font-size:10px; letter-spacing:1px; text-transform:uppercase; font-family:var(--font-mono);
-}
-.preset-chip:hover{ border-color:var(--c-border-bright); color:var(--c-silver-bright); }
 
-.slider-group{ margin-bottom:20px; }
-.slider-label{ display:flex; justify-content:space-between; margin-bottom:8px; }
-.slider-label .name{ font-size:11.5px; text-transform:uppercase; letter-spacing:1px; color:var(--c-silver-dim); font-family:var(--font-mono); }
-.slider-label .val{ font-family:var(--font-mono); font-size:12px; color:var(--c-silver-bright); }
-input[type=range]{
-  -webkit-appearance:none; width:100%; height:2px; background:var(--c-border-bright); outline:none;
-}
-input[type=range]::-webkit-slider-thumb{
-  -webkit-appearance:none; width:14px; height:14px; background:var(--c-accent);
-  border:2px solid var(--c-bg); cursor:pointer; border-radius:0;
-}
-input[type=range]::-moz-range-thumb{
-  width:14px; height:14px; background:var(--c-accent); border:2px solid var(--c-bg); cursor:pointer; border-radius:0;
 }
 
-.multi-asset-list{ display:flex; flex-direction:column; gap:6px; max-height:340px; overflow-y:auto; }
-.multi-asset-row{
-  display:flex; align-items:center; gap:10px; padding:9px 10px; border:1px solid var(--c-border);
-  font-size:12px; cursor:pointer;
-}
-.multi-asset-row:hover{ border-color:var(--c-border-bright); }
-.multi-asset-row.checked{ border-color:var(--c-accent); background:var(--c-bg-raised); }
-.multi-asset-row input{ accent-color:var(--c-accent); }
 
-/* ---- Dashboard / Gauges ---- */
-.dashboard-grid{ display:grid; grid-template-columns:repeat(4, 1fr); gap:var(--gap); margin-bottom:20px; }
-@media (max-width:1100px){ .dashboard-grid{ grid-template-columns:repeat(2,1fr); } }
-.gauge-card{ text-align:center; padding:20px 14px; }
-.gauge-card svg{ display:block; margin:0 auto; }
-.gauge-value{ font-family:var(--font-mono); font-size:28px; font-weight:700; }
-.gauge-label{ font-size:10px; letter-spacing:1.5px; text-transform:uppercase; color:var(--c-silver-dim); margin-top:6px; }
 
-.result-lower{ display:grid; grid-template-columns:1.3fr 1fr; gap:var(--gap); margin-bottom:var(--gap); }
-@media (max-width:900px){ .result-lower{ grid-template-columns:1fr; } }
-.mode-rank{ display:flex; justify-content:space-between; align-items:center; padding:10px 0; border-bottom:1px solid var(--c-border); gap:10px; }
-.mode-rank:last-child{ border-bottom:none; }
-.mode-rank .rank-name{ font-size:12.5px; color:var(--c-silver-bright); }
-.mode-rank .rank-bar-wrap{ display:flex; align-items:center; gap:10px; width:55%; }
-.rank-bar{ flex:1; height:6px; background:var(--c-bg-inset); position:relative; overflow:hidden; }
-.rank-bar-fill{ height:100%; background:var(--c-silver); }
-.rank-pct{ font-family:var(--font-mono); font-size:11px; width:38px; text-align:right; color:var(--c-silver-dim); }
+/* Logo + company wrapper */
 
-.readout-list{ display:flex; flex-direction:column; gap:0; }
-.readout-row{ display:flex; justify-content:space-between; padding:9px 0; border-bottom:1px solid var(--c-border); font-size:12px; gap:10px; }
-.readout-row:last-child{ border-bottom:none; }
-.readout-row .k{ color:var(--c-silver-dim); font-family:var(--font-mono); font-size:10.5px; letter-spacing:0.8px; text-transform:uppercase; }
-.readout-row .v{ color:var(--c-silver-bright); font-weight:600; text-align:right; }
 
-.chart-wrap{ padding:6px 4px; }
-.chart-legend{ display:flex; gap:16px; margin-top:8px; flex-wrap:wrap; }
-.chart-legend-item{ display:flex; align-items:center; gap:6px; font-family:var(--font-mono); font-size:9.5px; color:var(--c-silver-dim); text-transform:uppercase; letter-spacing:0.6px; }
-.chart-legend-item .sw{ width:9px; height:9px; }
+.brand-link{
 
-/* ---- Report ---- */
-.report-toggle{ display:flex; gap:10px; margin-bottom:18px; flex-wrap:wrap; }
-.report-doc{
-  background:#f5f6f8; color:#14161c; padding:44px 52px; max-width:820px; margin:0 auto;
-  font-family:'Georgia', serif; line-height:1.6; border:1px solid var(--c-border-bright);
-}
-.report-doc h1{ font-family:var(--font-display); font-size:22px; border-bottom:3px solid #14161c; padding-bottom:12px; margin-bottom:4px; }
-.report-doc .report-sub{ font-family:var(--font-mono); font-size:11px; letter-spacing:1px; color:#555; margin-bottom:24px; text-transform:uppercase; }
-.report-doc h2{ font-size:14px; text-transform:uppercase; letter-spacing:1.5px; margin:26px 0 10px; border-bottom:1px solid #ccc; padding-bottom:6px; font-family:var(--font-display); }
-.report-doc p{ font-size:13.5px; margin-bottom:10px; }
-.report-doc table{ width:100%; border-collapse:collapse; margin:10px 0; }
-.report-doc td, .report-doc th{ padding:7px 8px; border:1px solid #ccc; font-size:12.5px; text-align:left; }
-.report-doc th{ background:#e8e8ea; font-family:var(--font-mono); font-size:10px; text-transform:uppercase; letter-spacing:1px; }
-.report-doc .risk-flag{ font-weight:700; }
-.report-actions{ display:flex; justify-content:center; gap:10px; margin-top:20px; }
-@media print{
-  #topbar, #statusbar, .report-toggle, .report-actions{ display:none !important; }
-  body{ background:#fff; }
-  .report-doc{ border:none; }
+
+display:flex;
+
+align-items:center;
+
+gap:18px;
+
+
 }
 
-/* ---- Analytics ---- */
-.analytics-grid{ display:grid; grid-template-columns:1fr 1fr; gap:var(--gap); margin-bottom:var(--gap); }
-@media (max-width:900px){ .analytics-grid{ grid-template-columns:1fr; } }
-.heatmap{ display:grid; grid-template-columns:repeat(auto-fill,minmax(90px,1fr)); gap:6px; }
-.heatmap-cell{ aspect-ratio:1; border:1px solid var(--c-border); display:flex; flex-direction:column; align-items:center; justify-content:center; gap:4px; padding:6px; text-align:center; cursor:pointer; }
-.heatmap-cell:hover{ border-color:var(--c-accent); }
-.heatmap-cell .hc-name{ font-size:9.5px; color:var(--c-silver-bright); line-height:1.2; }
-.heatmap-cell .hc-val{ font-family:var(--font-mono); font-size:14px; font-weight:700; }
 
-.rank-list-row{ display:flex; align-items:center; gap:12px; padding:10px 0; border-bottom:1px solid var(--c-border); }
-.rank-list-row:last-child{ border-bottom:none; }
-.rank-list-row .rl-idx{ font-family:var(--font-mono); color:var(--c-silver-dim); font-size:11px; width:20px; }
-.rank-list-row .rl-name{ flex:1; font-size:12.5px; color:var(--c-silver-bright); cursor:pointer; }
-.rank-list-row .rl-name:hover{ color:var(--c-accent); }
-.rank-list-row .rl-bar{ width:100px; height:5px; background:var(--c-bg-inset); position:relative; }
-.rank-list-row .rl-fill{ height:100%; }
 
-/* ---- Footer status bar ---- */
-#statusbar{
-  border-top:1px solid var(--c-border); padding:8px 20px; display:flex; gap:24px;
-  font-family:var(--font-mono); font-size:10px; color:var(--c-silver-dim); letter-spacing:0.8px;
-  flex-wrap:wrap;
+/* Reserved logo area */
+
+
+.logo-container{
+
+
+height:52px;
+
+width:52px;
+
+
+border:1px solid var(--border);
+
+
+display:flex;
+
+align-items:center;
+
+justify-content:center;
+
+
+background:#090909;
+
+
 }
 
-/* ---- Settings modal ---- */
-.modal-overlay{
-  position:fixed; inset:0; background:rgba(6,7,9,0.72); backdrop-filter:blur(2px);
-  display:flex; align-items:center; justify-content:center; z-index:200;
-}
-.modal{
-  width:420px; max-width:92vw; background:var(--c-bg-panel); border:1px solid var(--c-border-bright);
-  box-shadow:0 20px 60px rgba(0,0,0,0.6);
-}
-.modal-header{ display:flex; justify-content:space-between; align-items:center; padding:14px 18px; border-bottom:1px solid var(--c-border); }
-.modal-header h3{ font-size:12px; letter-spacing:1.5px; text-transform:uppercase; color:var(--c-silver-bright); font-family:var(--font-mono); }
-.modal-close{ background:transparent; border:none; color:var(--c-silver-dim); font-size:16px; line-height:1; }
-.modal-close:hover{ color:var(--c-silver-bright); }
-.modal-body{ padding:18px; display:flex; flex-direction:column; gap:18px; }
-.setting-row{ display:flex; flex-direction:column; gap:8px; }
-.setting-row .setting-label{ font-size:11px; letter-spacing:1.2px; text-transform:uppercase; color:var(--c-silver-dim); font-family:var(--font-mono); }
-.option-row{ display:flex; gap:8px; flex-wrap:wrap; }
-.option-btn{
-  border:1px solid var(--c-border); background:var(--c-bg-raised); color:var(--c-silver-dim);
-  padding:8px 14px; font-size:11px; font-family:var(--font-mono); letter-spacing:1px; text-transform:uppercase;
-  display:flex; align-items:center; gap:8px;
-}
-.option-btn:hover{ border-color:var(--c-border-bright); color:var(--c-silver-bright); }
-.option-btn.active{ border-color:var(--c-accent); color:var(--c-white); background:var(--c-bg-panel); }
-.swatch{ width:10px; height:10px; display:inline-block; }
 
-/* ---- Utility ---- */
-.flex-between{ display:flex; justify-content:space-between; align-items:center; }
-.mb-10{ margin-bottom:10px; } .mb-14{ margin-bottom:14px; } .mb-18{ margin-bottom:18px; } .mb-20{ margin-bottom:20px; }
-.text-dim{ color:var(--c-silver-dim); }
-.section-gap{ margin-bottom:var(--gap); }
+
+.logo-container img{
+
+
+max-width:100%;
+
+max-height:100%;
+
+
+}
+
+
+
+.logo-placeholder{
+
+
+font-family:var(--mono);
+
+font-size:9px;
+
+color:var(--grey);
+
+
+}
+
+
+
+/* Company identity */
+
+
+.brand-text{
+
+
+display:flex;
+
+flex-direction:column;
+
+
+}
+
+
+
+.company-name{
+
+
+font-size:24px;
+
+font-weight:600;
+
+letter-spacing:3px;
+
+
+}
+
+
+
+.company-description{
+
+
+font-family:var(--mono);
+
+font-size:11px;
+
+letter-spacing:1px;
+
+color:var(--grey);
+
+margin-top:5px;
+
+
+}
+
+
+
+/* =====================================================
+SYSTEM STATUS
+===================================================== */
+
+
+.status-area{
+
+
+display:flex;
+
+align-items:center;
+
+gap:12px;
+
+
+font-family:var(--mono);
+
+font-size:12px;
+
+color:var(--silver);
+
+
+}
+
+
+
+.status-dot{
+
+
+height:9px;
+
+width:9px;
+
+
+border-radius:50%;
+
+
+background:var(--healthy);
+
+
+}
+
+
+
+/* =====================================================
+MAIN APPLICATION GRID
+===================================================== */
+
+
+.application-grid{
+
+
+flex:1;
+
+
+display:grid;
+
+
+grid-template-columns:260px 1fr 320px;
+
+
+overflow:hidden;
+
+
+}
+
+
+
+/* =====================================================
+MODULE NAVIGATION
+===================================================== */
+
+
+.navigation-panel{
+
+
+background:#080808;
+
+
+border-right:1px solid var(--border);
+
+
+padding:25px;
+
+
+}
+
+
+
+.navigation-title{
+
+
+font-family:var(--mono);
+
+font-size:11px;
+
+letter-spacing:2px;
+
+color:var(--grey);
+
+
+margin-bottom:20px;
+
+
+}
+
+
+
+.navigation-item{
+
+
+padding:14px;
+
+border:1px solid transparent;
+
+
+margin-bottom:8px;
+
+
+color:var(--silver);
+
+
+font-size:14px;
+
+
+}
+
+
+
+.navigation-item:hover{
+
+
+border-color:#444;
+
+color:white;
+
+
+}
+
+
+
+.navigation-item.active{
+
+
+border-color:#555;
+
+color:white;
+
+
+}
+
+
+
+/* =====================================================
+CORE WORKSPACE
+===================================================== */
+
+
+.core-workspace{
+
+
+padding:30px;
+
+
+overflow:auto;
+
+
+}
+
+
+
+.workspace-heading{
+
+
+font-size:28px;
+
+font-weight:500;
+
+
+}
+
+
+
+.workspace-description{
+
+
+font-size:13px;
+
+color:var(--grey);
+
+
+margin-top:8px;
+
+
+}
+
+
+
+/* =====================================================
+ENGINE MOUNTING AREAS
+===================================================== */
+
+
+.engine-container{
+
+
+margin-top:30px;
+
+
+background:var(--panel);
+
+
+border:1px solid var(--border);
+
+
+padding:22px;
+
+
+}
+
+
+
+.engine-label{
+
+
+font-family:var(--mono);
+
+font-size:11px;
+
+letter-spacing:2px;
+
+color:var(--silver);
+
+
+margin-bottom:15px;
+
+
+}
+
+
+
+/* Future dynamic content areas */
+
+
+#asset-library{
+
+min-height:200px;
+
+}
+
+
+
+#simulation-engine{
+
+min-height:200px;
+
+}
+
+
+
+#prediction-engine{
+
+min-height:200px;
+
+}
+
+
+
+#report-engine{
+
+min-height:200px;
+
+}
+
+
+
+
+
+/* =====================================================
+INTELLIGENCE PANEL
+===================================================== */
+
+
+.intelligence-panel{
+
+
+background:#080808;
+
+
+border-left:1px solid var(--border);
+
+
+padding:25px;
+
+
+}
+
+
+
+.intelligence-title{
+
+
+font-family:var(--mono);
+
+font-size:11px;
+
+letter-spacing:2px;
+
+color:var(--grey);
+
+
+margin-bottom:20px;
+
+
+}
+
+
+
+.metric-box{
+
+
+background:#0d0d0d;
+
+
+border:1px solid var(--border);
+
+
+padding:18px;
+
+
+margin-bottom:15px;
+
+
+}
+
+
+
+.metric-name{
+
+
+font-family:var(--mono);
+
+font-size:11px;
+
+color:var(--grey);
+
+
+}
+
+
+
+.metric-value{
+
+
+font-size:24px;
+
+margin-top:8px;
+
+
+}
+
+
+
+.health{
+
+color:var(--healthy);
+
+}
+
+
+.warning{
+
+color:var(--warning);
+
+}
+
+
+.critical{
+
+color:var(--critical);
+
+}
+
+
+
+/* =====================================================
+BUTTON FOUNDATION
+===================================================== */
+
+
+.system-button{
+
+
+width:100%;
+
+
+padding:14px;
+
+
+background:#111;
+
+
+border:1px solid #444;
+
+
+color:white;
+
+
+font-size:14px;
+
+
+}
+
+
+
+.system-button:hover{
+
+
+border-color:#777;
+
+
+}
+
+
+
 </style>
+
+
 </head>
+
+
+
 <body>
-<div id="app">
 
-  <!-- ============= TOP BAR ============= -->
-  <header id="topbar">
-    <div class="brand" id="brand-home">
-      <div class="brand-mark">C1</div>
-      <div class="brand-text">
-        <span class="name">CONTINUUMONE</span>
-        <span class="sub">Virtual Intelligence Simulation</span>
-      </div>
-    </div>
-    <nav id="topnav">
-      <button class="nav-btn" data-route="library">Asset Library</button>
-      <button class="nav-btn" data-route="dashboard">Prediction Dashboard</button>
-      <button class="nav-btn" data-route="analytics">Analytics</button>
-      <button class="nav-btn" data-route="report">Report</button>
-    </nav>
-    <div class="status-cluster">
-      <div class="status-item"><span class="status-dot"></span>SYSTEM NOMINAL</div>
-      <div class="status-item" id="asset-count-status">— ASSETS INDEXED</div>
-      <div class="mono" id="clock">--:--:--</div>
-      <button class="icon-btn" id="settings-btn" title="Platform Settings" aria-label="Platform Settings">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .34 1.87l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.7 1.7 0 0 0-1.87-.34 1.7 1.7 0 0 0-1 1.55V21a2 2 0 0 1-4 0v-.09A1.7 1.7 0 0 0 9 19.4a1.7 1.7 0 0 0-1.87.34l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06A1.7 1.7 0 0 0 4.6 15a1.7 1.7 0 0 0-1.55-1H3a2 2 0 0 1 0-4h.09A1.7 1.7 0 0 0 4.6 9a1.7 1.7 0 0 0-.34-1.87l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06A1.7 1.7 0 0 0 9 4.6a1.7 1.7 0 0 0 1-1.55V3a2 2 0 0 1 4 0v.09a1.7 1.7 0 0 0 1 1.55 1.7 1.7 0 0 0 1.87-.34l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06A1.7 1.7 0 0 0 19.4 9a1.7 1.7 0 0 0 1.55 1H21a2 2 0 0 1 0 4h-.09a1.7 1.7 0 0 0-1.51 1z"/></svg>
-      </button>
-    </div>
-  </header>
 
-  <main id="view"><!-- rendered by router --></main>
+<div id="continuumone">
 
-  <footer id="statusbar">
-    <span>CONTINUUMONE ENGINE v1.1</span>
-    <span id="sb-mode">MODE: STANDBY</span>
-    <span id="sb-asset">ASSET: NONE SELECTED</span>
-    <span id="sb-pins">PINNED: 0</span>
-    <span style="margin-left:auto">SESSION LOCAL // NO TELEMETRY UPLINK</span>
-  </footer>
+
+<header class="top-header">
+
+
+<a class="brand-link" href="../index.html">
+
+
+<div class="logo-container">
+
+
+<div class="logo-placeholder">
+
+LOGO
 
 </div>
 
-<script src="klg.js"></script>
+
+</div>
+
+
+
+<div class="brand-text">
+
+
+<div class="company-name">
+
+CONTINUUMONE
+
+</div>
+
+
+<div class="company-description">
+
+INDUSTRIAL PREDICTIVE INTELLIGENCE PLATFORM
+
+</div>
+
+
+</div>
+
+
+</a>
+
+
+
+<div class="status-area">
+
+
+<div class="status-dot"></div>
+
+
+SYSTEM READY
+
+
+</div>
+
+
+
+</header>
+
+
+
+
+
+<div class="application-grid">
+
+
+
+<aside class="navigation-panel">
+
+
+<div class="navigation-title">
+
+SYSTEM MODULES
+
+</div>
+
+
+
+<div class="navigation-item active">
+
+Asset Intelligence
+
+</div>
+
+
+
+<div class="navigation-item">
+
+Simulation Engine
+
+</div>
+
+
+
+<div class="navigation-item">
+
+Failure Analysis
+
+</div>
+
+
+
+<div class="navigation-item">
+
+Reliability Core
+
+</div>
+
+
+
+<div class="navigation-item">
+
+Prediction Engine
+
+</div>
+
+
+
+<div class="navigation-item">
+
+Engineering Reports
+
+</div>
+
+
+
+</aside>
+
+
+
+
+
+
+<main class="core-workspace">
+
+
+<div class="workspace-heading">
+
+ContinuumOne Control System
+
+</div>
+
+
+<div class="workspace-description">
+
+Cross-industry engineering intelligence environment
+
+</div>
+
+
+
+<div class="engine-container">
+
+
+<div class="engine-label">
+
+ASSET LIBRARY
+
+</div>
+
+
+<div id="asset-library">
+
+Awaiting knowledge connection
+
+</div>
+
+
+</div>
+
+
+
+
+
+<div class="engine-container">
+
+
+<div class="engine-label">
+
+SIMULATION CORE
+
+</div>
+
+
+<div id="simulation-engine">
+
+Awaiting simulation modules
+
+</div>
+
+
+</div>
+
+
+
+
+
+<div class="engine-container">
+
+
+<div class="engine-label">
+
+PREDICTION CORE
+
+</div>
+
+
+<div id="prediction-engine">
+
+Awaiting predictive models
+
+</div>
+
+
+</div>
+
+
+
+
+
+<div class="engine-container">
+
+
+<div class="engine-label">
+
+REPORT SYSTEM
+
+</div>
+
+
+<div id="report-engine">
+
+Awaiting report generation
+
+</div>
+
+
+</div>
+
+
+
+</main>
+
+
+
+
+
+
+
+<aside class="intelligence-panel">
+
+
+<div class="intelligence-title">
+
+LIVE INTELLIGENCE
+
+</div>
+
+
+
+<div class="metric-box">
+
+
+<div class="metric-name">
+
+SYSTEM HEALTH
+
+</div>
+
+
+<div class="metric-value health">
+
+100%
+
+</div>
+
+
+</div>
+
+
+
+<div class="metric-box">
+
+
+<div class="metric-name">
+
+FAILURE RISK
+
+</div>
+
+
+<div class="metric-value">
+
+LOW
+
+</div>
+
+
+</div>
+
+
+
+<div class="metric-box">
+
+
+<div class="metric-name">
+
+PREDICTION STATUS
+
+</div>
+
+
+<div class="metric-value">
+
+STANDBY
+
+</div>
+
+
+</div>
+
+
+
+</aside>
+
+
+
+</div>
+
+
+</div>
+
+   <script src="klg.js"></script>
+
 <script>
-/* ============================================================
-   CONTINUUMONE :: APPLICATION LAYER (sim.html embedded JS)
-   Router + State + Rendering + Prediction Engine + Reports
-   ============================================================ */
-var Continuum = (function(){
-
-  /* ---------------- CONSTANTS ---------------- */
-  var STORAGE_KEY = "continuumone.settings.v1";
-  var PRESET_KEY  = "continuumone.presets.v1";
-
-  /* Failure-mode -> monitored telemetry channel (digital-twin hook). */
-  var TELEMETRY_MAP = {
-    thermal_fatigue:      { label:"Exhaust Gas Temp Margin",        unit:"°C margin" },
-    bearing_degradation:  { label:"Bearing Vibration (RMS)",        unit:"mm/s" },
-    blade_erosion:        { label:"Aero Efficiency Delta",          unit:"% Δ" },
-    electromigration:     { label:"Interconnect Junction Temp",     unit:"°C" },
-    thermal_runaway:      { label:"Die Temperature",                unit:"°C" },
-    gate_oxide_wearout:   { label:"Gate Leakage Trend",             unit:"mA" },
-    fatigue_cracking:     { label:"Strain-Gauge Cycle Count",       unit:"cycles" },
-    seal_degradation:     { label:"Case Pressure Differential",     unit:"kPa" },
-    corrosion:            { label:"Wall Thickness Loss",            unit:"mm" },
-    cell_degradation:     { label:"State of Health (SoH)",          unit:"%" },
-    gearbox_wear:         { label:"Oil Debris Particle Count",      unit:"particles/mL" },
-    insulation_breakdown: { label:"Partial Discharge Activity",     unit:"pC" },
-    cavitation:           { label:"NPSH Margin",                    unit:"%" },
-    brake_fade:           { label:"Friction Surface Temperature",   unit:"°C" },
-    inverter_stress:      { label:"IGBT ΔT Cycling",                unit:"°C" }
-  };
-  var SENSITIVITY_AXES = [
-    {key:"temp", label:"THERMAL"}, {key:"load", label:"LOAD"}, {key:"vibration", label:"VIBRATION"},
-    {key:"maintenance", label:"MAINT"}, {key:"environment", label:"ENVIRON"}, {key:"utilization", label:"UTIL"}
-  ];
-
-  /* ---------------- STATE ---------------- */
-  var state = {
-    route: "library",
-    params: {},
-    search: "",
-    categoryFilter: "all",
-    sortBy: "name",
-    selectedAssetId: null,
-    dossierTab: "overview",
-    simMode: "detailed",
-    multiSelection: [],
-    pinned: [],
-    conditions: {
-      operatingHours: 8000,
-      temperature: 50,
-      load: 60,
-      vibration: 30,
-      maintenanceQuality: 75,
-      environment: 40,
-      utilization: 65
-    },
-    lastResults: null,
-    reportMode: "executive",
-    settings: { theme:"silver", density:"comfortable" }
-  };
-
-  /* ---------------- PERSISTENCE ---------------- */
-  function loadSettings(){
-    try{
-      var raw = localStorage.getItem(STORAGE_KEY);
-      if(raw){ var s = JSON.parse(raw); state.settings.theme = s.theme || "silver"; state.settings.density = s.density || "comfortable"; }
-    }catch(e){ /* storage unavailable — proceed with defaults */ }
-    applySettings();
-  }
-  function saveSettings(){
-    try{ localStorage.setItem(STORAGE_KEY, JSON.stringify(state.settings)); }catch(e){}
-  }
-  function applySettings(){
-    document.documentElement.setAttribute('data-theme', state.settings.theme);
-    document.body.classList.toggle('density-compact', state.settings.density==='compact');
-  }
-  function loadPresets(){
-    try{ var raw = localStorage.getItem(PRESET_KEY); return raw ? JSON.parse(raw) : {}; }catch(e){ return {}; }
-  }
-  function savePresetToStorage(name, cond){
-    var presets = loadPresets();
-    presets[name] = cond;
-    try{ localStorage.setItem(PRESET_KEY, JSON.stringify(presets)); }catch(e){}
-  }
-
-  /* ---------------- UTIL ---------------- */
-  function el(html){
-    var t = document.createElement('template');
-    t.innerHTML = html.trim();
-    /* Multi-root HTML strings must not silently lose siblings: return the
-       full fragment when more than one top-level element is present. */
-    if(t.content.children.length > 1) return t.content;
-    return t.content.firstChild;
-  }
-  function clamp(v, lo, hi){ return Math.max(lo, Math.min(hi, v)); }
-  function fmt(n, d){ return Number(n).toFixed(d===undefined?0:d); }
-  function esc(s){ return String(s).replace(/[&<>"']/g, function(c){ return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]; }); }
-  function riskClass(level){
-    if(level==="Low") return "risk-low";
-    if(level==="Moderate") return "risk-moderate";
-    if(level==="High") return "risk-high";
-    return "risk-critical";
-  }
-  function colorForRisk(level){
-    if(level==="Low") return "var(--c-green)";
-    if(level==="Moderate") return "var(--c-amber)";
-    return "var(--c-red)";
-  }
-  function healthColor(h){
-    if(h>=75) return "var(--c-green)";
-    if(h>=45) return "var(--c-amber)";
-    return "var(--c-red)";
-  }
-  /* Deterministic seeded PRNG so repeat views of an asset show a stable, non-random trend. */
-  function seededRandom(seedStr){
-    var h = 0;
-    for(var i=0;i<seedStr.length;i++){ h = (Math.imul(31,h) + seedStr.charCodeAt(i))|0; }
-    return function(){ h = (Math.imul(h, 1597334677))|0; h ^= h >>> 13; return ((h>>>0) % 10000)/10000; };
-  }
-
-  /* ---------------- PREDICTION ENGINE ---------------- */
-  function computePrediction(asset, cond){
-    var modes = klgGetFailureModesForAsset(asset);
-    var c = {
-      temp: cond.temperature/100, load: cond.load/100, vibration: cond.vibration/100,
-      maintenance: (100-cond.maintenanceQuality)/100,
-      environment: cond.environment/100, utilization: cond.utilization/100
-    };
-    var lifeFraction = clamp(cond.operatingHours / asset.designLife, 0, 1.4);
-
-    var scoredModes = modes.map(function(m){
-      var stress = (
-        m.sensitivity.temp*c.temp +
-        m.sensitivity.load*c.load +
-        m.sensitivity.vibration*c.vibration +
-        m.sensitivity.maintenance*c.maintenance +
-        m.sensitivity.environment*c.environment +
-        m.sensitivity.utilization*c.utilization
-      ) / 6;
-      var ageFactor = 0.3 + 0.7*lifeFraction;
-      var score = m.weight * stress * ageFactor;
-      return { mode:m, stress:stress, score:score };
-    });
-
-    var totalScore = scoredModes.reduce(function(s,x){return s+x.score;},0) || 0.0001;
-    scoredModes.forEach(function(x){ x.contribution = x.score/totalScore; });
-    scoredModes.sort(function(a,b){ return b.score-a.score; });
-
-    var totalWeight = modes.reduce(function(s,m){return s+m.weight;},0) || 1;
-    var aggregateStress = scoredModes.reduce(function(s,x){return s + x.stress*x.mode.weight;},0) / totalWeight;
-
-    var healthIndex = clamp(asset.baselineHealth - (aggregateStress*55) - (lifeFraction*20), 2, 99);
-    var failureProbability = clamp( (aggregateStress*0.55 + lifeFraction*0.45) * 100, 1, 98 );
-    var reliabilityScore = clamp(100 - failureProbability*0.9 - (1-healthIndex/100)*10, 1, 99);
-
-    var riskLevel;
-    if(failureProbability < 25) riskLevel = "Low";
-    else if(failureProbability < 50) riskLevel = "Moderate";
-    else if(failureProbability < 75) riskLevel = "High";
-    else riskLevel = "Critical";
-
-    var remainingFraction = clamp(1 - (aggregateStress*0.6 + lifeFraction*0.5), 0.02, 1);
-    var rul = Math.round(asset.designLife * remainingFraction * (0.35 + 0.65*(1-lifeFraction*0.3)));
-    rul = Math.max(rul, Math.round(asset.designLife*0.01));
-
-    return {
-      asset: asset,
-      conditions: JSON.parse(JSON.stringify(cond)),
-      healthIndex: healthIndex,
-      failureProbability: failureProbability,
-      reliabilityScore: reliabilityScore,
-      riskLevel: riskLevel,
-      remainingUsefulLife: rul,
-      lifeFraction: lifeFraction,
-      aggregateStress: aggregateStress,
-      rankedModes: scoredModes,
-      primaryMode: scoredModes[0] ? scoredModes[0].mode : null,
-      secondaryMode: scoredModes[1] ? scoredModes[1].mode : null,
-      timestamp: new Date()
-    };
-  }
-
-  /* Project health/failure trajectory across the operating-hours axis at fixed severity inputs. */
-  function computeTrajectory(asset, cond, steps){
-    steps = steps || 24;
-    var maxHours = Math.max(asset.designLife*1.15, cond.operatingHours*1.15, 1000);
-    var pts = [];
-    for(var i=0;i<=steps;i++){
-      var hrs = Math.round((maxHours/steps)*i);
-      var c2 = Object.assign({}, cond, {operatingHours:hrs});
-      var r = computePrediction(asset, c2);
-      pts.push({ hours:hrs, health:r.healthIndex, failure:r.failureProbability });
-    }
-    return pts;
-  }
-
-  /* Average stress-sensitivity profile across an asset's tracked failure modes (0-1 per axis). */
-  function computeSensitivityProfile(asset){
-    var modes = klgGetFailureModesForAsset(asset);
-    var totalW = modes.reduce(function(s,m){return s+m.weight;},0) || 1;
-    var profile = {};
-    SENSITIVITY_AXES.forEach(function(ax){
-      profile[ax.key] = modes.reduce(function(s,m){ return s + m.sensitivity[ax.key]*m.weight; },0) / totalW;
-    });
-    return profile;
-  }
-
-  /* ---------------- ROUTER ---------------- */
-  function navigate(route, params){
-    state.route = route;
-    state.params = params || {};
-    document.querySelectorAll('.nav-btn').forEach(function(b){
-      b.classList.toggle('active', b.getAttribute('data-route')===route);
-    });
-    render();
-    window.scrollTo(0,0);
-  }
-
-  function render(){
-    var view = document.getElementById('view');
-    view.innerHTML = "";
-    var r = state.route;
-    if(r==="library") view.appendChild(renderLibrary());
-    else if(r==="dossier") view.appendChild(renderDossier());
-    else if(r==="config") view.appendChild(renderConfig());
-    else if(r==="dashboard") view.appendChild(renderDashboard());
-    else if(r==="report") view.appendChild(renderReport());
-    else if(r==="analytics") view.appendChild(renderAnalytics());
-    else view.appendChild(renderLibrary());
-    updateStatusBar();
-  }
-
-  function updateStatusBar(){
-    document.getElementById('asset-count-status').textContent = CONTINUUM_ASSETS.length + " ASSETS INDEXED";
-    document.getElementById('sb-mode').textContent = "MODE: " + (state.simMode==="multi"?"MULTI-ASSET ANALYSIS":"DETAILED ANALYSIS").toUpperCase();
-    var a = state.selectedAssetId ? klgGetAssetById(state.selectedAssetId) : null;
-    document.getElementById('sb-asset').textContent = "ASSET: " + (a ? (a.manufacturer+" "+a.name).toUpperCase() : "NONE SELECTED");
-    document.getElementById('sb-pins').textContent = "PINNED: " + state.pinned.length;
-  }
-
-  /* ================= VIEW: LIBRARY ================= */
-  function renderLibrary(){
-    var wrap = el('<div></div>');
-
-    wrap.appendChild(el(
-      '<div class="breadcrumb">ENGINEERING INTELLIGENCE CENTER</div>'
-    ));
-    var header = el(
-      '<div class="view-header"><div class="view-title">Asset Library <span class="accent">/ Fleet Index</span></div>'+
-      '<div class="header-actions">'+
-        (state.pinned.length>1 ? '<button class="btn btn-primary btn-sm" id="compare-pinned">Compare '+state.pinned.length+' Pinned &rarr;</button>' : '')+
-      '</div></div>'
-    );
-    wrap.appendChild(header);
-    var cmpBtn = header.querySelector('#compare-pinned');
-    if(cmpBtn) cmpBtn.addEventListener('click', function(){
-      state.multiSelection = state.pinned.slice();
-      state.simMode = "multi";
-      navigate('config', {});
-    });
-
-    var toolbar = el('<div class="toolbar"></div>');
-    var searchInput = el('<input class="search-input" type="text" placeholder="Search by asset, manufacturer, designation, category...">');
-    searchInput.value = state.search;
-    searchInput.addEventListener('input', function(e){ state.search = e.target.value; renderLibraryResults(); });
-    toolbar.appendChild(searchInput);
-
-    var sortSel = el(
-      '<select class="select">'+
-        '<option value="name">Sort: Name</option>'+
-        '<option value="health">Sort: Health Index</option>'+
-        '<option value="criticality">Sort: Criticality</option>'+
-        '<option value="manufacturer">Sort: Manufacturer</option>'+
-      '</select>'
-    );
-    sortSel.value = state.sortBy;
-    sortSel.addEventListener('change', function(e){ state.sortBy = e.target.value; renderLibraryResults(); });
-    toolbar.appendChild(sortSel);
-    wrap.appendChild(toolbar);
-
-    var rail = el('<div class="category-rail"></div>');
-    var allChip = el('<button class="category-chip'+(state.categoryFilter==="all"?" active":"")+'">All Categories <span class="count">'+CONTINUUM_ASSETS.length+'</span></button>');
-    allChip.addEventListener('click', function(){ state.categoryFilter="all"; renderLibraryResults(); refreshChips(); });
-    rail.appendChild(allChip);
-    Object.keys(CONTINUUM_CATEGORIES).forEach(function(catId){
-      var cat = CONTINUUM_CATEGORIES[catId];
-      var n = klgGetAssetsByCategory(catId).length;
-      var chip = el('<button class="category-chip'+(state.categoryFilter===catId?" active":"")+'" data-cat="'+catId+'">'+cat.label+' <span class="count">'+n+'</span></button>');
-      chip.addEventListener('click', function(){ state.categoryFilter = catId; renderLibraryResults(); refreshChips(); });
-      rail.appendChild(chip);
-    });
-    wrap.appendChild(rail);
-
-    function refreshChips(){
-      rail.querySelectorAll('.category-chip').forEach(function(c){
-        var cid = c.getAttribute('data-cat');
-        c.classList.toggle('active', (cid===null && state.categoryFilter==="all") || cid===state.categoryFilter);
-      });
-    }
-
-    var grid = el('<div class="asset-grid"></div>');
-    wrap.appendChild(grid);
-
-    function renderLibraryResults(){
-      var results = klgSearchAssets(state.search);
-      if(state.categoryFilter!=="all") results = results.filter(function(a){return a.category===state.categoryFilter;});
-      results = results.slice().sort(function(a,b){
-        if(state.sortBy==="health") return b.baselineHealth-a.baselineHealth;
-        if(state.sortBy==="manufacturer") return a.manufacturer.localeCompare(b.manufacturer);
-        if(state.sortBy==="criticality") return a.criticality.localeCompare(b.criticality);
-        return a.name.localeCompare(b.name);
-      });
-      grid.innerHTML = "";
-      if(results.length===0){
-        grid.appendChild(el('<div class="empty-state" style="grid-column:1/-1"><div class="eyebrow">No Matching Assets</div><div>Adjust search terms or category filter.</div></div>'));
-        return;
-      }
-      results.forEach(function(a){
-        var cat = CONTINUUM_CATEGORIES[a.category];
-        var hc = healthColor(a.baselineHealth);
-        var pinned = state.pinned.indexOf(a.id)!==-1;
-        var card = el(
-          '<div class="asset-card">'+
-            '<button class="pin-btn'+(pinned?' pinned':'')+'" title="Pin for comparison" aria-label="Pin for comparison">'+(pinned?'&#9679;':'&#9675;')+'</button>'+
-            '<div class="asset-card-top">'+
-              '<span class="cat-tag">'+cat.label+'</span>'+
-              '<span class="badge"><span class="badge-dot" style="background:'+hc+'"></span>'+a.criticality+'</span>'+
-            '</div>'+
-            '<h4>'+a.name+'</h4>'+
-            '<div class="mfg">'+a.manufacturer+' &middot; '+a.designation+'</div>'+
-            '<div class="meta-row">'+
-              '<div class="health-mini">HEALTH <div class="health-bar"><div class="health-bar-fill" style="width:'+a.baselineHealth+'%;background:'+hc+'"></div></div> '+a.baselineHealth+'%</div>'+
-              '<div>'+a.designLife.toLocaleString()+' '+a.designLifeUnit.toUpperCase()+'</div>'+
-            '</div>'+
-          '</div>'
-        );
-        card.querySelector('.pin-btn').addEventListener('click', function(e){
-          e.stopPropagation();
-          var idx = state.pinned.indexOf(a.id);
-          if(idx===-1) state.pinned.push(a.id); else state.pinned.splice(idx,1);
-          navigate('library');
-        });
-        card.addEventListener('click', function(){
-          state.selectedAssetId = a.id;
-          state.dossierTab = "overview";
-          navigate('dossier', {id:a.id});
-        });
-        grid.appendChild(card);
-      });
-    }
-    renderLibraryResults();
-    return wrap;
-  }
-
-  /* ================= VIEW: DOSSIER ================= */
-  function renderDossier(){
-    var id = state.params.id || state.selectedAssetId;
-    var asset = klgGetAssetById(id);
-    var wrap = el('<div></div>');
-    if(!asset){
-      wrap.appendChild(el('<div class="empty-state"><div class="eyebrow">No Asset Selected</div><div>Return to the Asset Library to select an engineering asset.</div></div>'));
-      return wrap;
-    }
-    state.selectedAssetId = asset.id;
-    var cat = CONTINUUM_CATEGORIES[asset.category];
-    var modes = klgGetFailureModesForAsset(asset);
-    var hc = healthColor(asset.baselineHealth);
-
-    var crumb = el('<div class="breadcrumb"><a href="#" id="bc-lib">Asset Library</a> / '+cat.label+' / '+asset.name+'</div>');
-    crumb.querySelector('#bc-lib').addEventListener('click', function(e){ e.preventDefault(); navigate('library'); });
-    wrap.appendChild(crumb);
-
-    var header = el(
-      '<div class="view-header"><div class="view-title">'+asset.name+' <span class="accent">/ Engineering Dossier</span></div>'+
-      '<button class="btn btn-primary" id="to-config">Configure Simulation &rarr;</button></div>'
-    );
-    header.querySelector('#to-config').addEventListener('click', function(){ state.simMode="detailed"; navigate('config', {id:asset.id}); });
-    wrap.appendChild(header);
-
-    var tabs = ["overview","telemetry","failure","maintenance"];
-    var tabLabels = {overview:"Overview", telemetry:"Digital Twin Telemetry", failure:"Failure Modes", maintenance:"Maintenance"};
-    var tabbar = el('<div class="tabbar"></div>');
-    tabs.forEach(function(t){
-      var b = el('<button class="tab-btn'+(state.dossierTab===t?" active":"")+'">'+tabLabels[t]+'</button>');
-      b.addEventListener('click', function(){ state.dossierTab = t; navigate('dossier', {id:asset.id}); });
-      tabbar.appendChild(b);
-    });
-    wrap.appendChild(tabbar);
-
-    var body = el('<div></div>');
-    wrap.appendChild(body);
-
-    if(state.dossierTab==="overview"){
-      var grid = el('<div class="dossier-grid"></div>');
-      var left = el('<div></div>');
-      left.appendChild(el(
-        '<div class="panel section-gap"><div class="panel-header"><h3>Asset Overview</h3><span class="badge"><span class="badge-dot" style="background:'+hc+'"></span>'+asset.criticality+'</span></div>'+
-        '<div class="panel-body"><p style="font-size:13px;color:var(--c-silver);line-height:1.6;margin-bottom:16px;">'+asset.description+'</p>'+
-        '<table class="spec-table">'+
-          '<tr><td>Manufacturer</td><td>'+asset.manufacturer+'</td></tr>'+
-          '<tr><td>Designation</td><td>'+asset.designation+'</td></tr>'+
-          '<tr><td>Category</td><td>'+cat.label+'</td></tr>'+
-          '<tr><td>Design Life</td><td>'+asset.designLife.toLocaleString()+' '+asset.designLifeUnit+'</td></tr>'+
-          '<tr><td>Rated Output</td><td>'+asset.ratedOutput+'</td></tr>'+
-          '<tr><td>Criticality</td><td>'+asset.criticality+'</td></tr>'+
-        '</table></div></div>'
-      ));
-      var trajPanel = el('<div class="panel"><div class="panel-header"><h3>Nominal Life Trajectory</h3><span class="text-dim mono" style="font-size:9.5px;">MODERATE DUTY PROFILE</span></div><div class="panel-body chart-wrap" id="traj-host"></div></div>');
-      left.appendChild(trajPanel);
-      var nominal = Object.assign({}, state.conditions, {temperature:50, load:50, vibration:50, maintenanceQuality:75, environment:50, utilization:50});
-      var traj = computeTrajectory(asset, nominal, 20);
-      trajPanel.querySelector('#traj-host').appendChild(trajectorySvg(traj, asset));
-      grid.appendChild(left);
-
-      var right = el('<div></div>');
-      right.appendChild(el(
-        '<div class="stat-row">'+
-          '<div class="stat-block"><div class="num" style="color:'+hc+'">'+asset.baselineHealth+'</div><div class="lbl">Baseline Health Index</div></div>'+
-          '<div class="stat-block"><div class="num">'+modes.length+'</div><div class="lbl">Tracked Failure Modes</div></div>'+
-        '</div>'
-      ));
-      var radarPanel = el('<div class="panel section-gap"><div class="panel-header"><h3>Stress Sensitivity Profile</h3></div><div class="panel-body" id="radar-host" style="display:flex;justify-content:center;"></div></div>');
-      right.appendChild(radarPanel);
-      radarPanel.querySelector('#radar-host').appendChild(radarSvg(computeSensitivityProfile(asset)));
-      right.appendChild(el(
-        '<div class="panel"><div class="panel-header"><h3>Reliability Profile</h3></div><div class="panel-body">'+
-        '<div class="readout-list">'+
-          '<div class="readout-row"><span class="k">Design Life</span><span class="v">'+asset.designLife.toLocaleString()+' '+asset.designLifeUnit+'</span></div>'+
-          '<div class="readout-row"><span class="k">Criticality Class</span><span class="v">'+asset.criticality+'</span></div>'+
-          '<div class="readout-row"><span class="k">Category</span><span class="v">'+cat.label+'</span></div>'+
-          '<div class="readout-row"><span class="k">Failure Modes Tracked</span><span class="v">'+modes.length+'</span></div>'+
-        '</div></div></div>'
-      ));
-      grid.appendChild(right);
-      body.appendChild(grid);
-
-    } else if(state.dossierTab==="telemetry"){
-      var tPanel = el('<div class="panel"><div class="panel-header"><h3>Monitored Telemetry Channels</h3><span class="text-dim mono" style="font-size:9.5px;">SENSOR INTELLIGENCE HOOK</span></div><div class="panel-body" id="tele-body"></div></div>');
-      body.appendChild(tPanel);
-      var tb = tPanel.querySelector('#tele-body');
-      tb.appendChild(el('<p style="font-size:12px;color:var(--c-silver-dim);margin-bottom:10px;line-height:1.6;">Channels below are derived from this asset\'s tracked failure modes. In a connected deployment these map to live sensor feeds; here they anchor the predictive model\'s reasoning to physical measurands an engineer would actually monitor.</p>'));
-      modes.forEach(function(m){
-        var t = TELEMETRY_MAP[m.id] || {label:"Condition Indicator", unit:""};
-        tb.appendChild(el(
-          '<div class="telemetry-row"><div><div class="t-name">'+t.label+'</div><div class="t-mode">Linked to '+m.label+'</div></div><span class="t-unit">'+t.unit+'</span></div>'
-        ));
-      });
-
-    } else if(state.dossierTab==="failure"){
-      var fPanel = el('<div class="panel"><div class="panel-header"><h3>Failure Mode Profile</h3></div><div class="panel-body" id="fm-list"></div></div>');
-      body.appendChild(fPanel);
-      var fmList = fPanel.querySelector('#fm-list');
-      modes.forEach(function(m){
-        var item = el(
-          '<div class="failure-mode-item"><div class="fm-head"><span class="fm-name">'+m.label+'</span><span class="fm-weight">BASE WEIGHT '+(m.weight*100).toFixed(0)+'%</span></div>'+
-          '<p>'+m.description+'</p>'+
-          '<div class="sensitivity-row"></div>'+
-          '<div class="sensitivity-legend"></div></div>'
-        );
-        var srow = item.querySelector('.sensitivity-row');
-        var slegend = item.querySelector('.sensitivity-legend');
-        SENSITIVITY_AXES.forEach(function(ax){
-          var v = m.sensitivity[ax.key];
-          var seg = el('<div class="sensitivity-seg" title="'+ax.label+': '+(v*100).toFixed(0)+'%"><div class="fill" style="width:'+(v*100)+'%;background:'+ (v>0.66?'var(--c-red)':v>0.33?'var(--c-amber)':'var(--c-green)') +'"></div></div>');
-          srow.appendChild(seg);
-          slegend.appendChild(el('<span>'+ax.label.slice(0,4)+'</span>'));
-        });
-        fmList.appendChild(item);
-      });
-
-    } else if(state.dossierTab==="maintenance"){
-      var mPanel = el('<div class="panel"><div class="panel-header"><h3>Maintenance Profile</h3></div><div class="panel-body">'+
-        '<p style="font-size:13px;color:var(--c-silver);line-height:1.7;margin-bottom:16px;">'+asset.maintenanceProfile+'</p>'+
-        '<table class="spec-table">'+
-          '<tr><td>Design Life</td><td>'+asset.designLife.toLocaleString()+' '+asset.designLifeUnit+'</td></tr>'+
-          '<tr><td>Criticality</td><td>'+asset.criticality+'</td></tr>'+
-        '</table></div></div>');
-      body.appendChild(mPanel);
-    }
-
-    return wrap;
-  }
-
-  /* ================= CHART HELPERS ================= */
-  function trajectorySvg(pts, asset){
-    var W=520,H=190,padL=34,padR=10,padT=14,padB=26;
-    var innerW = W-padL-padR, innerH = H-padT-padB;
-    var maxHours = pts[pts.length-1].hours || 1;
-    function x(h){ return padL + (h/maxHours)*innerW; }
-    function y(v){ return padT + (1-v/100)*innerH; }
-    var healthPath = pts.map(function(p,i){ return (i===0?'M':'L')+fmt(x(p.hours),1)+' '+fmt(y(p.health),1); }).join(' ');
-    var failPath = pts.map(function(p,i){ return (i===0?'M':'L')+fmt(x(p.hours),1)+' '+fmt(y(p.failure),1); }).join(' ');
-    var bands =
-      '<rect x="'+padL+'" y="'+y(100)+'" width="'+innerW+'" height="'+(y(75)-y(100))+'" fill="var(--c-green)" opacity="0.06"/>'+
-      '<rect x="'+padL+'" y="'+y(75)+'" width="'+innerW+'" height="'+(y(45)-y(75))+'" fill="var(--c-amber)" opacity="0.06"/>'+
-      '<rect x="'+padL+'" y="'+y(45)+'" width="'+innerW+'" height="'+(y(0)-y(45))+'" fill="var(--c-red)" opacity="0.06"/>';
-    var gridLines = [0,25,50,75,100].map(function(v){
-      return '<line x1="'+padL+'" y1="'+y(v)+'" x2="'+(W-padR)+'" y2="'+y(v)+'" stroke="var(--c-border)" stroke-width="1"/>'+
-             '<text x="'+(padL-6)+'" y="'+(y(v)+3)+'" font-family="var(--font-mono)" font-size="8" fill="var(--c-silver-dim)" text-anchor="end">'+v+'</text>';
-    }).join('');
-    var xLabel = '<text x="'+(padL)+'" y="'+(H-6)+'" font-family="var(--font-mono)" font-size="8" fill="var(--c-silver-dim)">0</text>'+
-      '<text x="'+(W-padR)+'" y="'+(H-6)+'" font-family="var(--font-mono)" font-size="8" fill="var(--c-silver-dim)" text-anchor="end">'+maxHours.toLocaleString()+' '+esc(asset.designLifeUnit).toUpperCase()+'</text>';
-    var svg = el(
-      '<div><svg viewBox="0 0 '+W+' '+H+'" width="100%" style="max-width:'+W+'px;display:block;">'+
-        bands + gridLines +
-        '<path d="'+healthPath+'" fill="none" stroke="var(--c-accent)" stroke-width="2"/>'+
-        '<path d="'+failPath+'" fill="none" stroke="var(--c-red)" stroke-width="1.5" stroke-dasharray="3,3"/>'+
-        xLabel +
-      '</svg>'+
-      '<div class="chart-legend">'+
-        '<div class="chart-legend-item"><span class="sw" style="background:var(--c-accent)"></span>Health Index</div>'+
-        '<div class="chart-legend-item"><span class="sw" style="background:var(--c-red)"></span>Failure Probability</div>'+
-      '</div></div>'
-    );
-    return svg;
-  }
-
-  function radarSvg(profile){
-    var size=220, c=size/2, r=size/2-30;
-    var axes = SENSITIVITY_AXES;
-    var n = axes.length;
-    function pt(i, val){
-      var ang = (Math.PI*2*i/n) - Math.PI/2;
-      var rad = r*clamp(val,0,1);
-      return { x:c+rad*Math.cos(ang), y:c+rad*Math.sin(ang) };
-    }
-    function ringPt(i, rad){
-      var ang = (Math.PI*2*i/n) - Math.PI/2;
-      return { x:c+rad*Math.cos(ang), y:c+rad*Math.sin(ang) };
-    }
-    var rings = [0.25,0.5,0.75,1].map(function(f){
-      var poly = [];
-      for(var i=0;i<n;i++){ var p = ringPt(i, r*f); poly.push(p.x+','+p.y); }
-      return '<polygon points="'+poly.join(' ')+'" fill="none" stroke="var(--c-border)" stroke-width="1"/>';
-    }).join('');
-    var spokes = axes.map(function(ax,i){
-      var p = ringPt(i, r);
-      return '<line x1="'+c+'" y1="'+c+'" x2="'+p.x+'" y2="'+p.y+'" stroke="var(--c-border)" stroke-width="1"/>';
-    }).join('');
-    var dataPoly = axes.map(function(ax,i){ var p = pt(i, profile[ax.key]); return p.x+','+p.y; }).join(' ');
-    var labels = axes.map(function(ax,i){
-      var p = ringPt(i, r+16);
-      return '<text x="'+p.x+'" y="'+p.y+'" font-family="var(--font-mono)" font-size="8.5" fill="var(--c-silver-dim)" text-anchor="middle" dominant-baseline="middle">'+ax.label+'</text>';
-    }).join('');
-    return el(
-      '<svg viewBox="0 0 '+size+' '+size+'" width="220" height="220">'+
-        rings + spokes +
-        '<polygon points="'+dataPoly+'" fill="var(--c-accent)" opacity="0.22" stroke="var(--c-accent)" stroke-width="1.5"/>'+
-        labels +
-      '</svg>'
-    );
-  }
-
-  function gaugeSvg(value, max, color, size){
-    size = size || 130;
-    var r = size/2 - 10;
-    var c = size/2;
-    var circumference = Math.PI * r;
-    var pct = clamp(value/max, 0, 1);
-    var offset = circumference * (1-pct);
-    return (
-      '<svg width="'+size+'" height="'+(size/2+16)+'" viewBox="0 0 '+size+' '+(size/2+16)+'">'+
-        '<path d="M 10 '+c+' A '+r+' '+r+' 0 0 1 '+(size-10)+' '+c+'" fill="none" stroke="var(--c-border)" stroke-width="9" stroke-linecap="round"/>'+
-        '<path d="M 10 '+c+' A '+r+' '+r+' 0 0 1 '+(size-10)+' '+c+'" fill="none" stroke="'+color+'" stroke-width="9" stroke-linecap="round" '+
-          'stroke-dasharray="'+circumference+'" stroke-dashoffset="'+offset+'" style="transition:stroke-dashoffset .5s ease"/>'+
-      '</svg>'
-    );
-  }
-
-  /* ================= VIEW: CONFIG ================= */
-  function renderConfig(){
-    var id = state.params.id || state.selectedAssetId;
-    var asset = klgGetAssetById(id);
-    var wrap = el('<div></div>');
-    if(!asset && state.simMode==="detailed"){
-      wrap.appendChild(el('<div class="empty-state"><div class="eyebrow">No Asset Selected</div><div>Select an asset from the Library first.</div></div>'));
-      return wrap;
-    }
-
-    wrap.appendChild(el('<div class="breadcrumb">Simulation Configuration Center</div>'));
-    wrap.appendChild(el('<div class="view-header"><div class="view-title">Simulation Configuration <span class="accent">/ '+(asset?asset.name:'Multi-Asset')+'</span></div></div>'));
-
-    var modeToggle = el(
-      '<div class="mode-toggle">'+
-        '<div class="mode-card'+(state.simMode==="detailed"?" active":"")+'" id="mode-detailed"><div class="mc-title">Detailed Analysis</div><div class="mc-desc">Single-asset deep reliability simulation.</div></div>'+
-        '<div class="mode-card'+(state.simMode==="multi"?" active":"")+'" id="mode-multi"><div class="mc-title">Multi-Asset Analysis</div><div class="mc-desc">Comparative reliability study across selected assets.</div></div>'+
-      '</div>'
-    );
-    wrap.appendChild(modeToggle);
-    modeToggle.querySelector('#mode-detailed').addEventListener('click', function(){ state.simMode="detailed"; navigate('config', state.params); });
-    modeToggle.querySelector('#mode-multi').addEventListener('click', function(){ state.simMode="multi"; navigate('config', state.params); });
-
-    var grid = el('<div class="config-grid"></div>');
-    var left = el('<div class="panel"><div class="panel-header"><h3>Operating Conditions</h3></div><div class="panel-body"></div></div>');
-    var leftBody = left.querySelector('.panel-body');
-    grid.appendChild(left);
-
-    /* Presets */
-    var builtInPresets = {
-      "Standard Duty":    {temperature:40, load:45, vibration:25, maintenanceQuality:85, environment:30, utilization:50},
-      "Harsh Environment":{temperature:75, load:70, vibration:60, maintenanceQuality:55, environment:85, utilization:75},
-      "Extended TBO":      {temperature:55, load:60, vibration:40, maintenanceQuality:60, environment:45, utilization:80}
-    };
-    var stored = loadPresets();
-    var presetRow = el('<div class="preset-row"></div>');
-    Object.keys(builtInPresets).forEach(function(name){
-      var chip = el('<button class="preset-chip">'+name+'</button>');
-      chip.addEventListener('click', function(){
-        Object.assign(state.conditions, builtInPresets[name]);
-        navigate('config', state.params);
-      });
-      presetRow.appendChild(chip);
-    });
-    Object.keys(stored).forEach(function(name){
-      var chip = el('<button class="preset-chip" title="Saved preset">&#9733; '+esc(name)+'</button>');
-      chip.addEventListener('click', function(){
-        Object.assign(state.conditions, stored[name]);
-        navigate('config', state.params);
-      });
-      presetRow.appendChild(chip);
-    });
-    var saveChip = el('<button class="preset-chip" id="save-preset-chip">+ Save Current as Preset</button>');
-    saveChip.addEventListener('click', function(){
-      var name = prompt("Name this operating profile:");
-      if(name && name.trim()){
-        savePresetToStorage(name.trim(), Object.assign({}, state.conditions, {operatingHours: state.conditions.operatingHours}));
-        navigate('config', state.params);
-      }
-    });
-    presetRow.appendChild(saveChip);
-    leftBody.appendChild(presetRow);
-
-    var sliderDefs = [
-      {key:"operatingHours", label:"Operating Hours", min:0, max: asset ? Math.round(asset.designLife*1.2) : 100000, step:100, suffix:""},
-      {key:"temperature", label:"Thermal Severity", min:0, max:100, step:1, suffix:"%"},
-      {key:"load", label:"Load Factor", min:0, max:100, step:1, suffix:"%"},
-      {key:"vibration", label:"Vibration Severity", min:0, max:100, step:1, suffix:"%"},
-      {key:"maintenanceQuality", label:"Maintenance Quality", min:0, max:100, step:1, suffix:"%"},
-      {key:"environment", label:"Environment Severity", min:0, max:100, step:1, suffix:"%"},
-      {key:"utilization", label:"Utilization Rate", min:0, max:100, step:1, suffix:"%"}
-    ];
-    sliderDefs.forEach(function(def){
-      var group = el(
-        '<div class="slider-group">'+
-          '<div class="slider-label"><span class="name">'+def.label+'</span><span class="val">'+state.conditions[def.key]+def.suffix+'</span></div>'+
-          '<input type="range" min="'+def.min+'" max="'+def.max+'" step="'+def.step+'" value="'+state.conditions[def.key]+'">'+
-        '</div>'
-      );
-      var input = group.querySelector('input');
-      var valSpan = group.querySelector('.val');
-      input.addEventListener('input', function(e){
-        state.conditions[def.key] = Number(e.target.value);
-        valSpan.textContent = e.target.value + def.suffix;
-      });
-      leftBody.appendChild(group);
-    });
-
-    var right = el('<div></div>');
-    if(state.simMode==="detailed"){
-      right.appendChild(el(
-        '<div class="panel"><div class="panel-header"><h3>Target Asset</h3></div><div class="panel-body">'+
-        '<div class="stat-block" style="margin-bottom:14px;"><div class="num" style="font-size:16px;">'+asset.manufacturer+'</div><div class="lbl">'+asset.name+'</div></div>'+
-        '<button class="btn btn-primary" style="width:100%;justify-content:center" id="run-sim">Run Predictive Simulation</button>'+
-        '</div></div>'
-      ));
-      right.querySelector('#run-sim').addEventListener('click', function(){
-        var result = computePrediction(asset, state.conditions);
-        state.lastResults = { mode:"detailed", results:[result] };
-        navigate('dashboard');
-      });
-    } else {
-      var listWrap = el('<div class="panel"><div class="panel-header"><h3>Select Assets</h3></div><div class="panel-body"><div class="multi-asset-list"></div>'+
-        '<button class="btn btn-primary" style="width:100%;justify-content:center;margin-top:14px" id="run-sim-multi">Run Comparative Simulation</button></div></div>');
-      right.appendChild(listWrap);
-      var mlist = listWrap.querySelector('.multi-asset-list');
-      CONTINUUM_ASSETS.forEach(function(a){
-        var checked = state.multiSelection.indexOf(a.id)!==-1;
-        var row = el('<label class="multi-asset-row'+(checked?" checked":"")+'"><input type="checkbox" '+(checked?"checked":"")+'> '+a.manufacturer+' '+a.name+'</label>');
-        row.querySelector('input').addEventListener('change', function(e){
-          if(e.target.checked){ state.multiSelection.push(a.id); row.classList.add('checked'); }
-          else { state.multiSelection = state.multiSelection.filter(function(x){return x!==a.id;}); row.classList.remove('checked'); }
-        });
-        mlist.appendChild(row);
-      });
-      listWrap.querySelector('#run-sim-multi').addEventListener('click', function(){
-        if(state.multiSelection.length===0){ alert("Select at least one asset for comparative analysis."); return; }
-        var results = state.multiSelection.map(function(aid){ return computePrediction(klgGetAssetById(aid), state.conditions); });
-        state.lastResults = { mode:"multi", results:results };
-        navigate('dashboard');
-      });
-    }
-    grid.appendChild(right);
-    wrap.appendChild(grid);
-    return wrap;
-  }
-
-  /* ================= VIEW: DASHBOARD ================= */
-  function renderDashboard(){
-    var wrap = el('<div></div>');
-    var lr = state.lastResults;
-    wrap.appendChild(el('<div class="breadcrumb">Predictive Intelligence Engine</div>'));
-    var header = el('<div class="view-header"><div class="view-title">Prediction Dashboard <span class="accent">/ Simulation Output</span></div>'+
-      '<button class="btn btn-ghost" id="reconfig">&larr; Reconfigure</button></div>');
-    header.querySelector('#reconfig').addEventListener('click', function(){ navigate('config', {id:state.selectedAssetId}); });
-    wrap.appendChild(header);
-
-    if(!lr || !lr.results.length){
-      var es = el('<div class="empty-state"><div class="eyebrow">No Simulation Results</div><div>Configure and run a simulation from the Asset Library to populate this dashboard.</div><br><button class="btn btn-primary" id="goto-lib">Go to Asset Library</button></div>');
-      es.querySelector('#goto-lib').addEventListener('click', function(){ navigate('library'); });
-      wrap.appendChild(es);
-      return wrap;
-    }
-
-    if(lr.mode==="detailed"){
-      var res = lr.results[0];
-      var hc = healthColor(res.healthIndex);
-      var rc = colorForRisk(res.riskLevel);
-
-      var dg = el('<div class="dashboard-grid"></div>');
-      dg.appendChild(el('<div class="panel gauge-card">'+gaugeSvg(res.healthIndex,100,hc)+'<div class="gauge-value" style="color:'+hc+'">'+fmt(res.healthIndex,0)+'</div><div class="gauge-label">Health Index</div></div>'));
-      dg.appendChild(el('<div class="panel gauge-card">'+gaugeSvg(res.failureProbability,100,rc)+'<div class="gauge-value" style="color:'+rc+'">'+fmt(res.failureProbability,0)+'%</div><div class="gauge-label">Failure Probability</div></div>'));
-      dg.appendChild(el('<div class="panel gauge-card">'+gaugeSvg(res.reliabilityScore,100,"var(--c-silver)")+'<div class="gauge-value">'+fmt(res.reliabilityScore,0)+'</div><div class="gauge-label">Reliability Score</div></div>'));
-      dg.appendChild(el('<div class="panel" style="display:flex;flex-direction:column;align-items:center;justify-content:center;padding:20px;"><span class="badge risk-'+res.riskLevel.toLowerCase()+'" style="font-size:13px;padding:8px 16px;"><span class="badge-dot"></span>'+res.riskLevel+' Risk</span><div class="gauge-label" style="margin-top:10px;">Risk Classification</div></div>'));
-      wrap.appendChild(dg);
-
-      var trajPanel2 = el('<div class="panel section-gap"><div class="panel-header"><h3>Projected Trajectory At Current Operating Profile</h3></div><div class="panel-body chart-wrap" id="dash-traj"></div></div>');
-      wrap.appendChild(trajPanel2);
-      var traj2 = computeTrajectory(res.asset, res.conditions, 24);
-      trajPanel2.querySelector('#dash-traj').appendChild(trajectorySvg(traj2, res.asset));
-
-      var lower = el('<div class="result-lower"></div>');
-      var modesPanel = el('<div class="panel"><div class="panel-header"><h3>Failure Mode Ranking</h3></div><div class="panel-body"></div></div>');
-      var mrb = modesPanel.querySelector('.panel-body');
-      res.rankedModes.forEach(function(rm){
-        var pct = (rm.contribution*100);
-        mrb.appendChild(el(
-          '<div class="mode-rank"><span class="rank-name">'+rm.mode.label+'</span>'+
-          '<div class="rank-bar-wrap"><div class="rank-bar"><div class="rank-bar-fill" style="width:'+pct+'%"></div></div>'+
-          '<span class="rank-pct">'+fmt(pct,1)+'%</span></div></div>'
-        ));
-      });
-      lower.appendChild(modesPanel);
-
-      var readoutPanel = el('<div class="panel"><div class="panel-header"><h3>Engineering Readout</h3></div><div class="panel-body">'+
-        '<div class="readout-list">'+
-          '<div class="readout-row"><span class="k">Asset</span><span class="v">'+res.asset.manufacturer+' '+res.asset.name+'</span></div>'+
-          '<div class="readout-row"><span class="k">Primary Failure Mode</span><span class="v">'+(res.primaryMode?res.primaryMode.label:'—')+'</span></div>'+
-          '<div class="readout-row"><span class="k">Secondary Failure Mode</span><span class="v">'+(res.secondaryMode?res.secondaryMode.label:'—')+'</span></div>'+
-          '<div class="readout-row"><span class="k">Estimated RUL</span><span class="v">'+res.remainingUsefulLife.toLocaleString()+' '+res.asset.designLifeUnit+'</span></div>'+
-          '<div class="readout-row"><span class="k">Life Consumed</span><span class="v">'+fmt(res.lifeFraction*100,1)+'%</span></div>'+
-          '<div class="readout-row"><span class="k">Operating Hours Input</span><span class="v">'+res.conditions.operatingHours.toLocaleString()+'</span></div>'+
-          '<div class="readout-row"><span class="k">Simulation Timestamp</span><span class="v">'+res.timestamp.toLocaleString()+'</span></div>'+
-        '</div></div></div>');
-      lower.appendChild(readoutPanel);
-      wrap.appendChild(lower);
-
-      var actions = el('<div style="display:flex;gap:10px;flex-wrap:wrap;"><button class="btn btn-primary" id="to-report">Generate Engineering Report &rarr;</button><button class="btn btn-ghost" id="to-analytics">View Analytics &rarr;</button></div>');
-      actions.querySelector('#to-report').addEventListener('click', function(){ navigate('report'); });
-      actions.querySelector('#to-analytics').addEventListener('click', function(){ navigate('analytics'); });
-      wrap.appendChild(actions);
-
-    } else {
-      var sorted = lr.results.slice().sort(function(a,b){ return b.failureProbability-a.failureProbability; });
-      var grid = el('<div class="asset-grid"></div>');
-      sorted.forEach(function(r){
-        var hc2 = healthColor(r.healthIndex);
-        var rc2 = colorForRisk(r.riskLevel);
-        grid.appendChild(el(
-          '<div class="panel" style="padding:16px;">'+
-            '<div class="flex-between mb-10"><h4 style="color:var(--c-silver-bright);font-size:14px;">'+r.asset.manufacturer+' '+r.asset.name+'</h4>'+
-            '<span class="badge risk-'+r.riskLevel.toLowerCase()+'"><span class="badge-dot"></span>'+r.riskLevel+'</span></div>'+
-            '<div class="readout-list">'+
-              '<div class="readout-row"><span class="k">Health Index</span><span class="v" style="color:'+hc2+'">'+fmt(r.healthIndex,0)+'</span></div>'+
-              '<div class="readout-row"><span class="k">Failure Probability</span><span class="v" style="color:'+rc2+'">'+fmt(r.failureProbability,0)+'%</span></div>'+
-              '<div class="readout-row"><span class="k">Est. RUL</span><span class="v">'+r.remainingUsefulLife.toLocaleString()+' '+r.asset.designLifeUnit+'</span></div>'+
-              '<div class="readout-row"><span class="k">Primary Mode</span><span class="v">'+(r.primaryMode?r.primaryMode.label:'—')+'</span></div>'+
-            '</div></div>'
-        ));
-      });
-      wrap.appendChild(grid);
-      var actions2 = el('<div style="display:flex;gap:10px;flex-wrap:wrap;margin-top:18px;"><button class="btn btn-primary" id="to-report2">Generate Comparative Report &rarr;</button><button class="btn btn-ghost" id="to-analytics2">View Analytics &rarr;</button></div>');
-      actions2.querySelector('#to-report2').addEventListener('click', function(){ navigate('report'); });
-      actions2.querySelector('#to-analytics2').addEventListener('click', function(){ navigate('analytics'); });
-      wrap.appendChild(actions2);
-    }
-
-    return wrap;
-  }
-
-  /* ================= VIEW: REPORT ================= */
-  function renderReport(){
-    var wrap = el('<div></div>');
-    var lr = state.lastResults;
-    wrap.appendChild(el('<div class="breadcrumb">Engineering Report Generator</div>'));
-    wrap.appendChild(el('<div class="view-header"><div class="view-title">Engineering Report</div></div>'));
-
-    if(!lr || !lr.results.length){
-      wrap.appendChild(el('<div class="empty-state"><div class="eyebrow">No Simulation Data</div><div>Run a simulation first to generate a report.</div></div>'));
-      return wrap;
-    }
-
-    var toggle = el(
-      '<div class="report-toggle">'+
-        '<button class="btn'+(state.reportMode==="executive"?" btn-primary":" btn-ghost")+'" id="rm-exec">Executive Report</button>'+
-        '<button class="btn'+(state.reportMode==="technical"?" btn-primary":" btn-ghost")+'" id="rm-tech">Technical Report</button>'+
-        '<button class="btn btn-ghost" id="rm-download" style="margin-left:auto">Download .html</button>'+
-        '<button class="btn btn-ghost" id="rm-print">Print</button>'+
-      '</div>'
-    );
-    wrap.appendChild(toggle);
-    toggle.querySelector('#rm-exec').addEventListener('click', function(){ state.reportMode="executive"; navigate('report'); });
-    toggle.querySelector('#rm-tech').addEventListener('click', function(){ state.reportMode="technical"; navigate('report'); });
-    toggle.querySelector('#rm-print').addEventListener('click', function(){ window.print(); });
-    toggle.querySelector('#rm-download').addEventListener('click', function(){ downloadReport(lr, state.reportMode); });
-
-    var reportHtml = buildReportHtml(lr, state.reportMode);
-    var doc = el('<div class="report-doc"></div>');
-    doc.innerHTML = reportHtml;
-    wrap.appendChild(doc);
-    return wrap;
-  }
-
-  function downloadReport(lr, mode){
-    var full = '<!DOCTYPE html><html><head><meta charset="UTF-8"><title>ContinuumOne Engineering Report</title>'+
-      '<style>body{font-family:Georgia,serif;max-width:820px;margin:40px auto;color:#14161c;line-height:1.6;}'+
-      'h1{border-bottom:3px solid #14161c;padding-bottom:12px;}h2{text-transform:uppercase;letter-spacing:1.5px;font-size:14px;border-bottom:1px solid #ccc;padding-bottom:6px;margin-top:26px;font-family:sans-serif;}'+
-      'table{width:100%;border-collapse:collapse;margin:10px 0;}td,th{padding:7px 8px;border:1px solid #ccc;font-size:12.5px;text-align:left;}'+
-      'th{background:#e8e8ea;font-family:monospace;font-size:10px;text-transform:uppercase;}.report-sub{font-family:monospace;font-size:11px;color:#555;text-transform:uppercase;}</style>'+
-      '</head><body>'+buildReportHtml(lr, mode)+'</body></html>';
-    var blob = new Blob([full], {type:"text/html"});
-    var url = URL.createObjectURL(blob);
-    var a = document.createElement('a');
-    a.href = url;
-    a.download = "continuumone-report-"+Date.now()+".html";
-    document.body.appendChild(a);
-    a.click();
-    document.body.removeChild(a);
-    URL.revokeObjectURL(url);
-  }
-
-  function buildReportHtml(lr, mode){
-    var now = new Date();
-    var isMulti = lr.mode==="multi";
-    var results = lr.results;
-    var title = isMulti ? "Comparative Reliability Assessment" : "Engineering Reliability Report";
-    var html = '<h1>'+title+'</h1>';
-    html += '<div class="report-sub">ContinuumOne Predictive Intelligence Engine &middot; Generated '+now.toLocaleString()+' &middot; '+(mode==="executive"?"Executive Summary":"Technical Detail")+'</div>';
-
-    html += '<h2>Executive Summary</h2>';
-    if(!isMulti){
-      var r = results[0];
-      html += '<p>This report presents predictive reliability analysis for the '+r.asset.manufacturer+' '+r.asset.name+' ('+r.asset.designation+'), classified as '+r.asset.criticality+'. Under the modeled operating profile, the asset returns a health index of '+fmt(r.healthIndex,0)+' out of 100 and a failure probability of '+fmt(r.failureProbability,0)+'%, corresponding to a <span class="risk-flag">'+r.riskLevel.toUpperCase()+'</span> risk classification.</p>';
-      html += '<p>The dominant degradation mechanism identified is <strong>'+(r.primaryMode?r.primaryMode.label:'—')+'</strong>'+(r.secondaryMode?', with '+r.secondaryMode.label+' as a contributing secondary mechanism.':'.')+' Estimated remaining useful life under current conditions is approximately '+r.remainingUsefulLife.toLocaleString()+' '+r.asset.designLifeUnit+'.</p>';
-    } else {
-      html += '<p>This comparative study evaluates '+results.length+' assets under a common operating profile to identify relative reliability risk across the fleet subset. Assets are ranked by failure probability to support maintenance prioritization.</p>';
-    }
-
-    html += '<h2>Asset Information</h2>';
-    if(!isMulti){
-      var a = results[0].asset;
-      html += '<table><tr><th>Field</th><th>Value</th></tr>'+
-        '<tr><td>Manufacturer</td><td>'+a.manufacturer+'</td></tr>'+
-        '<tr><td>Asset</td><td>'+a.name+' ('+a.designation+')</td></tr>'+
-        '<tr><td>Category</td><td>'+CONTINUUM_CATEGORIES[a.category].label+'</td></tr>'+
-        '<tr><td>Design Life</td><td>'+a.designLife.toLocaleString()+' '+a.designLifeUnit+'</td></tr>'+
-        '<tr><td>Criticality</td><td>'+a.criticality+'</td></tr>'+
-      '</table>';
-    } else {
-      html += '<table><tr><th>Asset</th><th>Category</th><th>Criticality</th></tr>';
-      results.forEach(function(r){ html += '<tr><td>'+r.asset.manufacturer+' '+r.asset.name+'</td><td>'+CONTINUUM_CATEGORIES[r.asset.category].label+'</td><td>'+r.asset.criticality+'</td></tr>'; });
-      html += '</table>';
-    }
-
-    var c = results[0].conditions;
-    html += '<h2>Operating Conditions Modeled</h2>';
-    html += '<table><tr><th>Parameter</th><th>Value</th></tr>'+
-      '<tr><td>Operating Hours</td><td>'+c.operatingHours.toLocaleString()+'</td></tr>'+
-      '<tr><td>Thermal Severity</td><td>'+c.temperature+'%</td></tr>'+
-      '<tr><td>Load Factor</td><td>'+c.load+'%</td></tr>'+
-      '<tr><td>Vibration Severity</td><td>'+c.vibration+'%</td></tr>'+
-      '<tr><td>Maintenance Quality</td><td>'+c.maintenanceQuality+'%</td></tr>'+
-      '<tr><td>Environment Severity</td><td>'+c.environment+'%</td></tr>'+
-      '<tr><td>Utilization Rate</td><td>'+c.utilization+'%</td></tr>'+
-    '</table>';
-
-    html += '<h2>Risk Analysis</h2>';
-    html += '<table><tr><th>Asset</th><th>Health Index</th><th>Failure Probability</th><th>Risk Level</th><th>Est. RUL</th></tr>';
-    results.slice().sort(function(x,y){return y.failureProbability-x.failureProbability;}).forEach(function(r){
-      html += '<tr><td>'+r.asset.manufacturer+' '+r.asset.name+'</td><td>'+fmt(r.healthIndex,0)+'</td><td>'+fmt(r.failureProbability,0)+'%</td><td class="risk-flag">'+r.riskLevel+'</td><td>'+r.remainingUsefulLife.toLocaleString()+' '+r.asset.designLifeUnit+'</td></tr>';
-    });
-    html += '</table>';
-
-    if(mode==="technical"){
-      html += '<h2>Failure Mode Detail</h2>';
-      results.forEach(function(r){
-        html += '<p><strong>'+r.asset.manufacturer+' '+r.asset.name+'</strong></p>';
-        html += '<table><tr><th>Failure Mode</th><th>Contribution</th><th>Base Weight</th></tr>';
-        r.rankedModes.forEach(function(rm){
-          html += '<tr><td>'+rm.mode.label+'</td><td>'+fmt(rm.contribution*100,1)+'%</td><td>'+(rm.mode.weight*100).toFixed(0)+'%</td></tr>';
-        });
-        html += '</table>';
-      });
-      html += '<h2>Reliability Assessment</h2>';
-      html += '<p>Reliability scores incorporate weighted contributions from all tracked failure mechanisms adjusted for elapsed life fraction relative to design life. Scores below 50 indicate elevated intervention priority.</p>';
-    }
-
-    html += '<h2>Recommendations</h2>';
-    html += '<p>'+buildRecommendation(results)+'</p>';
-
-    return html;
-  }
-
-  function buildRecommendation(results){
-    var worst = results.slice().sort(function(a,b){return b.failureProbability-a.failureProbability;})[0];
-    if(worst.riskLevel==="Critical" || worst.riskLevel==="High"){
-      return "Prioritize inspection of "+worst.asset.manufacturer+" "+worst.asset.name+" targeting "+(worst.primaryMode?worst.primaryMode.label:"the dominant failure mechanism")+". Recommend condition-based maintenance intervention ahead of the next scheduled interval and increased monitoring cadence given current operating severity.";
-    }
-    if(worst.riskLevel==="Moderate"){
-      return "Continue on-condition monitoring at standard cadence. Reassess if operating severity (thermal, load, or vibration) increases beyond modeled thresholds.";
-    }
-    return "No immediate intervention indicated. Maintain current maintenance program and monitoring schedule.";
-  }
-
-  /* ================= VIEW: ANALYTICS ================= */
-  function renderAnalytics(){
-    var wrap = el('<div></div>');
-    wrap.appendChild(el('<div class="breadcrumb">Reliability Analytics Center</div>'));
-    wrap.appendChild(el('<div class="view-header"><div class="view-title">Reliability Analytics <span class="accent">/ Fleet-Wide Intelligence</span></div></div>'));
-
-    var byCategory = {};
-    Object.keys(CONTINUUM_CATEGORIES).forEach(function(c){ byCategory[c] = klgGetAssetsByCategory(c); });
-
-    var top = el('<div class="analytics-grid"></div>');
-
-    var heatPanel = el('<div class="panel"><div class="panel-header"><h3>Fleet Health Heatmap</h3></div><div class="panel-body"><div class="heatmap"></div></div></div>');
-    var hm = heatPanel.querySelector('.heatmap');
-    CONTINUUM_ASSETS.forEach(function(a){
-      var hc = healthColor(a.baselineHealth);
-      var cell = el('<div class="heatmap-cell" style="border-color:'+hc+'55"><div class="hc-val" style="color:'+hc+'">'+a.baselineHealth+'</div><div class="hc-name">'+a.name+'</div></div>');
-      cell.addEventListener('click', function(){ state.selectedAssetId=a.id; state.dossierTab="overview"; navigate('dossier',{id:a.id}); });
-      hm.appendChild(cell);
-    });
-    top.appendChild(heatPanel);
-
-    var rankPanel = el('<div class="panel"><div class="panel-header"><h3>Reliability Ranking</h3></div><div class="panel-body"></div></div>');
-    var rl = rankPanel.querySelector('.panel-body');
-    CONTINUUM_ASSETS.slice().sort(function(a,b){return b.baselineHealth-a.baselineHealth;}).forEach(function(a,i){
-      var hc = healthColor(a.baselineHealth);
-      var row = el(
-        '<div class="rank-list-row"><span class="rl-idx">'+(i+1).toString().padStart(2,'0')+'</span>'+
-        '<span class="rl-name">'+a.manufacturer+' '+a.name+'</span>'+
-        '<div class="rl-bar"><div class="rl-fill" style="width:'+a.baselineHealth+'%;background:'+hc+'"></div></div></div>'
-      );
-      row.querySelector('.rl-name').addEventListener('click', function(){ state.selectedAssetId=a.id; state.dossierTab="overview"; navigate('dossier',{id:a.id}); });
-      rl.appendChild(row);
-    });
-    top.appendChild(rankPanel);
-    wrap.appendChild(top);
-
-    var catPanel = el('<div class="panel section-gap"><div class="panel-header"><h3>Category Health Trends</h3></div><div class="panel-body"></div></div>');
-    wrap.appendChild(catPanel);
-    var ct = catPanel.querySelector('.panel-body');
-    Object.keys(byCategory).forEach(function(cid){
-      var arr = byCategory[cid];
-      var avg = arr.reduce(function(s,a){return s+a.baselineHealth;},0)/arr.length;
-      var hc = healthColor(avg);
-      ct.appendChild(el(
-        '<div class="mode-rank"><span class="rank-name">'+CONTINUUM_CATEGORIES[cid].label+' <span class="text-dim mono" style="font-size:10px;">('+arr.length+' assets)</span></span>'+
-        '<div class="rank-bar-wrap"><div class="rank-bar"><div class="rank-bar-fill" style="width:'+avg+'%;background:'+hc+'"></div></div>'+
-        '<span class="rank-pct">'+fmt(avg,0)+'</span></div></div>'
-      ));
-    });
-
-    if(state.lastResults && state.lastResults.results.length){
-      var simPanel = el('<div class="panel"><div class="panel-header"><h3>Last Simulation — Risk Distribution</h3></div><div class="panel-body"></div></div>');
-      wrap.appendChild(simPanel);
-      var st = simPanel.querySelector('.panel-body');
-      state.lastResults.results.forEach(function(r){
-        var rc = colorForRisk(r.riskLevel);
-        st.appendChild(el(
-          '<div class="mode-rank"><span class="rank-name">'+r.asset.manufacturer+' '+r.asset.name+'</span>'+
-          '<div class="rank-bar-wrap"><div class="rank-bar"><div class="rank-bar-fill" style="width:'+r.failureProbability+'%;background:'+rc+'"></div></div>'+
-          '<span class="rank-pct">'+fmt(r.failureProbability,0)+'%</span></div></div>'
-        ));
-      });
-    }
-
-    return wrap;
-  }
-
-  /* ================= SETTINGS MODAL ================= */
-  function openSettings(){
-    var overlay = el(
-      '<div class="modal-overlay"><div class="modal">'+
-        '<div class="modal-header"><h3>Platform Settings</h3><button class="modal-close" aria-label="Close">&times;</button></div>'+
-        '<div class="modal-body">'+
-          '<div class="setting-row"><span class="setting-label">Accent Theme</span><div class="option-row" id="theme-opts"></div></div>'+
-          '<div class="setting-row"><span class="setting-label">Display Density</span><div class="option-row" id="density-opts"></div></div>'+
-          '<div class="setting-row"><span class="setting-label">Session</span><div class="option-row"><button class="option-btn" id="reset-pins">Clear Pinned Assets</button></div></div>'+
-        '</div>'+
-      '</div></div>'
-    );
-    document.body.appendChild(overlay);
-    overlay.addEventListener('click', function(e){ if(e.target===overlay) close(); });
-    overlay.querySelector('.modal-close').addEventListener('click', close);
-    function close(){ if(overlay.parentNode) overlay.parentNode.removeChild(overlay); }
-
-    var themes = [{id:"silver",label:"Silver",color:"var(--c-silver-bright)"},{id:"green",label:"Signal Green",color:"var(--c-green)"},{id:"amber",label:"Command Amber",color:"var(--c-amber)"}];
-    var themeHost = overlay.querySelector('#theme-opts');
-    themes.forEach(function(t){
-      var b = el('<button class="option-btn'+(state.settings.theme===t.id?" active":"")+'"><span class="swatch" style="background:'+t.color+'"></span>'+t.label+'</button>');
-      b.addEventListener('click', function(){
-        state.settings.theme = t.id; saveSettings(); applySettings();
-        themeHost.querySelectorAll('.option-btn').forEach(function(x){x.classList.remove('active');});
-        b.classList.add('active');
-      });
-      themeHost.appendChild(b);
-    });
-
-    var densities = [{id:"comfortable",label:"Comfortable"},{id:"compact",label:"Compact"}];
-    var densityHost = overlay.querySelector('#density-opts');
-    densities.forEach(function(d){
-      var b = el('<button class="option-btn'+(state.settings.density===d.id?" active":"")+'">'+d.label+'</button>');
-      b.addEventListener('click', function(){
-        state.settings.density = d.id; saveSettings(); applySettings();
-        densityHost.querySelectorAll('.option-btn').forEach(function(x){x.classList.remove('active');});
-        b.classList.add('active');
-      });
-      densityHost.appendChild(b);
-    });
-
-    overlay.querySelector('#reset-pins').addEventListener('click', function(){
-      state.pinned = [];
-      updateStatusBar();
-      close();
-    });
-  }
-
-  /* ---------------- CLOCK ---------------- */
-  function tickClock(){
-    var d = new Date();
-    document.getElementById('clock').textContent = d.toLocaleTimeString('en-US', {hour12:false});
-  }
-
-  /* ---------------- INIT ---------------- */
-  function init(){
-    loadSettings();
-    tickClock();
-    setInterval(tickClock, 1000);
-    document.getElementById('brand-home').addEventListener('click', function(){ navigate('library'); });
-    document.querySelectorAll('.nav-btn').forEach(function(b){
-      b.addEventListener('click', function(){ navigate(b.getAttribute('data-route')); });
-    });
-    document.getElementById('settings-btn').addEventListener('click', openSettings);
-    navigate('library');
-  }
-
-  return { navigate: navigate, state: state, init: init };
-})();
-
-document.addEventListener('DOMContentLoaded', Continuum.init);
+
+
+/* =====================================================
+CONTINUUMONE ASSET INTELLIGENCE ENGINE
+===================================================== */
+
+
+
+const assetLibraryContainer =
+document.getElementById("asset-library");
+
+
+
+const assetDatabase = window.KLG
+?
+window.KLG.assets
+:
+{};
+
+
+
+
+/* =====================================================
+ASSET ENGINE STATE
+===================================================== */
+
+
+const AssetEngine = {
+
+
+currentAsset:null,
+
+
+industryFilter:"All",
+
+
+initialize(){
+
+
+this.renderIndustries();
+
+
+this.renderAssets();
+
+
+},
+
+
+
+renderIndustries(){
+
+
+},
+
+
+
+renderAssets(){
+
+
+
+if(!assetLibraryContainer)
+return;
+
+
+
+assetLibraryContainer.innerHTML="";
+
+
+
+const assets =
+Object.values(assetDatabase);
+
+
+
+if(assets.length===0){
+
+
+assetLibraryContainer.innerHTML=
+
+`
+
+<div style="
+color:#777;
+font-family:monospace;
+font-size:12px;
+">
+
+NO ASSET DATABASE CONNECTED
+
+</div>
+
+`;
+
+return;
+
+
+}
+
+
+
+
+
+assets.forEach(asset=>{
+
+
+
+const card =
+document.createElement("div");
+
+
+
+card.className =
+"asset-card";
+
+
+
+card.innerHTML=
+
+`
+
+<div class="asset-name">
+
+${asset.name || "Unnamed Asset"}
+
+</div>
+
+
+<div class="asset-meta">
+
+Industry
+
+${asset.industry || asset.category || "Unknown"}
+
+</div>
+
+
+<div class="asset-meta">
+
+Criticality
+
+${asset.criticality || "Unknown"}
+
+</div>
+
+
+`;
+
+
+
+card.onclick=()=>{
+
+
+AssetEngine.selectAsset(asset);
+
+
+
+};
+
+
+
+assetLibraryContainer.appendChild(card);
+
+
+
+});
+
+
+
+},
+
+
+
+
+selectAsset(asset){
+
+
+this.currentAsset=asset;
+
+
+this.openDossier(asset);
+
+
+},
+
+
+
+
+openDossier(asset){
+
+
+
+const container =
+document.getElementById("asset-library");
+
+
+
+container.innerHTML=
+
+
+`
+
+<div style="
+border:1px solid #292929;
+padding:20px;
+background:#090909;
+">
+
+
+<div style="
+font-size:24px;
+margin-bottom:15px;
+">
+
+
+${asset.name}
+
+
+</div>
+
+
+
+<div style="
+color:#888;
+font-family:monospace;
+font-size:12px;
+line-height:2;
+">
+
+
+INDUSTRY
+
+${asset.industry || asset.category || "Unknown"}
+
+<br>
+
+
+TYPE
+
+${asset.type || "Industrial System"}
+
+<br>
+
+
+CRITICALITY
+
+${asset.criticality || "Not Classified"}
+
+
+</div>
+
+
+
+
+<br>
+
+
+
+<div style="
+border-top:1px solid #292929;
+padding-top:15px;
+">
+
+
+<div style="
+font-family:monospace;
+font-size:11px;
+color:#aaa;
+margin-bottom:10px;
+">
+
+
+SYSTEM STATUS
+
+
+</div>
+
+
+
+<div>
+
+Awaiting Simulation Configuration
+
+</div>
+
+
+
+</div>
+
+
+
+<button
+class="system-button"
+onclick="AssetEngine.returnLibrary()"
+style="margin-top:20px"
+>
+
+RETURN TO ASSET LIBRARY
+
+</button>
+
+
+
+</div>
+
+`;
+
+
+
+},
+
+
+
+
+returnLibrary(){
+
+
+this.renderAssets();
+
+
+}
+
+
+
+};
+
+
+
+
+
+/* =====================================================
+INITIALIZE ASSET SYSTEM
+===================================================== */
+
+
+window.addEventListener(
+"load",
+()=>{
+
+
+AssetEngine.initialize();
+
+
+
+}
+
+);
+
+
+
 </script>
+<script>
+
+
+/* =====================================================
+CONTINUUMONE ASSET DOSSIER ENGINE
+===================================================== */
+
+
+const DossierEngine = {
+
+
+
+createStructure(asset){
+
+
+const container =
+document.getElementById("asset-library");
+
+
+
+if(!container)
+return;
+
+
+
+const subsystems =
+asset.subsystems
+||
+[
+
+"Primary Mechanical System",
+
+"Control System",
+
+"Thermal Management",
+
+"Power System",
+
+"Sensor Network"
+
+];
+
+
+
+const components =
+asset.components
+||
+[
+
+"Bearings",
+
+"Seals",
+
+"Rotors",
+
+"Sensors",
+
+"Actuators"
+
+];
+
+
+
+const failures =
+asset.failures
+||
+[
+
+"Bearing Wear",
+
+"Thermal Fatigue",
+
+"Material Degradation",
+
+"Sensor Drift",
+
+"Lubrication Failure"
+
+];
+
+
+
+
+
+container.innerHTML = `
+
+
+
+<div style="
+
+border:1px solid #292929;
+
+background:#090909;
+
+padding:25px;
+
+">
+
+
+
+<div style="
+
+font-size:26px;
+
+font-weight:500;
+
+margin-bottom:8px;
+
+">
+
+${asset.name}
+
+</div>
+
+
+
+<div style="
+
+font-family:monospace;
+
+font-size:12px;
+
+color:#888;
+
+margin-bottom:25px;
+
+">
+
+ENGINEERING DOSSIER
+
+</div>
+
+
+
+
+
+<div style="
+
+display:grid;
+
+grid-template-columns:repeat(2,1fr);
+
+gap:15px;
+
+">
+
+
+
+
+
+<div class="metric-box">
+
+<div class="metric-name">
+
+INDUSTRY
+
+</div>
+
+
+<div class="metric-value" style="font-size:16px">
+
+${asset.industry || asset.category || "Unknown"}
+
+</div>
+
+</div>
+
+
+
+
+
+<div class="metric-box">
+
+<div class="metric-name">
+
+CRITICALITY
+
+</div>
+
+
+<div class="metric-value" style="font-size:16px">
+
+${asset.criticality || "Unknown"}
+
+</div>
+
+</div>
+
+
+
+
+</div>
+
+
+
+
+
+<br>
+
+
+
+
+
+<div class="engine-container">
+
+
+<div class="engine-label">
+
+SUBSYSTEM ARCHITECTURE
+
+</div>
+
+
+${
+
+subsystems.map(item=>`
+
+<div style="
+
+padding:10px;
+
+border-bottom:1px solid #202020;
+
+color:#bbb;
+
+">
+
+${item}
+
+</div>
+
+`).join("")
+
+
+}
+
+
+
+</div>
+
+
+
+
+
+
+
+<div class="engine-container">
+
+
+<div class="engine-label">
+
+COMPONENT INVENTORY
+
+</div>
+
+
+
+${
+
+components.map(item=>`
+
+<div style="
+
+padding:10px;
+
+border-bottom:1px solid #202020;
+
+color:#bbb;
+
+">
+
+${item}
+
+</div>
+
+`).join("")
+
+
+}
+
+
+
+</div>
+
+
+
+
+
+
+
+<div class="engine-container">
+
+
+<div class="engine-label">
+
+KNOWN FAILURE MODES
+
+</div>
+
+
+
+${
+
+failures.map(item=>`
+
+<div style="
+
+padding:10px;
+
+border-bottom:1px solid #202020;
+
+color:#bbb;
+
+">
+
+${item}
+
+</div>
+
+`).join("")
+
+
+}
+
+
+
+</div>
+
+
+
+
+
+
+
+<button
+
+class="system-button"
+
+onclick="DossierEngine.prepareSimulation()"
+
+>
+
+PREPARE SIMULATION
+
+</button>
+
+
+
+
+
+
+<button
+
+class="system-button"
+
+onclick="AssetEngine.returnLibrary()"
+
+style="margin-top:10px"
+
+>
+
+RETURN TO LIBRARY
+
+</button>
+
+
+
+
+
+
+</div>
+
+
+
+`;
+
+
+
+},
+
+
+
+
+
+
+prepareSimulation(){
+
+
+const simulation =
+document.getElementById("simulation-engine");
+
+
+
+if(simulation){
+
+
+simulation.innerHTML=
+
+`
+
+<div style="
+
+color:#bdbdbd;
+
+font-family:monospace;
+
+font-size:13px;
+
+">
+
+
+ASSET CONFIGURATION READY
+
+
+<br><br>
+
+
+Awaiting operational parameters
+
+
+<br>
+
+Temperature
+
+<br>
+
+Load
+
+<br>
+
+Runtime
+
+<br>
+
+Environment Severity
+
+<br>
+
+Maintenance History
+
+
+</div>
+
+`;
+
+
+
+}
+
+
+
+}
+
+
+
+
+};
+
+
+
+
+
+/* =====================================================
+CONNECT DOSSIER WITH ASSET ENGINE
+===================================================== */
+
+
+const originalSelectAsset =
+AssetEngine.selectAsset;
+
+
+
+AssetEngine.selectAsset=function(asset){
+
+
+this.currentAsset=asset;
+
+
+DossierEngine.createStructure(asset);
+
+
+
+};
+
+
+
+
+
+</script>
+<script>
+
+
+/* =====================================================
+CONTINUUMONE SIMULATION CONFIGURATION ENGINE
+===================================================== */
+
+
+const SimulationConfig = {
+
+
+parameters:{
+
+
+temperature:25,
+
+
+load:50,
+
+
+runtime:1000,
+
+
+environment:"Normal",
+
+
+maintenanceQuality:80
+
+
+
+},
+
+
+
+
+initialize(){
+
+
+this.render();
+
+
+},
+
+
+
+
+
+render(){
+
+
+const container =
+document.getElementById("simulation-engine");
+
+
+
+if(!container)
+return;
+
+
+
+
+container.innerHTML = `
+
+
+
+<div style="margin-bottom:20px">
+
+
+<div class="metric-name">
+
+OPERATING PARAMETERS
+
+</div>
+
+
+</div>
+
+
+
+
+
+<div style="margin-bottom:15px">
+
+
+<label class="metric-name">
+
+TEMPERATURE
+
+</label>
+
+
+<input
+
+id="sim-temperature"
+
+type="range"
+
+min="0"
+
+max="100"
+
+value="${this.parameters.temperature}"
+
+style="width:100%"
+
+>
+
+
+
+<div id="temperature-value">
+
+${this.parameters.temperature} %
+
+</div>
+
+
+</div>
+
+
+
+
+
+
+
+<div style="margin-bottom:15px">
+
+
+<label class="metric-name">
+
+LOAD INTENSITY
+
+</label>
+
+
+<input
+
+id="sim-load"
+
+type="range"
+
+min="0"
+
+max="100"
+
+value="${this.parameters.load}"
+
+style="width:100%"
+
+>
+
+
+<div id="load-value">
+
+${this.parameters.load} %
+
+</div>
+
+
+</div>
+
+
+
+
+
+
+
+<div style="margin-bottom:15px">
+
+
+<label class="metric-name">
+
+OPERATING HOURS
+
+</label>
+
+
+<input
+
+id="sim-runtime"
+
+type="range"
+
+min="0"
+
+max="100000"
+
+value="${this.parameters.runtime}"
+
+style="width:100%"
+
+>
+
+
+<div id="runtime-value">
+
+${this.parameters.runtime}
+
+</div>
+
+
+</div>
+
+
+
+
+
+
+
+<div style="margin-bottom:15px">
+
+
+<label class="metric-name">
+
+ENVIRONMENT
+
+</label>
+
+
+<select
+
+id="sim-environment"
+
+style="
+
+width:100%;
+
+background:#111;
+
+color:white;
+
+border:1px solid #333;
+
+padding:12px;
+
+"
+
+>
+
+
+<option>
+
+Normal
+
+</option>
+
+
+<option>
+
+Harsh
+
+</option>
+
+
+<option>
+
+Extreme
+
+</option>
+
+
+</select>
+
+
+
+</div>
+
+
+
+
+
+
+
+<div style="margin-bottom:20px">
+
+
+<label class="metric-name">
+
+MAINTENANCE QUALITY
+
+</label>
+
+
+<input
+
+id="sim-maintenance"
+
+type="range"
+
+min="0"
+
+max="100"
+
+value="${this.parameters.maintenanceQuality}"
+
+style="width:100%"
+
+>
+
+
+
+<div id="maintenance-value">
+
+${this.parameters.maintenanceQuality} %
+
+</div>
+
+
+
+</div>
+
+
+
+
+
+
+
+
+<button
+
+class="system-button"
+
+onclick="SimulationEngine.start()"
+
+>
+
+RUN ENGINEERING SIMULATION
+
+</button>
+
+
+
+`;
+
+
+
+
+
+this.bindControls();
+
+
+
+},
+
+
+
+
+
+bindControls(){
+
+
+
+const temp =
+document.getElementById("sim-temperature");
+
+const load =
+document.getElementById("sim-load");
+
+const runtime =
+document.getElementById("sim-runtime");
+
+const environment =
+document.getElementById("sim-environment");
+
+const maintenance =
+document.getElementById("sim-maintenance");
+
+
+
+
+temp.oninput=()=>{
+
+
+this.parameters.temperature =
+temp.value;
+
+
+document.getElementById(
+"temperature-value"
+)
+.innerHTML =
+temp.value+" %";
+
+
+};
+
+
+
+load.oninput=()=>{
+
+
+this.parameters.load =
+load.value;
+
+
+document.getElementById(
+"load-value"
+)
+.innerHTML =
+load.value+" %";
+
+
+};
+
+
+
+runtime.oninput=()=>{
+
+
+this.parameters.runtime =
+runtime.value;
+
+
+document.getElementById(
+"runtime-value"
+)
+.innerHTML =
+runtime.value;
+
+
+};
+
+
+
+maintenance.oninput=()=>{
+
+
+this.parameters.maintenanceQuality =
+maintenance.value;
+
+
+document.getElementById(
+"maintenance-value"
+)
+.innerHTML =
+maintenance.value+" %";
+
+
+};
+
+
+
+environment.onchange=()=>{
+
+
+this.parameters.environment =
+environment.value;
+
+
+};
+
+
+
+}
+
+
+
+};
+
+
+
+
+
+
+
+/* =====================================================
+SIMULATION EXECUTION PLACEHOLDER
+===================================================== */
+
+
+const SimulationEngine = {
+
+
+start(){
+
+
+const prediction =
+document.getElementById(
+"prediction-engine"
+);
+
+
+
+if(prediction){
+
+
+prediction.innerHTML=
+
+
+`
+
+<div style="
+
+font-family:monospace;
+
+color:#bbb;
+
+">
+
+
+SIMULATION INITIALIZED
+
+
+<br><br>
+
+
+Processing operational conditions
+
+
+<br>
+
+Analyzing degradation factors
+
+
+<br>
+
+Calculating reliability impact
+
+
+</div>
+
+
+`;
+
+
+
+}
+
+
+
+}
+
+
+
+};
+
+
+
+
+
+
+
+window.addEventListener(
+"load",
+()=>{
+
+
+SimulationConfig.initialize();
+
+
+}
+
+);
+
+
+
+</script>
+<script>
+
+
+/* =====================================================
+CONTINUUMONE DEGRADATION ENGINE
+===================================================== */
+
+
+const DegradationEngine = {
+
+
+
+state:{
+
+
+damageIndex:0,
+
+healthIndex:100,
+
+riskLevel:"LOW",
+
+drivers:[]
+
+
+},
+
+
+
+
+
+calculate(parameters){
+
+
+
+let damage=0;
+
+
+let drivers=[];
+
+
+
+/*
+Temperature stress
+*/
+
+
+if(parameters.temperature > 70){
+
+
+damage += 15;
+
+
+drivers.push(
+"High Thermal Stress"
+);
+
+
+}
+
+else if(parameters.temperature > 50){
+
+
+damage += 7;
+
+
+drivers.push(
+"Elevated Temperature"
+);
+
+
+}
+
+
+
+
+
+/*
+Load stress
+*/
+
+
+if(parameters.load > 80){
+
+
+damage += 20;
+
+
+drivers.push(
+"High Mechanical Load"
+);
+
+
+}
+
+else if(parameters.load > 60){
+
+
+damage += 10;
+
+
+drivers.push(
+"Moderate Load Stress"
+);
+
+
+}
+
+
+
+
+
+/*
+Runtime degradation
+*/
+
+
+let runtimeDamage =
+Number(parameters.runtime)
+/ 100000
+* 25;
+
+
+
+damage += runtimeDamage;
+
+
+
+if(runtimeDamage > 10){
+
+
+drivers.push(
+"Accumulated Operating Hours"
+);
+
+
+}
+
+
+
+
+
+
+/*
+Environment factor
+*/
+
+
+if(parameters.environment==="Harsh"){
+
+
+damage += 15;
+
+
+drivers.push(
+"Harsh Operating Environment"
+);
+
+
+}
+
+
+
+if(parameters.environment==="Extreme"){
+
+
+damage += 30;
+
+
+drivers.push(
+"Extreme Environmental Exposure"
+);
+
+
+}
+
+
+
+
+
+
+/*
+Maintenance effect
+*/
+
+
+const maintenanceLoss =
+(100 -
+Number(parameters.maintenanceQuality))
+/ 4;
+
+
+
+damage += maintenanceLoss;
+
+
+
+if(maintenanceLoss > 10){
+
+
+drivers.push(
+"Maintenance Deficiency"
+);
+
+
+}
+
+
+
+
+
+
+
+this.state.damageIndex =
+Math.min(
+100,
+Math.round(damage)
+);
+
+
+
+
+
+this.state.healthIndex =
+Math.max(
+0,
+100-this.state.damageIndex
+);
+
+
+
+
+
+
+if(this.state.healthIndex > 75){
+
+
+this.state.riskLevel="LOW";
+
+
+}
+
+else if(this.state.healthIndex > 45){
+
+
+this.state.riskLevel="MODERATE";
+
+
+}
+
+else{
+
+
+this.state.riskLevel="HIGH";
+
+
+}
+
+
+
+
+
+
+this.state.drivers =
+drivers;
+
+
+
+return this.state;
+
+
+
+},
+
+
+
+
+
+render(result){
+
+
+
+const prediction =
+document.getElementById(
+"prediction-engine"
+);
+
+
+
+if(!prediction)
+return;
+
+
+
+
+
+prediction.innerHTML = `
+
+
+
+<div class="metric-box">
+
+
+<div class="metric-name">
+
+ASSET HEALTH INDEX
+
+</div>
+
+
+<div class="metric-value">
+
+${result.healthIndex}%
+
+</div>
+
+
+</div>
+
+
+
+
+
+
+<div class="metric-box">
+
+
+<div class="metric-name">
+
+DEGRADATION LEVEL
+
+</div>
+
+
+<div class="metric-value">
+
+${result.damageIndex}%
+
+</div>
+
+
+</div>
+
+
+
+
+
+
+<div class="engine-container">
+
+
+<div class="engine-label">
+
+PRIMARY STRESS DRIVERS
+
+</div>
+
+
+
+${
+result.drivers.length
+
+?
+
+result.drivers.map(
+driver=>`
+
+<div style="
+
+padding:10px;
+
+border-bottom:1px solid #222;
+
+color:#bbb;
+
+">
+
+${driver}
+
+</div>
+
+`
+).join("")
+
+
+:
+
+"NO SIGNIFICANT STRESSORS DETECTED"
+
+}
+
+
+
+</div>
+
+
+
+
+
+`;
+
+
+
+}
+
+
+
+};
+
+
+
+
+
+
+/* =====================================================
+CONNECT SIMULATION TO DEGRADATION
+===================================================== */
+
+
+const originalSimulationStart =
+SimulationEngine.start;
+
+
+
+SimulationEngine.start=function(){
+
+
+
+const result =
+
+DegradationEngine.calculate(
+SimulationConfig.parameters
+);
+
+
+
+DegradationEngine.render(result);
+
+
+
+};
+
+
+
+
+</script>
+<script>
+
+
+/* =====================================================
+CONTINUUMONE FAILURE PROPAGATION ENGINE
+===================================================== */
+
+
+const FailurePropagationEngine = {
+
+
+
+state:{
+
+
+activeFailures:[],
+
+
+affectedSystems:[],
+
+
+riskChain:[]
+
+
+},
+
+
+
+
+
+failureDatabase:{
+
+
+
+bearingWear:{
+
+
+name:"Bearing Wear",
+
+
+severity:8,
+
+
+propagation:[
+
+"Rotor Imbalance",
+
+"Vibration Increase",
+
+"Shaft Damage"
+
+]
+
+},
+
+
+
+
+
+thermalFatigue:{
+
+
+name:"Thermal Fatigue",
+
+
+severity:9,
+
+
+propagation:[
+
+"Material Degradation",
+
+"Crack Formation",
+
+"Structural Weakening"
+
+]
+
+},
+
+
+
+
+
+lubricationFailure:{
+
+
+name:"Lubrication Failure",
+
+
+severity:8,
+
+
+propagation:[
+
+"Friction Increase",
+
+"Temperature Rise",
+
+"Component Wear"
+
+]
+
+},
+
+
+
+
+
+sensorDrift:{
+
+
+name:"Sensor Drift",
+
+
+severity:5,
+
+
+propagation:[
+
+"Incorrect Monitoring",
+
+"Prediction Error",
+
+"Control Deviation"
+
+]
+
+}
+
+
+
+},
+
+
+
+
+
+
+analyze(degradation){
+
+
+
+let failures=[];
+
+
+let systems=[];
+
+
+let chain=[];
+
+
+
+
+
+/*
+Thermal conditions
+*/
+
+
+if(
+degradation.drivers
+.includes(
+"High Thermal Stress"
+)
+
+||
+degradation.drivers
+.includes(
+"Extreme Environmental Exposure"
+)
+
+){
+
+
+failures.push(
+this.failureDatabase.thermalFatigue
+);
+
+
+systems.push(
+"Thermal System"
+);
+
+
+
+}
+
+
+
+
+
+
+
+/*
+Mechanical conditions
+*/
+
+
+if(
+degradation.drivers
+.includes(
+"High Mechanical Load"
+)
+
+){
+
+
+failures.push(
+this.failureDatabase.bearingWear
+);
+
+
+systems.push(
+"Mechanical Assembly"
+);
+
+
+
+}
+
+
+
+
+
+
+
+/*
+Maintenance conditions
+*/
+
+
+if(
+degradation.drivers
+.includes(
+"Maintenance Deficiency"
+)
+
+){
+
+
+failures.push(
+this.failureDatabase.lubricationFailure
+);
+
+
+systems.push(
+"Rotating Equipment"
+);
+
+
+
+}
+
+
+
+
+
+
+
+/*
+Create propagation chain
+*/
+
+
+failures.forEach(
+failure=>{
+
+
+chain.push(
+failure.name
+);
+
+
+failure.propagation.forEach(
+step=>{
+
+
+chain.push(
+"→ "+step
+);
+
+
+});
+
+
+});
+
+
+
+
+
+
+this.state.activeFailures =
+failures;
+
+
+
+this.state.affectedSystems =
+systems;
+
+
+
+this.state.riskChain =
+chain;
+
+
+
+return this.state;
+
+
+
+},
+
+
+
+
+
+
+render(result){
+
+
+
+const prediction =
+document.getElementById(
+"prediction-engine"
+);
+
+
+
+if(!prediction)
+return;
+
+
+
+
+
+prediction.innerHTML += `
+
+
+
+
+<div class="engine-container">
+
+
+<div class="engine-label">
+
+FAILURE PROPAGATION ANALYSIS
+
+</div>
+
+
+
+
+
+<div style="
+
+font-family:monospace;
+
+font-size:13px;
+
+color:#bbb;
+
+line-height:2;
+
+">
+
+
+${
+result.riskChain.length
+
+?
+
+result.riskChain.join("<br>")
+
+:
+
+"NO FAILURE PROPAGATION DETECTED"
+
+}
+
+
+</div>
+
+
+
+</div>
+
+
+
+
+
+<div class="engine-container">
+
+
+<div class="engine-label">
+
+AFFECTED SYSTEMS
+
+</div>
+
+
+
+${
+result.affectedSystems.length
+
+?
+
+result.affectedSystems
+.map(
+system=>`
+
+<div style="
+padding:10px;
+border-bottom:1px solid #222;
+color:#bbb;
+">
+
+${system}
+
+</div>
+
+`
+).join("")
+
+:
+
+"NONE"
+
+}
+
+
+</div>
+
+
+
+
+
+`;
+
+
+
+}
+
+
+
+};
+
+
+
+
+
+
+
+/* =====================================================
+CONNECT WITH DEGRADATION ENGINE
+===================================================== */
+
+
+const originalDegradationRender =
+DegradationEngine.render;
+
+
+
+DegradationEngine.render=function(result){
+
+
+
+originalDegradationRender(result);
+
+
+
+const propagation =
+FailurePropagationEngine.analyze(result);
+
+
+
+FailurePropagationEngine.render(
+propagation
+);
+
+
+
+};
+
+
+
+
+
+</script>
+<script>
+
+
+/* =====================================================
+CONTINUUMONE RELIABILITY ENGINE
+===================================================== */
+
+
+const ReliabilityEngine = {
+
+
+
+state:{
+
+
+healthIndex:100,
+
+
+reliabilityScore:100,
+
+
+failureProbability:0,
+
+
+remainingLife:100
+
+
+},
+
+
+
+
+
+
+calculate(degradation, propagation){
+
+
+
+let damage =
+degradation.damageIndex;
+
+
+
+let propagationPenalty =
+propagation.activeFailures.length * 5;
+
+
+
+let totalStress =
+Math.min(
+100,
+damage + propagationPenalty
+);
+
+
+
+
+
+this.state.healthIndex =
+
+Math.max(
+0,
+100-totalStress
+);
+
+
+
+
+
+this.state.reliabilityScore =
+
+Math.max(
+0,
+100-(totalStress*0.8)
+);
+
+
+
+
+
+
+this.state.failureProbability =
+
+Math.min(
+100,
+Math.round(totalStress)
+);
+
+
+
+
+
+
+
+/*
+Simplified remaining useful life model
+
+Higher damage
+=
+lower remaining life
+
+*/
+
+
+this.state.remainingLife =
+
+Math.max(
+
+0,
+
+Math.round(
+100-totalStress*0.9
+)
+
+);
+
+
+
+
+
+
+return this.state;
+
+
+
+},
+
+
+
+
+
+
+riskClassification(){
+
+
+
+if(
+this.state.failureProbability < 25
+){
+
+
+return "LOW";
+
+
+}
+
+
+
+if(
+this.state.failureProbability < 60
+){
+
+
+return "MODERATE";
+
+
+}
+
+
+
+return "HIGH";
+
+
+
+},
+
+
+
+
+
+
+
+render(result){
+
+
+
+const panel =
+
+document.querySelector(
+".intelligence-panel"
+);
+
+
+
+if(!panel)
+return;
+
+
+
+
+
+panel.innerHTML += `
+
+
+
+<div class="metric-box">
+
+
+<div class="metric-name">
+
+RELIABILITY SCORE
+
+</div>
+
+
+<div class="metric-value">
+
+${Math.round(result.reliabilityScore)}%
+
+</div>
+
+
+</div>
+
+
+
+
+
+<div class="metric-box">
+
+
+<div class="metric-name">
+
+FAILURE PROBABILITY
+
+</div>
+
+
+<div class="metric-value">
+
+${Math.round(result.failureProbability)}%
+
+</div>
+
+
+</div>
+
+
+
+
+
+<div class="metric-box">
+
+
+<div class="metric-name">
+
+REMAINING USEFUL LIFE
+
+</div>
+
+
+<div class="metric-value">
+
+${Math.round(result.remainingLife)}%
+
+</div>
+
+
+</div>
+
+
+
+
+
+<div class="metric-box">
+
+
+<div class="metric-name">
+
+RISK CLASSIFICATION
+
+</div>
+
+
+<div class="metric-value">
+
+${this.riskClassification()}
+
+</div>
+
+
+</div>
+
+
+
+`;
+
+
+
+}
+
+
+
+};
+
+
+
+
+
+
+
+/* =====================================================
+CONNECT RELIABILITY ENGINE
+===================================================== */
+
+
+const originalPropagationRender =
+
+FailurePropagationEngine.render;
+
+
+
+
+
+FailurePropagationEngine.render=function(result){
+
+
+
+originalPropagationRender(result);
+
+
+
+const reliability =
+
+ReliabilityEngine.calculate(
+
+DegradationEngine.state,
+
+result
+
+);
+
+
+
+
+ReliabilityEngine.render(
+reliability
+);
+
+
+
+};
+
+
+
+
+
+</script>
+<script>
+
+
+/* =====================================================
+CONTINUUMONE PREDICTION ENGINE
+===================================================== */
+
+
+const PredictionEngine = {
+
+
+
+state:{
+
+
+primaryFailure:"None",
+
+
+affectedSubsystem:"None",
+
+
+failureWindow:"Unknown",
+
+
+confidence:0,
+
+
+recommendation:"None"
+
+
+},
+
+
+
+
+
+predict(reliability, propagation){
+
+
+
+let prediction = {
+
+
+primaryFailure:
+"Normal Operation",
+
+
+affectedSubsystem:
+"None",
+
+
+failureWindow:
+"Long Term",
+
+
+confidence:70,
+
+
+recommendation:
+"Continue monitoring"
+
+
+
+};
+
+
+
+
+
+
+/*
+Determine primary failure
+*/
+
+
+
+if(
+propagation.activeFailures.length > 0
+){
+
+
+
+const highestFailure =
+
+propagation.activeFailures
+.sort(
+(a,b)=>
+b.severity-a.severity
+)[0];
+
+
+
+
+
+prediction.primaryFailure =
+
+highestFailure.name;
+
+
+
+
+
+prediction.confidence += 15;
+
+
+
+}
+
+
+
+
+
+
+
+
+/*
+Subsystem mapping
+*/
+
+
+
+if(
+propagation.affectedSystems.length
+){
+
+prediction.affectedSubsystem =
+
+propagation
+.affectedSystems[0];
+
+}
+
+
+
+
+/*
+Failure window estimation
+*/
+
+
+
+if(
+reliability.failureProbability > 75
+){
+
+
+prediction.failureWindow =
+
+"Immediate Inspection Required";
+
+
+prediction.recommendation =
+
+"Perform maintenance action before continued operation";
+
+
+}
+
+
+
+else if(
+reliability.failureProbability > 45
+){
+
+
+prediction.failureWindow =
+
+"Short Term Risk Window";
+
+
+prediction.recommendation =
+
+"Schedule preventive inspection";
+
+
+}
+
+
+
+else if(
+reliability.failureProbability > 20
+){
+
+
+prediction.failureWindow =
+
+"Medium Term Risk Window";
+
+
+prediction.recommendation =
+
+"Increase monitoring frequency";
+
+
+}
+
+
+
+
+else{
+
+
+prediction.failureWindow =
+
+"Stable Operating Window";
+
+
+}
+
+
+
+
+this.state = prediction;
+
+
+
+return prediction;
+
+
+
+},
+
+
+
+
+
+
+render(result){
+
+
+
+const predictionPanel =
+
+document.getElementById(
+"prediction-engine"
+);
+
+
+
+if(!predictionPanel)
+return;
+
+
+
+
+
+
+predictionPanel.innerHTML += `
+
+
+
+<div class="engine-container">
+
+
+<div class="engine-label">
+
+PREDICTIVE ANALYSIS
+
+</div>
+
+
+
+
+
+
+<div class="metric-box">
+
+
+<div class="metric-name">
+
+PRIMARY FAILURE MODE
+
+</div>
+
+
+<div class="metric-value">
+
+${result.primaryFailure}
+
+</div>
+
+
+</div>
+
+
+
+
+
+
+
+<div class="metric-box">
+
+
+<div class="metric-name">
+
+AFFECTED SUBSYSTEM
+
+</div>
+
+
+<div class="metric-value">
+
+${result.affectedSubsystem}
+
+</div>
+
+
+</div>
+
+
+
+
+
+
+
+
+<div class="metric-box">
+
+
+<div class="metric-name">
+
+FAILURE WINDOW
+
+</div>
+
+
+<div class="metric-value">
+
+${result.failureWindow}
+
+</div>
+
+
+</div>
+
+
+
+
+
+
+
+<div class="metric-box">
+
+
+<div class="metric-name">
+
+ENGINEERING ACTION
+
+</div>
+
+
+<div class="metric-value" style="font-size:15px">
+
+${result.recommendation}
+
+</div>
+
+
+</div>
+
+
+
+
+
+</div>
+
+
+
+`;
+
+
+
+}
+
+
+
+};
+
+
+
+
+
+
+
+/* =====================================================
+CONNECT PREDICTION ENGINE
+===================================================== */
+
+
+
+const originalReliabilityRender =
+
+ReliabilityEngine.render;
+
+
+
+
+
+ReliabilityEngine.render=function(result){
+
+
+
+originalReliabilityRender(result);
+
+
+
+
+
+const prediction =
+
+PredictionEngine.predict(
+
+result,
+
+FailurePropagationEngine.state
+
+);
+
+
+
+
+
+PredictionEngine.render(
+prediction
+);
+
+
+
+};
+
+
+
+
+
+</script>
+<script>
+
+
+/* =====================================================
+CONTINUUMONE ENGINEERING INTELLIGENCE ENGINE
+===================================================== */
+
+
+const IntelligenceEngine = {
+
+
+
+state:{
+
+
+rootCause:"",
+
+contributors:[],
+
+
+mechanism:"",
+
+
+impact:"",
+
+
+decision:""
+
+
+
+},
+
+
+
+
+
+
+generate(prediction, degradation, reliability){
+
+
+
+let result = {
+
+
+rootCause:
+"Normal operating conditions",
+
+
+contributors:[],
+
+
+mechanism:
+"No significant degradation mechanism detected",
+
+
+impact:
+"Minimal operational impact",
+
+
+decision:
+"Continue standard monitoring"
+
+
+
+};
+
+
+
+
+
+/*
+Root cause identification
+*/
+
+
+if(
+degradation.drivers.length > 0
+){
+
+
+result.rootCause =
+
+degradation.drivers[0];
+
+
+result.contributors =
+
+degradation.drivers.slice(1);
+
+
+
+}
+
+
+
+
+
+/*
+Failure mechanism reasoning
+*/
+
+
+
+if(
+prediction.primaryFailure !==
+"Normal Operation"
+){
+
+
+
+result.mechanism =
+
+
+prediction.primaryFailure +
+
+" progression affecting " +
+
+prediction.affectedSubsystem;
+
+
+
+}
+
+
+
+
+
+
+
+/*
+Impact analysis
+*/
+
+
+if(
+reliability.failureProbability > 70
+){
+
+
+
+result.impact =
+
+"High probability of operational disruption";
+
+
+}
+
+
+else if(
+reliability.failureProbability > 40
+){
+
+
+result.impact =
+
+"Potential performance degradation";
+
+
+}
+
+
+else{
+
+
+result.impact =
+
+"Limited operational impact";
+
+
+}
+
+
+
+
+
+
+
+
+/*
+Decision logic
+*/
+
+
+
+result.decision =
+
+prediction.recommendation;
+
+
+
+this.state=result;
+
+
+
+return result;
+
+
+
+},
+
+
+
+
+
+
+render(result){
+
+
+
+const container =
+
+document.getElementById(
+"prediction-engine"
+);
+
+
+
+if(!container)
+return;
+
+
+
+
+
+container.innerHTML += `
+
+
+
+<div class="engine-container">
+
+
+<div class="engine-label">
+
+ENGINEERING INTELLIGENCE
+
+</div>
+
+
+
+
+
+<div class="metric-box">
+
+
+<div class="metric-name">
+
+PRIMARY DRIVER
+
+</div>
+
+
+<div class="metric-value" style="font-size:16px">
+
+${result.rootCause}
+
+</div>
+
+
+</div>
+
+
+
+
+
+
+
+
+<div class="metric-box">
+
+
+<div class="metric-name">
+
+FAILURE MECHANISM
+
+</div>
+
+
+<div class="metric-value" style="font-size:15px">
+
+${result.mechanism}
+
+</div>
+
+
+</div>
+
+
+
+
+
+
+
+<div class="metric-box">
+
+
+<div class="metric-name">
+
+OPERATIONAL IMPACT
+
+</div>
+
+
+<div class="metric-value" style="font-size:15px">
+
+${result.impact}
+
+</div>
+
+
+</div>
+
+
+
+
+
+
+
+
+<div class="metric-box">
+
+
+<div class="metric-name">
+
+ENGINEERING DECISION
+
+</div>
+
+
+<div class="metric-value" style="font-size:15px">
+
+${result.decision}
+
+</div>
+
+
+</div>
+
+
+
+</div>
+
+
+
+`;
+
+
+
+}
+
+
+
+};
+
+
+
+
+
+
+/* =====================================================
+CONNECT INTELLIGENCE ENGINE
+===================================================== */
+
+
+
+const originalPredictionRender =
+
+PredictionEngine.render;
+
+
+
+
+
+PredictionEngine.render=function(result){
+
+
+
+originalPredictionRender(result);
+
+
+
+
+
+const intelligence =
+
+IntelligenceEngine.generate(
+
+result,
+
+DegradationEngine.state,
+
+ReliabilityEngine.state
+
+);
+
+
+
+
+
+IntelligenceEngine.render(
+intelligence
+);
+
+
+
+};
+
+
+
+
+</script>
+<script>
+
+
+/* =====================================================
+CONTINUUMONE ENGINEERING REPORT ENGINE
+===================================================== */
+
+
+const ReportEngine = {
+
+
+
+generate(){
+
+
+
+const asset =
+AssetEngine.currentAsset;
+
+
+
+const degradation =
+DegradationEngine.state;
+
+
+
+const reliability =
+ReliabilityEngine.state;
+
+
+
+const prediction =
+PredictionEngine.state;
+
+
+
+const intelligence =
+IntelligenceEngine.state;
+
+
+
+
+
+const report = {
+
+
+
+asset:
+
+asset
+?
+asset.name
+
+:
+
+"Unknown Asset",
+
+
+
+
+
+health:
+
+reliability.healthIndex+"%",
+
+
+
+
+risk:
+
+prediction.failureWindow,
+
+
+
+
+
+failure:
+
+prediction.primaryFailure,
+
+
+
+
+
+cause:
+
+intelligence.rootCause,
+
+
+
+
+
+mechanism:
+
+intelligence.mechanism,
+
+
+
+
+
+action:
+
+intelligence.decision
+
+
+
+
+
+};
+
+
+
+
+
+this.render(report);
+
+
+
+return report;
+
+
+
+},
+
+
+
+
+
+
+
+render(report){
+
+
+
+const container =
+
+document.getElementById(
+"report-engine"
+);
+
+
+
+if(!container)
+return;
+
+
+
+
+
+container.innerHTML = `
+
+
+
+<div class="engine-container">
+
+
+<div class="engine-label">
+
+CONTINUUMONE ENGINEERING REPORT
+
+</div>
+
+
+
+
+
+
+<div class="metric-box">
+
+
+<div class="metric-name">
+
+ASSET
+
+</div>
+
+
+<div class="metric-value" style="font-size:18px">
+
+${report.asset}
+
+</div>
+
+
+</div>
+
+
+
+
+
+
+
+<div class="metric-box">
+
+
+<div class="metric-name">
+
+CURRENT HEALTH INDEX
+
+</div>
+
+
+<div class="metric-value">
+
+${report.health}
+
+</div>
+
+
+</div>
+
+
+
+
+
+
+
+<div class="metric-box">
+
+
+<div class="metric-name">
+
+PREDICTED FAILURE
+
+</div>
+
+
+<div class="metric-value" style="font-size:16px">
+
+${report.failure}
+
+</div>
+
+
+</div>
+
+
+
+
+
+
+
+<div class="metric-box">
+
+
+<div class="metric-name">
+
+ROOT CAUSE
+
+</div>
+
+
+<div class="metric-value" style="font-size:15px">
+
+${report.cause}
+
+</div>
+
+
+</div>
+
+
+
+
+
+
+
+<div class="metric-box">
+
+
+<div class="metric-name">
+
+ENGINEERING RECOMMENDATION
+
+</div>
+
+
+<div class="metric-value" style="font-size:15px">
+
+${report.action}
+
+</div>
+
+
+</div>
+
+
+
+
+
+<button
+
+class="system-button"
+
+onclick="ReportEngine.exportReport()"
+
+>
+
+EXPORT ENGINEERING REPORT
+
+</button>
+
+
+
+</div>
+
+
+
+`;
+
+
+
+},
+
+
+
+
+
+
+
+exportReport(){
+
+
+
+const prediction =
+PredictionEngine.state;
+
+
+
+const text =
+
+
+
+`
+
+CONTINUUMONE ENGINEERING REPORT
+
+
+Asset
+
+${AssetEngine.currentAsset
+?
+AssetEngine.currentAsset.name
+:
+"Unknown"}
+
+
+
+Failure Prediction
+
+${prediction.primaryFailure}
+
+
+
+Failure Window
+
+${prediction.failureWindow}
+
+
+
+Recommended Action
+
+${prediction.recommendation}
+
+
+
+Generated by ContinuumOne Predictive Intelligence System
+
+`;
+
+
+
+
+
+const file =
+
+new Blob(
+[text],
+{
+type:"text/plain"
+}
+);
+
+
+
+
+
+const link =
+document.createElement("a");
+
+
+
+link.href =
+URL.createObjectURL(file);
+
+
+
+link.download =
+"ContinuumOne_Report.txt";
+
+
+
+link.click();
+
+
+
+}
+
+
+
+};
+
+
+
+
+
+
+
+/* =====================================================
+CONNECT REPORT ENGINE
+===================================================== */
+
+
+const originalIntelligenceRender =
+
+IntelligenceEngine.render;
+
+
+
+
+
+IntelligenceEngine.render=function(result){
+
+
+
+originalIntelligenceRender(result);
+
+
+
+ReportEngine.generate();
+
+
+
+};
+
+
+
+
+
+
+</script>
+<script>
+
+
+/* =====================================================
+CONTINUUMONE RELIABILITY ANALYTICS ENGINE
+===================================================== */
+
+
+const AnalyticsEngine = {
+
+
+
+state:{
+
+
+riskTrend:[],
+
+
+healthTrend:[],
+
+
+failureDrivers:[]
+
+
+},
+
+
+
+
+
+analyze(){
+
+
+
+const reliability =
+ReliabilityEngine.state;
+
+
+
+const degradation =
+DegradationEngine.state;
+
+
+
+
+
+this.state.healthTrend.push(
+
+reliability.healthIndex
+
+);
+
+
+
+
+
+this.state.riskTrend.push(
+
+reliability.failureProbability
+
+);
+
+
+
+
+
+
+this.state.failureDrivers =
+
+degradation.drivers;
+
+
+
+return this.state;
+
+
+
+},
+
+
+
+
+
+
+render(){
+
+
+
+const panel =
+
+document.querySelector(
+".intelligence-panel"
+);
+
+
+
+if(!panel)
+return;
+
+
+
+
+
+const analyticsBox =
+
+document.createElement("div");
+
+
+
+analyticsBox.className =
+"metric-box";
+
+
+
+analyticsBox.innerHTML = `
+
+
+
+<div class="metric-name">
+
+ANALYTICS SUMMARY
+
+</div>
+
+
+
+<div style="
+
+margin-top:15px;
+
+font-size:13px;
+
+line-height:2;
+
+color:#bbb;
+
+">
+
+
+HEALTH TREND
+
+${
+
+this.state.healthTrend.length
+
+?
+
+this.state.healthTrend.join(" → ")
+
+:
+
+"N/A"
+
+}
+
+
+
+<br>
+
+
+RISK TREND
+
+${
+
+this.state.riskTrend.length
+
+?
+
+this.state.riskTrend.join(" → ")
+
+:
+
+"N/A"
+
+}
+
+
+
+<br>
+
+
+ACTIVE DRIVERS
+
+${
+
+this.state.failureDrivers.length
+
+?
+
+this.state.failureDrivers.join(", ")
+
+:
+
+"None"
+
+}
+
+
+
+</div>
+
+
+
+`;
+
+
+
+panel.appendChild(
+analyticsBox
+);
+
+
+
+}
+
+
+
+};
+
+
+
+
+
+
+
+
+/* =====================================================
+CONNECT ANALYTICS ENGINE
+===================================================== */
+
+
+const originalReportGenerate =
+
+ReportEngine.generate;
+
+
+
+
+
+ReportEngine.generate=function(){
+
+
+
+const report =
+
+originalReportGenerate();
+
+
+
+AnalyticsEngine.analyze();
+
+
+
+AnalyticsEngine.render();
+
+
+
+return report;
+
+
+
+};
+
+
+
+
+
+</script>
+<script>
+
+
+/* =====================================================
+CONTINUUMONE ADVANCED RELIABILITY ANALYTICS SYSTEM
+===================================================== */
+
+
+
+const AdvancedAnalytics = {
+
+
+
+history:[],
+
+
+metrics:{
+
+
+averageHealth:100,
+
+averageRisk:0,
+
+highestRisk:0,
+
+dominantFailure:"None"
+
+
+},
+
+
+
+
+
+recordSnapshot(){
+
+
+
+const snapshot={
+
+
+
+timestamp:
+new Date().toLocaleTimeString(),
+
+
+
+health:
+
+ReliabilityEngine.state.healthIndex,
+
+
+
+risk:
+
+ReliabilityEngine.state.failureProbability,
+
+
+
+damage:
+
+DegradationEngine.state.damageIndex,
+
+
+
+failure:
+
+PredictionEngine.state.primaryFailure || "None"
+
+
+
+};
+
+
+
+
+this.history.push(snapshot);
+
+
+
+if(this.history.length>20){
+
+
+this.history.shift();
+
+
+}
+
+
+
+this.calculateMetrics();
+
+
+
+},
+
+
+
+
+
+
+
+
+calculateMetrics(){
+
+
+
+if(this.history.length===0)
+return;
+
+
+
+let healthTotal=0;
+
+let riskTotal=0;
+
+let highest=0;
+
+
+let failures={};
+
+
+
+
+
+this.history.forEach(
+entry=>{
+
+
+
+healthTotal +=
+Number(entry.health);
+
+
+
+riskTotal +=
+Number(entry.risk);
+
+
+
+if(entry.risk>highest){
+
+
+highest=entry.risk;
+
+
+}
+
+
+
+if(entry.failure){
+
+
+failures[entry.failure]=
+
+(failures[entry.failure]||0)+1;
+
+
+}
+
+
+
+});
+
+
+
+
+
+this.metrics.averageHealth =
+
+Math.round(
+healthTotal /
+this.history.length
+);
+
+
+
+
+this.metrics.averageRisk =
+
+Math.round(
+riskTotal /
+this.history.length
+);
+
+
+
+this.metrics.highestRisk =
+highest;
+
+
+
+
+
+
+let dominant="None";
+
+
+let count=0;
+
+
+
+Object.keys(failures).forEach(
+failure=>{
+
+
+if(failures[failure]>count){
+
+
+count=failures[failure];
+
+dominant=failure;
+
+
+}
+
+
+});
+
+
+
+this.metrics.dominantFailure =
+dominant;
+
+
+
+},
+
+
+
+
+
+
+
+getRiskState(){
+
+
+
+const risk =
+this.metrics.averageRisk;
+
+
+
+if(risk<25)
+return "STABLE";
+
+
+
+if(risk<60)
+return "MONITOR";
+
+
+
+return "CRITICAL";
+
+
+
+},
+
+
+
+
+
+
+
+
+renderDashboard(){
+
+
+
+const panel =
+
+document.querySelector(
+".intelligence-panel"
+);
+
+
+
+if(!panel)
+return;
+
+
+
+
+
+const old =
+document.getElementById(
+"advanced-analytics"
+);
+
+
+
+if(old)
+old.remove();
+
+
+
+
+
+const dashboard =
+document.createElement("div");
+
+
+
+dashboard.id=
+"advanced-analytics";
+
+
+
+dashboard.className=
+"metric-box";
+
+
+
+
+
+dashboard.innerHTML=
+
+
+
+`
+
+<div class="metric-name">
+
+RELIABILITY ANALYTICS
+
+</div>
+
+
+
+
+
+<div style="
+
+margin-top:15px;
+
+font-size:13px;
+
+line-height:2;
+
+color:#bbb;
+
+">
+
+
+
+AVERAGE HEALTH
+
+${this.metrics.averageHealth}%
+
+
+
+<br>
+
+
+
+AVERAGE RISK
+
+${this.metrics.averageRisk}%
+
+
+
+<br>
+
+
+
+SYSTEM STATE
+
+${this.getRiskState()}
+
+
+
+<br>
+
+
+
+DOMINANT FAILURE
+
+${this.metrics.dominantFailure}
+
+
+
+</div>
+
+
+`;
+
+
+
+
+
+panel.appendChild(
+dashboard
+);
+
+
+
+}
+
+
+
+
+
+
+
+};
+
+
+
+
+
+
+
+
+
+/* =====================================================
+FAILURE DRIVER ANALYSIS
+===================================================== */
+
+
+
+const FailureDriverAnalysis = {
+
+
+
+analyse(){
+
+
+
+const drivers =
+
+DegradationEngine.state.drivers;
+
+
+
+let ranking=[];
+
+
+
+
+drivers.forEach(
+driver=>{
+
+
+ranking.push({
+
+
+name:driver,
+
+
+impact:
+Math.floor(
+Math.random()*40
+)+60
+
+
+
+});
+
+
+});
+
+
+
+
+
+ranking.sort(
+(a,b)=>
+b.impact-a.impact
+);
+
+
+
+return ranking;
+
+
+
+},
+
+
+
+
+
+
+
+render(){
+
+
+
+const container=
+
+document.getElementById(
+"prediction-engine"
+);
+
+
+
+if(!container)
+return;
+
+
+
+
+
+const drivers =
+this.analyse();
+
+
+
+
+
+container.innerHTML +=
+
+
+
+`
+
+<div class="engine-container">
+
+
+<div class="engine-label">
+
+FAILURE DRIVER RANKING
+
+</div>
+
+
+
+${
+
+
+drivers.length
+
+?
+
+drivers.map(
+item=>`
+
+
+<div style="
+
+padding:12px;
+
+border-bottom:1px solid #222;
+
+display:flex;
+
+justify-content:space-between;
+
+color:#bbb;
+
+">
+
+
+<span>
+
+${item.name}
+
+</span>
+
+
+
+<span>
+
+${item.impact}%
+
+</span>
+
+
+</div>
+
+
+`
+).join("")
+
+
+:
+
+"NO ACTIVE DRIVERS"
+
+
+}
+
+
+
+</div>
+
+
+`;
+
+
+
+}
+
+
+
+};
+
+
+
+
+
+
+
+
+
+/* =====================================================
+HEALTH TREND VISUALIZER
+===================================================== */
+
+
+const HealthTrendVisualizer={
+
+
+
+
+render(){
+
+
+
+const container=
+
+document.getElementById(
+"report-engine"
+);
+
+
+
+if(!container)
+return;
+
+
+
+
+
+let points="";
+
+
+
+AdvancedAnalytics.history.forEach(
+point=>{
+
+
+points +=
+
+
+`
+
+<div style="
+
+display:flex;
+
+align-items:center;
+
+gap:10px;
+
+margin-bottom:8px;
+
+">
+
+
+<div style="
+
+width:${point.health}%;
+
+height:6px;
+
+background:#477c59;
+
+">
+
+
+</div>
+
+
+
+<span style="
+
+font-size:11px;
+
+color:#888;
+
+">
+
+${point.health}%
+
+</span>
+
+
+</div>
+
+
+`;
+
+
+
+});
+
+
+
+
+
+
+container.innerHTML +=
+
+
+`
+
+<div class="engine-container">
+
+
+<div class="engine-label">
+
+HEALTH HISTORY
+
+</div>
+
+
+
+${
+
+points || "NO HISTORY"
+
+}
+
+
+
+</div>
+
+
+`;
+
+
+
+
+}
+
+
+
+};
+
+
+
+
+
+
+
+
+
+/* =====================================================
+CONNECT ANALYTICS PIPELINE
+===================================================== */
+
+
+
+const oldAnalyticsGenerate =
+
+ReportEngine.generate;
+
+
+
+
+
+ReportEngine.generate=function(){
+
+
+
+const report =
+oldAnalyticsGenerate();
+
+
+
+AdvancedAnalytics.recordSnapshot();
+
+
+
+AdvancedAnalytics.renderDashboard();
+
+
+
+FailureDriverAnalysis.render();
+
+
+
+HealthTrendVisualizer.render();
+
+
+
+
+return report;
+
+
+
+};
+
+
+
+
+
+
+</script>
+<script>
+
+
+/* =====================================================
+CONTINUUMONE ADVANCED SIMULATION CONTROL SYSTEM
+===================================================== */
+
+
+
+const ScenarioEngine = {
+
+
+
+scenarios:[],
+
+
+activeScenario:null,
+
+
+
+
+create(name,parameters){
+
+
+
+const scenario={
+
+
+
+id:
+
+"SCN-" +
+
+Date.now(),
+
+
+
+name:name,
+
+
+
+parameters:
+
+JSON.parse(
+JSON.stringify(parameters)
+),
+
+
+
+created:
+
+new Date()
+.toLocaleString(),
+
+
+
+result:null
+
+
+
+};
+
+
+
+
+
+this.scenarios.push(
+scenario
+);
+
+
+
+return scenario;
+
+
+
+},
+
+
+
+
+
+runScenario(id){
+
+
+
+const scenario =
+
+this.scenarios.find(
+item=>item.id===id
+);
+
+
+
+if(!scenario)
+return;
+
+
+
+this.activeScenario =
+scenario;
+
+
+
+const oldParameters =
+
+SimulationConfig.parameters;
+
+
+
+SimulationConfig.parameters =
+
+scenario.parameters;
+
+
+
+
+
+const degradation =
+
+DegradationEngine.calculate(
+scenario.parameters
+);
+
+
+
+
+
+const propagation =
+
+FailurePropagationEngine.analyze(
+degradation
+);
+
+
+
+
+
+const reliability =
+
+ReliabilityEngine.calculate(
+degradation,
+propagation
+);
+
+
+
+
+
+
+const prediction =
+
+PredictionEngine.predict(
+reliability,
+propagation
+);
+
+
+
+
+
+scenario.result={
+
+
+health:
+reliability.healthIndex,
+
+
+risk:
+reliability.failureProbability,
+
+
+failure:
+prediction.primaryFailure,
+
+
+window:
+prediction.failureWindow
+
+
+
+};
+
+
+
+
+
+SimulationConfig.parameters =
+oldParameters;
+
+
+
+
+return scenario.result;
+
+
+
+},
+
+
+
+
+
+
+
+compare(){
+
+
+
+return this.scenarios
+.filter(
+item=>item.result
+);
+
+
+
+}
+
+
+
+
+
+
+};
+
+
+
+
+
+
+
+
+
+/* =====================================================
+STRESS TESTING ENGINE
+===================================================== */
+
+
+const StressTestEngine={
+
+
+
+
+
+profiles:{
+
+
+
+normal:{
+
+
+temperature:40,
+
+load:40,
+
+runtime:20000,
+
+environment:"Normal",
+
+maintenanceQuality:90
+
+
+},
+
+
+
+
+
+heavy:{
+
+
+temperature:70,
+
+load:75,
+
+runtime:60000,
+
+environment:"Harsh",
+
+maintenanceQuality:70
+
+
+},
+
+
+
+
+
+extreme:{
+
+
+temperature:90,
+
+load:95,
+
+runtime:90000,
+
+environment:"Extreme",
+
+maintenanceQuality:40
+
+
+}
+
+
+
+},
+
+
+
+
+
+
+
+generateTests(){
+
+
+
+Object.keys(
+this.profiles
+).forEach(
+profile=>{
+
+
+ScenarioEngine.create(
+
+profile.toUpperCase(),
+
+this.profiles[profile]
+
+);
+
+
+
+});
+
+
+
+}
+
+
+
+
+
+
+
+};
+
+
+
+
+
+
+
+
+
+/* =====================================================
+SCENARIO COMPARISON ENGINE
+===================================================== */
+
+
+const ScenarioComparison={
+
+
+
+
+
+render(){
+
+
+
+const container =
+
+document.getElementById(
+"report-engine"
+);
+
+
+
+if(!container)
+return;
+
+
+
+
+const data =
+
+ScenarioEngine.compare();
+
+
+
+
+
+container.innerHTML +=
+
+
+
+`
+
+<div class="engine-container">
+
+
+<div class="engine-label">
+
+SCENARIO COMPARISON
+
+</div>
+
+
+
+
+${
+data.length
+
+?
+
+data.map(
+scenario=>`
+
+
+<div style="
+
+border-bottom:1px solid #222;
+
+padding:12px;
+
+color:#bbb;
+
+">
+
+
+
+<div>
+
+${scenario.name}
+
+</div>
+
+
+
+<div style="font-size:12px">
+
+
+Health
+
+${scenario.result.health}%
+
+
+<br>
+
+
+Risk
+
+${scenario.result.risk}%
+
+
+<br>
+
+
+Failure
+
+${scenario.result.failure}
+
+
+
+</div>
+
+
+
+</div>
+
+
+
+`
+).join("")
+
+
+:
+
+"NO COMPLETED SCENARIOS"
+
+}
+
+
+
+</div>
+
+
+
+`;
+
+
+
+}
+
+
+
+
+
+
+};
+
+
+
+
+
+
+
+
+
+/* =====================================================
+SIMULATION CONTROL PANEL
+===================================================== */
+
+
+const SimulationControlPanel={
+
+
+
+
+
+render(){
+
+
+
+const container =
+
+document.getElementById(
+"simulation-engine"
+);
+
+
+
+if(!container)
+return;
+
+
+
+
+container.innerHTML +=
+
+
+
+`
+
+<div class="engine-container">
+
+
+<div class="engine-label">
+
+ADVANCED SIMULATION CONTROL
+
+</div>
+
+
+
+
+<button
+
+class="system-button"
+
+onclick="StressTestEngine.generateTests()"
+
+>
+
+GENERATE STRESS PROFILES
+
+</button>
+
+
+
+
+
+<button
+
+class="system-button"
+
+onclick="ScenarioComparison.render()"
+
+>
+
+COMPARE SCENARIOS
+
+</button>
+
+
+
+</div>
+
+
+
+`;
+
+
+
+}
+
+
+
+
+
+};
+
+
+
+
+
+
+
+
+
+/* =====================================================
+CONNECT SYSTEM
+===================================================== */
+
+
+
+window.addEventListener(
+"load",
+()=>{
+
+
+SimulationControlPanel.render();
+
+
+
+StressTestEngine.generateTests();
+
+
+
+});
+
+
+
+
+
+</script>
+<script>
+
+
+/* =====================================================
+CONTINUUMONE DIGITAL TWIN VISUALIZATION FOUNDATION
+===================================================== */
+
+
+
+const DigitalTwinEngine = {
+
+
+
+currentModel:null,
+
+
+
+models:{},
+
+
+
+
+
+loadAsset(asset){
+
+
+
+if(!asset)
+return;
+
+
+
+
+this.currentModel={
+
+
+
+name:asset.name,
+
+
+
+subsystems:
+
+asset.subsystems ||
+
+[
+
+"Mechanical System",
+
+"Thermal System",
+
+"Control System",
+
+"Power System"
+
+],
+
+
+
+
+components:
+
+asset.components ||
+
+[
+
+"Bearings",
+
+"Rotors",
+
+"Sensors",
+
+"Actuators"
+
+]
+
+
+
+};
+
+
+
+
+
+this.render();
+
+
+
+},
+
+
+
+
+
+
+
+render(){
+
+
+
+const container =
+
+document.getElementById(
+"asset-library"
+);
+
+
+
+if(!container)
+return;
+
+
+
+
+const model =
+this.currentModel;
+
+
+
+if(!model)
+return;
+
+
+
+
+
+
+container.innerHTML = `
+
+
+
+<div class="engine-container">
+
+
+<div class="engine-label">
+
+DIGITAL TWIN SYSTEM MAP
+
+</div>
+
+
+
+
+
+
+<div style="
+
+font-size:22px;
+
+margin-bottom:20px;
+
+">
+
+
+${model.name}
+
+
+</div>
+
+
+
+
+
+
+
+<div style="
+
+display:grid;
+
+grid-template-columns:repeat(2,1fr);
+
+gap:15px;
+
+">
+
+
+
+
+
+${
+
+model.subsystems.map(
+system=>`
+
+
+<div style="
+
+background:#0d0d0d;
+
+border:1px solid #292929;
+
+padding:18px;
+
+">
+
+
+<div style="
+
+font-size:14px;
+
+color:#f3f3f3;
+
+">
+
+${system}
+
+</div>
+
+
+
+<div style="
+
+font-size:11px;
+
+color:#777;
+
+margin-top:10px;
+
+font-family:monospace;
+
+">
+
+CONNECTED COMPONENTS
+
+</div>
+
+
+
+</div>
+
+
+`
+).join("")
+
+}
+
+
+
+</div>
+
+
+
+
+
+
+<div class="engine-container">
+
+
+<div class="engine-label">
+
+COMPONENT NETWORK
+
+</div>
+
+
+
+
+${
+
+model.components.map(
+component=>`
+
+
+<div style="
+
+padding:12px;
+
+border-bottom:1px solid #222;
+
+display:flex;
+
+justify-content:space-between;
+
+color:#bbb;
+
+">
+
+
+<span>
+
+${component}
+
+</span>
+
+
+
+<span style="color:#477c59">
+
+NORMAL
+
+</span>
+
+
+
+</div>
+
+
+
+`
+).join("")
+
+}
+
+
+
+</div>
+
+
+
+
+</div>
+
+
+
+`;
+
+
+
+}
+
+
+
+
+
+
+};
+
+
+
+
+
+
+
+
+
+/* =====================================================
+DEPENDENCY GRAPH ENGINE
+===================================================== */
+
+
+
+const DependencyGraphEngine={
+
+
+
+
+
+nodes:[],
+
+
+
+connections:[],
+
+
+
+
+
+build(asset){
+
+
+
+this.nodes=[];
+
+
+this.connections=[];
+
+
+
+
+
+if(!asset)
+return;
+
+
+
+
+
+
+(asset.components || [])
+.forEach(
+component=>{
+
+
+this.nodes.push({
+
+name:component,
+
+health:100
+
+});
+
+
+});
+
+
+
+
+
+
+
+for(
+let i=0;
+i<this.nodes.length-1;
+i++
+){
+
+
+this.connections.push({
+
+from:
+this.nodes[i].name,
+
+
+to:
+this.nodes[i+1].name
+
+
+});
+
+
+}
+
+
+
+
+
+},
+
+
+
+
+
+
+
+highlightFailures(){
+
+
+
+const failures =
+
+FailurePropagationEngine
+.state
+.riskChain;
+
+
+
+
+
+this.nodes.forEach(
+node=>{
+
+
+if(
+failures.includes(node.name)
+){
+
+
+node.health=40;
+
+
+}
+
+
+});
+
+
+
+
+
+return this.nodes;
+
+
+
+}
+
+
+
+
+
+};
+
+
+
+
+
+
+
+
+
+/* =====================================================
+HEALTH VISUALIZATION LAYER
+===================================================== */
+
+
+
+const TwinHealthRenderer={
+
+
+
+
+
+render(){
+
+
+
+const container =
+
+document.getElementById(
+"asset-library"
+);
+
+
+
+if(!container)
+return;
+
+
+
+
+
+const nodes =
+
+DependencyGraphEngine
+.highlightFailures();
+
+
+
+
+
+container.innerHTML +=
+
+
+
+`
+
+<div class="engine-container">
+
+
+<div class="engine-label">
+
+COMPONENT HEALTH MAP
+
+</div>
+
+
+
+
+
+${
+
+nodes.map(
+node=>`
+
+
+<div style="
+
+padding:12px;
+
+border-bottom:1px solid #222;
+
+display:flex;
+
+justify-content:space-between;
+
+">
+
+
+<span>
+
+${node.name}
+
+</span>
+
+
+
+
+<span style="
+
+color:
+
+${
+
+node.health<50
+
+?
+
+'#853d3d'
+
+:
+
+'#477c59'
+
+}
+
+">
+
+${node.health}%
+
+
+</span>
+
+
+
+</div>
+
+
+
+`
+).join("")
+
+}
+
+
+
+</div>
+
+
+
+`;
+
+
+
+}
+
+
+
+};
+
+
+
+
+
+
+
+
+
+/* =====================================================
+CONNECT DIGITAL TWIN WITH ASSET SELECTION
+===================================================== */
+
+
+
+const oldDossierStructure =
+
+DossierEngine.createStructure;
+
+
+
+
+
+DossierEngine.createStructure=function(asset){
+
+
+
+oldDossierStructure(asset);
+
+
+
+DigitalTwinEngine.loadAsset(asset);
+
+
+
+DependencyGraphEngine.build(asset);
+
+
+
+TwinHealthRenderer.render();
+
+
+
+};
+
+
+
+
+
+</script>
+<script>
+
+
+/* =====================================================
+CONTINUUMONE INDUSTRIAL MONITORING ENGINE
+===================================================== */
+
+
+
+const MonitoringEngine = {
+
+
+
+sensors:{},
+
+
+telemetry:[],
+
+
+anomalies:[],
+
+
+
+
+registerSensor(id,type,unit){
+
+
+
+this.sensors[id]={
+
+
+id:id,
+
+
+type:type,
+
+
+unit:unit,
+
+
+value:0,
+
+
+status:"ONLINE"
+
+
+
+};
+
+
+
+},
+
+
+
+
+
+
+
+initializeDefaultSensors(){
+
+
+
+this.registerSensor(
+"TEMP-001",
+"Temperature",
+"°C"
+);
+
+
+
+this.registerSensor(
+"VIB-001",
+"Vibration",
+"mm/s"
+);
+
+
+
+this.registerSensor(
+"LOAD-001",
+"Mechanical Load",
+"%"
+);
+
+
+
+this.registerSensor(
+"PRESS-001",
+"Pressure",
+"bar"
+);
+
+
+
+},
+
+
+
+
+
+
+
+generateTelemetry(){
+
+
+
+Object.values(
+this.sensors
+)
+.forEach(
+sensor=>{
+
+
+
+let value;
+
+
+
+if(sensor.type==="Temperature"){
+
+
+value =
+SimulationConfig.parameters.temperature;
+
+
+}
+
+
+
+else if(
+sensor.type==="Vibration"
+){
+
+
+value =
+Math.random()*10;
+
+
+}
+
+
+
+
+else if(
+sensor.type==="Mechanical Load"
+){
+
+
+value =
+SimulationConfig.parameters.load;
+
+
+}
+
+
+
+else{
+
+
+value =
+Math.random()*100;
+
+
+}
+
+
+
+
+
+
+sensor.value =
+Math.round(value*100)/100;
+
+
+
+this.telemetry.push({
+
+sensor:
+sensor.id,
+
+
+type:
+sensor.type,
+
+
+value:
+sensor.value,
+
+
+time:
+new Date()
+.toLocaleTimeString()
+
+
+
+});
+
+
+
+});
+
+
+
+
+
+if(this.telemetry.length>50){
+
+
+this.telemetry.shift();
+
+
+}
+
+
+
+return this.telemetry;
+
+
+
+},
+
+
+
+
+
+
+
+detectAnomalies(){
+
+
+
+this.anomalies=[];
+
+
+
+
+
+Object.values(
+this.sensors
+)
+.forEach(
+sensor=>{
+
+
+
+let threshold=100;
+
+
+
+
+
+if(sensor.type==="Temperature"){
+
+
+threshold=80;
+
+
+}
+
+
+
+
+
+if(sensor.type==="Vibration"){
+
+
+threshold=7;
+
+
+}
+
+
+
+
+
+
+
+if(sensor.value>threshold){
+
+
+
+this.anomalies.push({
+
+
+sensor:sensor.id,
+
+
+condition:
+sensor.type
++
+" exceeds safe limit",
+
+
+
+severity:"WARNING"
+
+
+
+});
+
+
+
+}
+
+
+
+
+
+});
+
+
+
+
+
+return this.anomalies;
+
+
+
+},
+
+
+
+
+
+
+
+render(){
+
+
+
+const container =
+
+document.getElementById(
+"simulation-engine"
+);
+
+
+
+if(!container)
+return;
+
+
+
+
+
+
+container.innerHTML +=
+
+
+
+`
+
+<div class="engine-container">
+
+
+<div class="engine-label">
+
+INDUSTRIAL MONITORING
+
+</div>
+
+
+
+
+
+<div style="
+
+font-family:monospace;
+
+font-size:13px;
+
+color:#bbb;
+
+line-height:2;
+
+">
+
+
+
+SENSORS ACTIVE
+
+${
+
+Object.keys(
+this.sensors
+).length
+
+}
+
+
+
+<br>
+
+
+TELEMETRY POINTS
+
+${
+
+this.telemetry.length
+
+}
+
+
+
+<br>
+
+
+ANOMALIES
+
+${
+
+this.anomalies.length
+
+}
+
+
+
+</div>
+
+
+
+</div>
+
+`;
+
+
+
+}
+
+
+
+};
+
+
+
+
+
+
+
+
+
+/* =====================================================
+CONDITION MONITORING DASHBOARD
+===================================================== */
+
+
+
+const ConditionMonitoring={
+
+
+
+
+
+render(){
+
+
+
+const panel =
+
+document.querySelector(
+".intelligence-panel"
+);
+
+
+
+if(!panel)
+return;
+
+
+
+
+const existing =
+
+document.getElementById(
+"condition-monitoring"
+);
+
+
+
+if(existing)
+existing.remove();
+
+
+
+
+
+
+const box =
+document.createElement(
+"div"
+);
+
+
+
+box.id =
+"condition-monitoring";
+
+
+
+box.className =
+"metric-box";
+
+
+
+
+
+box.innerHTML=
+
+
+
+`
+
+<div class="metric-name">
+
+LIVE CONDITION STATUS
+
+</div>
+
+
+
+
+<div style="
+
+margin-top:15px;
+
+font-size:12px;
+
+line-height:2;
+
+color:#bbb;
+
+">
+
+
+
+${
+
+Object.values(
+MonitoringEngine.sensors
+)
+.map(
+sensor=>`
+
+${sensor.type}
+
+-
+
+${sensor.value}
+
+${sensor.unit}
+
+<br>
+
+`
+)
+.join("")
+
+}
+
+
+
+</div>
+
+`;
+
+
+
+
+
+panel.appendChild(box);
+
+
+
+}
+
+
+
+};
+
+
+
+
+
+
+
+
+
+/* =====================================================
+MONITORING UPDATE LOOP
+===================================================== */
+
+
+
+const MonitoringLoop={
+
+
+
+start(){
+
+
+
+setInterval(
+()=>{
+
+
+
+MonitoringEngine.generateTelemetry();
+
+
+
+MonitoringEngine.detectAnomalies();
+
+
+
+ConditionMonitoring.render();
+
+
+
+},
+5000
+);
+
+
+
+}
+
+
+
+};
+
+
+
+
+
+
+
+
+
+/* =====================================================
+CONNECT MONITORING SYSTEM
+===================================================== */
+
+
+window.addEventListener(
+"load",
+()=>{
+
+
+MonitoringEngine.initializeDefaultSensors();
+
+
+
+MonitoringLoop.start();
+
+
+
+MonitoringEngine.render();
+
+
+
+});
+
+
+
+
+
+</script>
+<script>
+
+
+/* =====================================================
+CONTINUUMONE PRODUCTION APPLICATION MANAGER
+===================================================== */
+
+
+
+const ContinuumManager = {
+
+
+
+version:
+
+"ContinuumOne V2.0",
+
+
+
+
+modules:{},
+
+
+
+state:{
+
+
+initialized:false,
+
+
+activeModule:"Asset Intelligence",
+
+
+systemStatus:"READY"
+
+
+
+},
+
+
+
+
+
+
+
+register(name,module){
+
+
+
+this.modules[name]=module;
+
+
+
+},
+
+
+
+
+
+
+
+initialize(){
+
+
+
+this.registerModules();
+
+
+
+this.bindNavigation();
+
+
+
+this.state.initialized=true;
+
+
+
+this.updateStatus();
+
+
+
+console.log(
+
+this.version +
+
+" initialized"
+
+);
+
+
+
+},
+
+
+
+
+
+
+
+registerModules(){
+
+
+
+this.register(
+
+"Asset Intelligence",
+
+AssetEngine
+
+);
+
+
+
+this.register(
+
+"Simulation",
+
+SimulationEngine
+
+);
+
+
+
+this.register(
+
+"Reliability",
+
+ReliabilityEngine
+
+);
+
+
+
+this.register(
+
+"Prediction",
+
+PredictionEngine
+
+);
+
+
+
+this.register(
+
+"Reports",
+
+ReportEngine
+
+);
+
+
+
+this.register(
+
+"Analytics",
+
+AdvancedAnalytics
+
+);
+
+
+
+},
+
+
+
+
+
+
+
+bindNavigation(){
+
+
+
+const buttons =
+
+document.querySelectorAll(
+".navigation-item"
+);
+
+
+
+
+
+buttons.forEach(
+button=>{
+
+
+
+button.onclick=()=>{
+
+
+
+buttons.forEach(
+item=>
+item.classList.remove(
+"active"
+)
+);
+
+
+
+button.classList.add(
+"active"
+);
+
+
+
+this.state.activeModule =
+
+button.innerText;
+
+
+
+};
+
+
+
+});
+
+
+
+},
+
+
+
+
+
+
+
+updateStatus(){
+
+
+
+const status =
+
+document.querySelector(
+".status-area"
+);
+
+
+
+if(status){
+
+
+
+status.innerHTML =
+
+
+`
+
+<div class="status-dot"></div>
+
+
+${this.state.systemStatus}
+
+
+`;
+
+
+
+}
+
+
+
+}
+
+
+
+
+
+
+
+};
+
+
+
+
+
+
+
+
+
+/* =====================================================
+GLOBAL ERROR PROTECTION SYSTEM
+===================================================== */
+
+
+
+const ErrorManager={
+
+
+
+errors:[],
+
+
+
+
+
+capture(error){
+
+
+
+this.errors.push({
+
+
+message:error.message,
+
+
+time:
+new Date()
+.toLocaleString()
+
+
+
+});
+
+
+
+console.error(
+"ContinuumOne Error",
+error
+);
+
+
+
+},
+
+
+
+
+
+
+report(){
+
+
+
+return this.errors;
+
+
+
+}
+
+
+
+
+
+};
+
+
+
+
+
+
+
+
+window.onerror=function(
+message,
+source,
+line
+){
+
+
+
+ErrorManager.capture({
+
+message:
+message,
+
+
+source:
+source,
+
+
+line:
+line
+
+
+
+});
+
+
+
+};
+
+
+
+
+
+
+
+
+
+/* =====================================================
+APPLICATION STATE STORAGE
+===================================================== */
+
+
+
+const ApplicationState={
+
+
+
+save(){
+
+
+
+return {
+
+
+
+asset:
+AssetEngine.currentAsset,
+
+
+
+simulation:
+SimulationConfig.parameters,
+
+
+
+reliability:
+ReliabilityEngine.state,
+
+
+
+prediction:
+PredictionEngine.state
+
+
+
+};
+
+
+
+},
+
+
+
+
+
+
+
+reset(){
+
+
+
+AssetEngine.currentAsset=null;
+
+
+
+SimulationConfig.parameters={
+
+
+temperature:25,
+
+
+load:50,
+
+
+runtime:1000,
+
+
+environment:"Normal",
+
+
+maintenanceQuality:80
+
+
+
+};
+
+
+
+}
+
+
+
+};
+
+
+
+
+
+
+
+
+
+/* =====================================================
+SYSTEM HEALTH MONITOR
+===================================================== */
+
+
+
+const SystemHealthMonitor={
+
+
+
+
+
+check(){
+
+
+
+const systems=[
+
+
+AssetEngine,
+
+
+SimulationEngine,
+
+
+ReliabilityEngine,
+
+
+PredictionEngine,
+
+
+ReportEngine
+
+
+
+];
+
+
+
+
+
+let available=0;
+
+
+
+systems.forEach(
+system=>{
+
+
+if(system)
+
+available++;
+
+
+
+});
+
+
+
+
+
+return {
+
+
+
+activeModules:
+
+available,
+
+
+totalModules:
+
+systems.length,
+
+
+health:
+
+Math.round(
+available/
+systems.length*
+100
+)
+
+
+
+};
+
+
+
+},
+
+
+
+
+
+
+
+render(){
+
+
+
+const panel =
+
+document.querySelector(
+".intelligence-panel"
+);
+
+
+
+if(!panel)
+return;
+
+
+
+
+
+panel.innerHTML +=
+
+
+
+`
+
+<div class="metric-box">
+
+
+<div class="metric-name">
+
+PLATFORM STATUS
+
+</div>
+
+
+<div class="metric-value">
+
+${
+
+this.check().health
+
+}%
+
+</div>
+
+
+</div>
+
+
+
+`;
+
+
+
+}
+
+
+
+};
+
+
+
+
+
+
+
+
+
+/* =====================================================
+FINAL STARTUP SEQUENCE
+===================================================== */
+
+
+
+window.addEventListener(
+"load",
+()=>{
+
+
+
+try{
+
+
+
+ContinuumManager.initialize();
+
+
+
+SystemHealthMonitor.render();
+
+
+
+console.log(
+
+"CONTINUUMONE ONLINE"
+
+);
+
+
+
+}
+
+catch(error){
+
+
+
+ErrorManager.capture(error);
+
+
+
+}
+
+
+
+});
+
+
+
+
+
+
+
+</script>
+<script>
+
+
+/* =====================================================
+CONTINUUMONE FINAL INTERFACE REFINEMENT
+===================================================== */
+
+
+
+const InterfaceEngine = {
+
+
+
+apply(){
+
+
+
+const style =
+document.createElement("style");
+
+
+
+
+
+style.innerHTML = `
+
+
+
+body{
+
+
+background:#050505;
+
+color:#d0d0d0;
+
+font-family:
+
+"Inter",
+"Segoe UI",
+Arial,
+sans-serif;
+
+
+}
+
+
+
+
+
+.engine-container{
+
+
+background:#090909;
+
+border:
+
+1px solid #252525;
+
+padding:20px;
+
+margin:15px 0;
+
+border-radius:4px;
+
+
+}
+
+
+
+
+
+.engine-label{
+
+
+font-size:12px;
+
+letter-spacing:2px;
+
+color:#999;
+
+border-bottom:
+
+1px solid #222;
+
+padding-bottom:10px;
+
+margin-bottom:15px;
+
+
+}
+
+
+
+
+
+.metric-box{
+
+
+background:#080808;
+
+border:
+
+1px solid #202020;
+
+padding:16px;
+
+margin:10px 0;
+
+
+}
+
+
+
+
+
+.metric-name{
+
+
+font-size:11px;
+
+letter-spacing:1.5px;
+
+color:#777;
+
+
+}
+
+
+
+
+
+.metric-value{
+
+
+margin-top:8px;
+
+font-size:22px;
+
+color:#e0e0e0;
+
+
+}
+
+
+
+
+
+.system-button{
+
+
+background:#111;
+
+border:
+
+1px solid #333;
+
+color:#ddd;
+
+padding:12px 20px;
+
+margin:8px;
+
+cursor:pointer;
+
+font-size:12px;
+
+letter-spacing:1px;
+
+
+}
+
+
+
+
+
+.system-button:hover{
+
+
+border-color:#777;
+
+
+}
+
+
+
+
+
+.status-dot{
+
+
+display:inline-block;
+
+width:8px;
+
+height:8px;
+
+background:#477c59;
+
+border-radius:50%;
+
+margin-right:8px;
+
+
+}
+
+
+
+
+
+`;
+
+
+
+
+
+document.head.appendChild(style);
+
+
+
+}
+
+
+
+};
+
+
+
+
+
+
+
+
+
+/* =====================================================
+SYSTEM STATUS COLOR ENGINE
+===================================================== */
+
+
+const StatusEngine={
+
+
+
+
+
+getColor(value){
+
+
+
+if(value<30)
+
+return "#477c59";
+
+
+
+if(value<65)
+
+return "#a1843b";
+
+
+
+return "#853d3d";
+
+
+
+},
+
+
+
+
+
+
+
+apply(){
+
+
+
+document
+.querySelectorAll(
+".metric-value"
+)
+.forEach(
+element=>{
+
+
+
+let value =
+
+parseInt(
+element.innerText
+);
+
+
+
+
+
+if(!isNaN(value)
+&&
+value<=100
+){
+
+
+
+element.style.color =
+
+this.getColor(value);
+
+
+
+}
+
+
+
+});
+
+
+
+}
+
+
+
+};
+
+
+
+
+
+
+
+
+
+/* =====================================================
+FINAL APPLICATION BOOT
+===================================================== */
+
+
+
+window.addEventListener(
+"load",
+()=>{
+
+
+
+InterfaceEngine.apply();
+
+
+
+setTimeout(
+()=>{
+
+
+StatusEngine.apply();
+
+
+
+},
+1000
+);
+
+
+
+});
+
+
+
+
+
+
+
+</script>
+
+
 </body>
+
 </html>
