@@ -1340,6 +1340,81 @@ input[type="range"]::-webkit-slider-thumb {
 
             <div id="three-container"></div>
 
+            <div class="electrical-overlay">
+
+    <div class="circuit-node">
+
+        <div class="circuit-node-box">
+            GRID
+        </div>
+
+        <div class="circuit-node-label">
+            3-PHASE INPUT
+        </div>
+
+    </div>
+
+
+    <div class="circuit-line">
+
+        <div class="circuit-value">
+            <span id="grid-voltage">415 V</span>
+        </div>
+
+        <div class="current-flow"></div>
+
+    </div>
+
+
+    <div class="circuit-node">
+
+        <div class="circuit-node-box">
+            BREAKER
+        </div>
+
+        <div class="circuit-node-label">
+            PROTECTION
+        </div>
+
+    </div>
+
+
+    <div class="circuit-line">
+
+        <div class="circuit-value">
+            <span id="grid-current">18.4 A</span>
+        </div>
+
+        <div class="current-flow"></div>
+
+    </div>
+
+
+    <div class="circuit-node">
+
+        <div class="circuit-node-box">
+            MOTOR
+        </div>
+
+        <div class="circuit-node-label">
+            DRIVE LOAD
+        </div>
+
+    </div>
+
+</div>
+
+            document.getElementById(
+    "grid-voltage"
+).textContent =
+    state.voltage.toFixed(0) + " V";
+
+
+document.getElementById(
+    "grid-current"
+).textContent =
+    state.current.toFixed(1) + " A";
+
 
             <div class="viewport-help">
 
