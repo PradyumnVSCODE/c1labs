@@ -702,6 +702,47 @@ input[type="range"]::-webkit-slider-thumb {
     transition: width 300ms ease;
 }
 
+    <div class="telemetry-item">
+
+    <div class="telemetry-head">
+
+        <div class="telemetry-name">
+            System Efficiency
+        </div>
+
+        <div
+            class="telemetry-state"
+            id="efficiency-state"
+        >
+            NOMINAL
+        </div>
+
+    </div>
+
+    <div
+        class="telemetry-number"
+        id="efficiency-value"
+    >
+        96.2
+    </div>
+
+    <div class="telemetry-unit">
+        %
+    </div>
+
+    <div class="telemetry-bar">
+
+        <div
+            class="telemetry-bar-fill"
+            id="efficiency-bar"
+        ></div>
+
+    </div>
+
+</div>
+
+    
+
 
 /* =========================================================
    SELECTED COMPONENT
@@ -1728,6 +1769,165 @@ let degradation = false;
 
 let simulationTime = 0;
 
+    let riskScore = 0;
+let predictedFailureHours = null;
+let degradationTrend = 0;
+
+    function calculatePrediction() {
+
+    /*
+        Convert observable physical signatures
+        into normalized anomaly scores.
+    */
+
+    const thermalAnomaly =
+        Math.max(
+            0,
+            (state.temperature - 45) / 35
+        );
+
+
+    const vibrationAnomaly =
+        Math.max(
+            0,
+            (state.vibration - 3) / 9
+        );
+
+
+    const currentAnomaly =
+        Math.max(
+            0,
+            (state.current - 20) / 15
+        );
+
+
+    const efficiencyAnomaly =
+        Math.max(
+            0,
+            (96.2 - state.efficiency) / 25
+        );
+
+
+    /*
+        Weighted engineering risk model.
+
+        Vibration receives the strongest weight because
+        bearing degradation should strongly influence
+        the prototype's failure prediction.
+    */
+
+    riskScore =
+        (
+            thermalAnomaly * 0.23 +
+            vibrationAnomaly * 0.39 +
+            currentAnomaly * 0.18 +
+            efficiencyAnomaly * 0.20
+        ) * 100;
+
+
+    riskScore =
+        Math.min(
+            99.9,
+            Math.max(
+                0,
+                riskScore
+            )
+        );
+
+
+    /*
+        Estimate remaining time.
+
+        This is NOT a real RUL model yet.
+        It is a prototype representation showing
+        how ContinuumOne could eventually expose
+        remaining useful life.
+    */
+
+    if (
+        riskScore < 10
+    ) {
+
+        predictedFailureHours =
+            null;
+
+    } else {
+
+        predictedFailureHours =
+            Math.max(
+                1,
+                Math.round(
+                    120 /
+                    Math.max(
+                        riskScore,
+                        1
+                    )
+                )
+            );
+
+    }
+
+
+    updatePredictionUI();
+
+}
+
+    function updatePredictionUI() {
+
+    const stateText =
+        document.getElementById(
+            "simulation-state"
+        );
+
+
+    if (
+        !degradation
+    ) {
+
+        stateText.textContent =
+            "Nominal operation. ContinuumOne is monitoring system behaviour.";
+
+        return;
+
+    }
+
+
+    if (
+        riskScore < 20
+    ) {
+
+        stateText.textContent =
+            "Early deviation detected. System behaviour remains within a low-risk operating envelope.";
+
+    }
+
+    else if (
+        riskScore < 50
+    ) {
+
+        stateText.textContent =
+            "Emerging degradation detected. Multiple telemetry signatures are diverging from nominal behaviour.";
+
+    }
+
+    else if (
+        riskScore < 75
+    ) {
+
+        stateText.textContent =
+            "Significant degradation detected. Failure risk is increasing across coupled system signatures.";
+
+    }
+
+    else {
+
+        stateText.textContent =
+            "Critical degradation pattern detected. Maintenance intervention should be evaluated.";
+
+    }
+
+}
+
 
 /* =========================================================
    SIMULATION STATE
@@ -2544,129 +2744,180 @@ function selectComponent(event) {
    SIMULATION UPDATE
 ========================================================= */
 
-function updateSimulation() {
+/* =========================================================
+   CONTINUUMONE DEGRADATION MODEL
 
-    if (
-        !simulationRunning
-    ) {
-        return;
-    }
+   The simulator treats failure as a PROCESS rather than
+   an instantaneous event.
 
+   bearing degradation
+        ↓
+   friction
+        ↓
+   electrical load
+        ↓
+   thermal rise
+        ↓
+   vibration
+        ↓
+   efficiency loss
+        ↓
+   health deterioration
+========================================================= */
 
-    simulationTime += 0.016;
+let bearingDegradation = 0;
+let frictionFactor = 1;
+let thermalStress = 0;
+let mechanicalStress = 0;
+let efficiencyLoss = 0;
 
+if (degradation) {
 
-    const load =
-        state.load / 100;
+    /*
+        Degradation develops gradually rather than
+        appearing instantly.
+    */
 
-    const voltage =
-        state.voltage;
+    bearingDegradation =
+        Math.min(
+            simulationTime / 90,
+            1
+        );
 
 
     /*
-        Base electrical model.
-
-        This is intentionally a prototype model.
-        Later we will replace this with a more
-        physically detailed electrical network.
+        Mechanical friction increases as the bearing
+        deteriorates.
     */
 
-    const baseCurrent =
-        7 +
-        load * 16;
-
-
-    let current =
-        baseCurrent;
-
-
-    let temperature =
-        35 +
-        load * 11;
-
-
-    let vibration =
-        1.8 +
-        load * 1.3;
+    frictionFactor =
+        1 +
+        bearingDegradation * 0.42;
 
 
     /*
-        Controlled degradation.
+        Mechanical stress.
 
-        This is where the predictive-maintenance
-        layer will eventually connect.
+        Load and degradation interact.
     */
 
-    if (
-        degradation
-    ) {
-
-        const degradationFactor =
-            Math.min(
-                simulationTime / 60,
-                1
-            );
-
-
-        vibration +=
-            degradationFactor * 5.5;
-
-
-        temperature +=
-            degradationFactor * 22;
-
-
-        current +=
-            degradationFactor * 5;
-
-
-        state.health =
-            99.84 -
-            degradationFactor * 31;
-
-    }
+    mechanicalStress =
+        load *
+        bearingDegradation;
 
 
     /*
-        Sensor noise.
+        Additional electrical current required
+        to overcome increasing mechanical resistance.
     */
 
-    temperature +=
-        Math.sin(simulationTime * 1.7) *
-        0.25;
+    const frictionCurrent =
+        load *
+        bearingDegradation *
+        0.095;
 
 
     current +=
-        Math.sin(simulationTime * 2.1) *
-        0.18;
+        frictionCurrent * 10;
 
+
+    /*
+        Thermal generation.
+
+        Electrical losses + mechanical friction.
+    */
+
+    thermalStress =
+        (
+            current *
+            0.42
+        ) +
+        (
+            mechanicalStress *
+            0.12
+        );
+
+
+    temperature +=
+        bearingDegradation * 7 +
+        thermalStress * 0.15;
+
+
+    /*
+        Vibration signature.
+
+        Bearing degradation creates a much stronger
+        vibration response than normal load changes.
+    */
 
     vibration +=
-        Math.sin(simulationTime * 3.4) *
-        0.12;
+
+        bearingDegradation *
+        (
+            2.5 +
+            load * 0.045
+        );
 
 
-    state.temperature =
-        temperature;
+    /*
+        Efficiency loss.
+    */
 
-    state.current =
-        current;
-
-    state.vibration =
-        vibration;
-
-
-    if (
-        !degradation
-    ) {
-
-        state.health =
-            99.84;
-
-    }
+    efficiencyLoss =
+        bearingDegradation *
+        (
+            3.5 +
+            load * 0.025
+        );
 
 
-    updateTelemetry();
+    state.efficiency =
+        Math.max(
+            0,
+            96.2 - efficiencyLoss
+        );
+
+
+    /*
+        Health is based on multiple observable
+        system signatures rather than a random number.
+    */
+
+    const thermalPenalty =
+        Math.max(
+            0,
+            temperature - 50
+        ) * 0.16;
+
+
+    const vibrationPenalty =
+        Math.max(
+            0,
+            vibration - 3
+        ) * 1.7;
+
+
+    const efficiencyPenalty =
+        efficiencyLoss * 1.5;
+
+
+    state.health =
+        Math.max(
+            0,
+            99.84
+            - bearingDegradation * 13
+            - thermalPenalty
+            - vibrationPenalty
+            - efficiencyPenalty
+        );
+
+} else {
+
+    state.health =
+        99.84;
+
+    state.efficiency =
+        96.2;
 
 }
 
@@ -2676,6 +2927,7 @@ function updateSimulation() {
 ========================================================= */
 
 function updateTelemetry() {
+    calculatePrediction();
 
     document.getElementById(
         "temperature-value"
@@ -2758,6 +3010,27 @@ function updateTelemetry() {
 
 }
 
+    document.getElementById(
+    "efficiency-value"
+).textContent =
+    state.efficiency.toFixed(1);
+
+
+document.getElementById(
+    "efficiency-bar"
+).style.width =
+    Math.max(
+        0,
+        state.efficiency
+    ) + "%";
+
+
+document.getElementById(
+    "efficiency-state"
+).textContent =
+    state.efficiency < 90
+        ? "DEGRADING"
+        : "NOMINAL";
 
 /* =========================================================
    TELEMETRY STATES
